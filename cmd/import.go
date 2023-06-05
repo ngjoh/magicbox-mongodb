@@ -4,8 +4,9 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
+	"log"
 
+	"github.com/koksmat-com/koksmat/db"
 	"github.com/koksmat-com/koksmat/io"
 	model "github.com/koksmat-com/koksmat/model/exchange"
 	"github.com/spf13/cobra"
@@ -21,19 +22,21 @@ var importCmd = &cobra.Command{
 	Short: "Add a JSON file to the import queue",
 	Long:  `Add a JSON file to the import queue for further processing `,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Importing")
-		_ = io.Readfile[model.RecipientsType]("adsfdsf")
+		log.Println("Importing")
+		data := io.Readfile[model.RecipientsType](inputFile)
+		db.Save[model.RecipientsType](domain, subject, data)
+		log.Println("Done")
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(importCmd)
-	rootCmd.Flags().StringVarP(&inputFile, "inputFile", "i", "", "Input file (required)")
-	rootCmd.MarkFlagRequired("inputFile")
-	rootCmd.Flags().StringVarP(&domain, "domain", "d", "", "Domain (required)")
-	rootCmd.MarkFlagRequired("domain")
-	rootCmd.Flags().StringVarP(&subject, "subject", "s", "", "Subject (required)")
-	rootCmd.MarkFlagRequired("subject")
+	importCmd.Flags().StringVarP(&inputFile, "inputFile", "i", "", "Input file (required)")
+	importCmd.MarkFlagRequired("inputFile")
+	importCmd.Flags().StringVarP(&domain, "domain", "d", "", "Domain (required)")
+	importCmd.MarkFlagRequired("domain")
+	importCmd.Flags().StringVarP(&subject, "subject", "s", "", "Subject (required)")
+	importCmd.MarkFlagRequired("subject")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

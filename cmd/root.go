@@ -13,10 +13,9 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "koksmat",
 	Short: "Kitchen hands help kit",
-	Long: `koksmat is a CLI library. It provides the commands to 
-	dealing with batch orientated jobs.`,
+	Long:  `koksmat is a CLI library. It provides the commands to deal with batch orientated jobs.`,
 	// Uncomment the following line if your bare application
-	// has an action associated with it:
+	// has an action associated  with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
 }
 

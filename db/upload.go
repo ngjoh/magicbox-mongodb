@@ -3,10 +3,9 @@ package db
 import (
 	"context"
 	"log"
-	"os"
 	"time"
 
-	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,19 +17,12 @@ type recipentData[K any] struct {
 	Data     []K
 }
 
-func goDotEnvVariable(key string) string {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-	return os.Getenv(key)
-}
 func Save[K any](domain string, subject string, recipients []K) {
-	connectionString := goDotEnvVariable("DATABASEURL")
+	connectionString := viper.GetString("DATABASEURL")
 
 	credential := options.Credential{
-		Username: goDotEnvVariable("DATABASEADMIN"),
-		Password: goDotEnvVariable("DATABASEPASSWORD"),
+		Username: viper.GetString("DATABASEADMIN"),
+		Password: viper.GetString("DATABASEPASSWORD"),
 	}
 	clientOpts := options.Client().ApplyURI(connectionString).SetAuth(credential).SetDirect(true)
 
@@ -47,7 +39,7 @@ func Save[K any](domain string, subject string, recipients []K) {
 
 	log.Println("Inserting", len(recipients), subject)
 
-	databaseName := goDotEnvVariable("DATABASE")
+	databaseName := viper.GetString("DATABASE")
 	_, insertError := client.Database(databaseName).Collection("inputdata").InsertOne(context.TODO(), recipientData)
 	if insertError != nil {
 		panic(insertError)
