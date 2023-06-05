@@ -11,9 +11,9 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "koksmat-cli",
+	Use:   "koksmat",
 	Short: "Kitchen hands help kit",
-	Long: `KOKSMAT-CLI is a CLI library. It provides the commands to 
+	Long: `koksmat is a CLI library. It provides the commands to 
 	dealing with batch orientated jobs.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -34,7 +34,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.koksmat-cli.yaml)")
+	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.koksmat.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

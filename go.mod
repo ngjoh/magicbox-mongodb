@@ -1,4 +1,4 @@
-module github.com/koksmat-com/koksmat-cli
+module github.com/koksmat-com/koksmat
 
 go 1.20
 

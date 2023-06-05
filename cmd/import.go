@@ -6,8 +6,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/koksmat-com/koksmat-cli/io"
-	model "github.com/koksmat-com/koksmat-cli/model/exchange"
+	"github.com/koksmat-com/koksmat/io"
+	model "github.com/koksmat-com/koksmat/model/exchange"
 	"github.com/spf13/cobra"
 )
 
