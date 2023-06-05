@@ -1,13 +1,8 @@
 FROM golang:1.20-buster
 
-
-
+WORKDIR /app.
 COPY . .
-WORKDIR src
-RUN go mod download
-
-RUN go build -o /koksmat
-
-EXPOSE 8080
+#RUN go mod download
+RUN go build -o .
 
 CMD [ "koksmat" ]
