@@ -1,6 +1,6 @@
 package model
 
-type RecipientsType struct {
+type RecipientType struct {
 	Id                   string   `json:"Id"`
 	Guid                 string   `json:"Guid"`
 	Alias                string   `json:"Alias"`

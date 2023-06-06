@@ -16,6 +16,11 @@ var inputFile string
 var domain string
 var subject string
 
+func readAndSave[K any]() {
+	data := io.Readfile[K](inputFile)
+	db.Save[K](domain, subject, data)
+}
+
 // importCmd represents the import command
 var importCmd = &cobra.Command{
 	Use:   "import",
@@ -23,8 +28,18 @@ var importCmd = &cobra.Command{
 	Long:  `Add a JSON file to the import queue for further processing `,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Importing")
-		data := io.Readfile[model.RecipientsType](inputFile)
-		db.Save[model.RecipientsType](domain, subject, data)
+
+		switch subject {
+		case "recipients":
+			readAndSave[model.RecipientType]()
+		case "rooms":
+			readAndSave[model.RoomType]()
+		default:
+
+			log.Fatalln("Unknown subject", subject)
+			return
+		}
+
 		log.Println("Done")
 	},
 }
@@ -37,13 +52,4 @@ func init() {
 	importCmd.MarkFlagRequired("domain")
 	importCmd.Flags().StringVarP(&subject, "subject", "s", "", "Subject (required)")
 	importCmd.MarkFlagRequired("subject")
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// importCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// importCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
