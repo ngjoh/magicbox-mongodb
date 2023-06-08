@@ -14,7 +14,7 @@ var serveCmd = &cobra.Command{
 	Short: "Starts the Koksmat server",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		webserver.Serve()
+		webserver.Run()
 	},
 }
 

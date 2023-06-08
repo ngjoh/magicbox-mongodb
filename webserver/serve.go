@@ -1,60 +1,46 @@
 package webserver
 
 import (
-	"context"
 	"log"
 	"net/http"
-	"time"
+	"os"
+	"os/signal"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/koksmat-com/koksmat/model"
+	"github.com/gin-gonic/gin"
 )
 
-type UserResponse struct {
-	Status  int        `json:"status"`
-	Message string     `json:"message"`
-	Data    *fiber.Map `json:"data"`
-}
+var router = gin.Default()
 
-func Serve() {
-	app := fiber.New()
+// Run will start the server
+func Run() {
+	v1 := router.Group("/v1")
+	addSharedMailboxesRoutes(v1)
+	addPingRoutes(v1)
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+	v2 := router.Group("/v2")
+	addPingRoutes(v2)
 
-	app.Get("/api/v1/:name", func(c *fiber.Ctx) error {
+	server := &http.Server{
+		Addr:    ":5001",
+		Handler: router,
+	}
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
 
-		switch c.Params("name") {
-
-		case "sharedmailboxes":
-			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			var sharedMailboxes []model.SharedMailbox
-			defer cancel()
-
-			results, err := model.GetSharedMailboxes()
-			if err != nil {
-				return c.Status(http.StatusInternalServerError).JSON(UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
-			}
-			defer results.Close(ctx)
-			for results.Next(ctx) {
-				var sharedMailbox model.SharedMailbox
-				if err = results.Decode(&sharedMailbox); err != nil {
-					return c.Status(http.StatusInternalServerError).JSON(UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: &fiber.Map{"data": err.Error()}})
-				}
-
-				sharedMailboxes = append(sharedMailboxes, sharedMailbox)
-			}
-			return c.Status(http.StatusOK).JSON(
-				UserResponse{Status: http.StatusOK, Message: "success", Data: &fiber.Map{"data": sharedMailboxes}},
-			)
-		default:
-
-			return c.Status(404).SendString("Where is john?")
-
+	go func() {
+		<-quit
+		log.Println("receive interrupt signal")
+		if err := server.Close(); err != nil {
+			log.Fatal("Server Close:", err)
 		}
+	}()
+	if err := server.ListenAndServe(); err != nil {
+		if err == http.ErrServerClosed {
+			log.Println("Server closed under request")
+		} else {
+			log.Fatal("Server closed unexpect")
+		}
+	}
 
-	})
-
-	log.Fatal(app.Listen(":3000"))
+	log.Println("Server exiting")
 }
