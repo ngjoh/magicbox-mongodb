@@ -6,17 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-
-	"github.com/joho/godotenv"
+	"path/filepath"
+	"strings"
 )
-
-func goDotEnvVariable(key string) string {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-	return os.Getenv(key)
-}
 
 func Readfile[K any](filePath string) []K {
 	jsonFile, err := os.Open(filePath)
@@ -31,6 +23,9 @@ func Readfile[K any](filePath string) []K {
 	}
 
 	recipients := []K{}
+	if len(body) < 1 {
+		return recipients
+	}
 	jsonErr := json.Unmarshal(body, &recipients)
 
 	if jsonErr != nil {
@@ -38,4 +33,24 @@ func Readfile[K any](filePath string) []K {
 	}
 	defer jsonFile.Close()
 	return recipients
+}
+
+func GetFileNames(pathname string, prefix string) []string {
+	fileNames := []string{}
+	err := filepath.Walk(pathname, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
+		fileName := info.Name()
+		if strings.HasPrefix(fileName, prefix) {
+			_ = append(fileNames, "s")
+		}
+
+		return nil
+	})
+	if err != nil {
+		log.Println(err)
+	}
+	return fileNames
 }

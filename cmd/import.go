@@ -8,8 +8,9 @@ import (
 
 	"github.com/koksmat-com/koksmat/db"
 	"github.com/koksmat-com/koksmat/io"
-	model "github.com/koksmat-com/koksmat/model/exchange"
+	"github.com/koksmat-com/koksmat/model"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var inputFile string
@@ -25,15 +26,19 @@ func readAndSave[K any]() {
 var importCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Add a JSON file to the import queue",
-	Long:  `Add a JSON file to the import queue for further processing `,
+	Long:  `Add a JSON file to the import queue for further processing in MongoDB`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Importing")
 
 		switch subject {
 		case "recipients":
 			readAndSave[model.RecipientType]()
+			model.SyncRecipients(viper.GetString("DATABASE"))
 		case "rooms":
 			readAndSave[model.RoomType]()
+		case "sharedmailboxes":
+			model.ReadSharedMailboxes(inputFile)
+
 		default:
 
 			log.Fatalln("Unknown subject", subject)
