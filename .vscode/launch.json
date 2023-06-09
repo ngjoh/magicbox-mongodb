@@ -22,12 +22,12 @@
             "args": ["import", "-i", "/Users/nielsgregersjohansen/code/koksmat/storage/exchange/sharedmailboxes.json" ,"-d", "exchange" ,"-s", "sharedmailboxes"]
         },
         {
-            "name": "Test",
+            "name": "Web",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["test"]
+            "args": ["serve"]
         }
     ]
 }

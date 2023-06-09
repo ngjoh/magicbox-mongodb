@@ -1,44 +1,40 @@
 package webserver
 
 import (
-	"context"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/koksmat-com/koksmat/model"
 )
 
 func addSharedMailboxesRoutes(rg *gin.RouterGroup) {
-	users := rg.Group("/sharedmailboxes")
+	sharedMailboxes := rg.Group("/sharedmailboxes")
 
-	users.GET("/", func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		var sharedMailboxes []model.SharedMailbox
-		defer cancel()
-
-		results, err := model.GetSharedMailboxes()
+	sharedMailboxes.GET("/", func(c *gin.Context) {
+		sharedMailboxes, err := model.GetSharedMailboxes()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, "Error")
+			c.JSON(http.StatusInternalServerError, err)
 			return
 		}
-		defer results.Close(ctx)
-		for results.Next(ctx) {
-			var sharedMailbox model.SharedMailbox
-			if err = results.Decode(&sharedMailbox); err != nil {
-				c.JSON(http.StatusInternalServerError, err.Error())
-				return
-			}
 
-			sharedMailboxes = append(sharedMailboxes, sharedMailbox)
-		}
 		c.JSON(http.StatusOK, sharedMailboxes)
 
 	})
-	users.GET("/comments", func(c *gin.Context) {
-		c.JSON(http.StatusOK, "users comments")
+	sharedMailboxes.POST("/", func(c *gin.Context) {
+
+		var json model.NewSharedMailbox
+		if err := c.ShouldBindJSON(&json); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		sharedMailbox, err := model.CreateSharedMailbox(json.DisplayName, json.Alias, json.Name, json.Members, json.Owners, json.Readers)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, sharedMailbox)
+
 	})
-	users.GET("/pictures", func(c *gin.Context) {
-		c.JSON(http.StatusOK, "users pictures")
-	})
+
 }

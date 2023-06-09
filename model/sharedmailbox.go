@@ -2,15 +2,17 @@ package model
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/kamva/mgm/v3"
 	"github.com/koksmat-com/koksmat/io"
+	"github.com/koksmat-com/koksmat/magicbox"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type SharedMailbox struct {
@@ -23,6 +25,23 @@ type SharedMailbox struct {
 	Members            []string `bson:"members,truncate"`
 	Owners             []string `bson:"owners,truncate"`
 	Readers            []string `bson:"readers,truncate"`
+}
+type NewSharedMailbox struct {
+	DisplayName string   `json:"displayName" binding:"required"`
+	Alias       string   `json:"alias" binding:"required"`
+	Name        string   `json:"name" binding:"required"`
+	Members     []string `json:"members"`
+	Owners      []string `json:"owners"`
+	Readers     []string `json:"readers"`
+}
+type NewSharedMailboxData struct {
+	DisplayName        string   `json:"displayName" binding:"required"`
+	Alias              string   `json:"identity" binding:"required"`
+	PrimarySmtpAddress string   `json:"primarySmtpAddress" binding:"required"`
+	Name               string   `json:"name" binding:"required"`
+	Members            []string `json:"members"`
+	Owners             []string `json:"owners"`
+	Readers            []string `json:"readers"`
 }
 
 type access struct {
@@ -38,8 +57,66 @@ type permission struct {
 	AccessRights      []string `json:"AccessRights"` //https://learn.microsoft.com/en-us/powershell/module/exchange/add-recipientpermission?view=exchange-ps#-accessrights
 }
 
-func GetSharedMailboxes() (cur *mongo.Cursor, err error) {
-	return mgm.Coll(&SharedMailbox{}).Find(context.TODO(), bson.M{})
+func CreateSharedMailbox(DisplayName string,
+	Alias string,
+	Name string,
+	Members []string,
+	Owners []string,
+	Readers []string,
+) (sharedMailbox NewSharedMailboxData, err error) {
+	request := NewSharedMailbox{
+		DisplayName: DisplayName,
+		Alias:       Alias,
+		Name:        Name,
+		Members:     Members,
+		Owners:      Owners,
+		Readers:     Readers,
+	}
+
+	result, err := magicbox.Powerpack(request)
+	if err != nil {
+		return sharedMailbox, err
+	}
+
+	response := NewSharedMailboxData{}
+	json.Unmarshal(result, &response)
+	return response, nil
+	// log.Println(response)
+	// sharedMailbox = SharedMailbox{
+	// 	DefaultModel:       mgm.DefaultModel{},
+	// 	ExchangeObjectId:   "",
+	// 	Identity:           "",
+	// 	PrimarySmtpAddress: "",
+	// 	DisplayName:        DisplayName,
+	// 	CustomAttribute1:   "",
+	// 	Members:            Members,
+	// 	Owners:             Owners,
+	// 	Readers:            Readers,
+	// }
+	// return sharedMailbox, nil
+}
+
+func GetSharedMailboxes() (sharedMailboxes []SharedMailbox, err error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	defer cancel()
+
+	results, err := mgm.Coll(&SharedMailbox{}).Find(context.TODO(), bson.M{})
+	if err != nil {
+
+		return nil, err
+	}
+	defer results.Close(ctx)
+	for results.Next(ctx) {
+		var sharedMailbox SharedMailbox
+		if err = results.Decode(&sharedMailbox); err != nil {
+			return nil, err
+		}
+
+		sharedMailboxes = append(sharedMailboxes, sharedMailbox)
+	}
+	return sharedMailboxes, nil
 }
 func ReadSharedMailboxes(inputFile string) {
 	io.Waitfor(inputFile)
