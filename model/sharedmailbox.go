@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"path"
+	"strings"
 
 	"github.com/kamva/mgm/v3"
 	"github.com/koksmat-com/koksmat/io"
@@ -18,6 +19,7 @@ type SharedMailbox struct {
 	Identity           string   `json:"Identity"`
 	PrimarySmtpAddress string   `json:"PrimarySmtpAddress"`
 	DisplayName        string   `json:"DisplayName"`
+	CustomAttribute1   string   `json:"DisplayName"` // stores a comma separated list of owners upn's
 	Members            []string `bson:"members,truncate"`
 	Owners             []string `bson:"owners,truncate"`
 	Readers            []string `bson:"readers,truncate"`
@@ -26,14 +28,14 @@ type SharedMailbox struct {
 type access struct {
 	Identity     string   `json:"Identity"`
 	User         string   `json:"User"`
-	AccessRights []string `json:"AccessRights"`
+	AccessRights []string `json:"AccessRights"` // https://learn.microsoft.com/en-us/previous-versions/office/developer/exchange-server-2010/ff321296(v=exchg.140)
 }
 
 type permission struct {
 	Identity          string   `json:"Identity"`
 	Trustee           string   `json:"Trustee"`
 	AccessControlType string   `json:"AccessControlType"`
-	AccessRights      []string `json:"AccessRights"`
+	AccessRights      []string `json:"AccessRights"` //https://learn.microsoft.com/en-us/powershell/module/exchange/add-recipientpermission?view=exchange-ps#-accessrights
 }
 
 func GetSharedMailboxes() (cur *mongo.Cursor, err error) {
@@ -44,32 +46,36 @@ func ReadSharedMailboxes(inputFile string) {
 
 	for _, smt := range data {
 		log.Println(smt.PrimarySmtpAddress)
-
-		sharedmailboxpermissionsPath := path.Join(path.Dir(inputFile), "sharedmailboxpermissions-"+smt.PrimarySmtpAddress+".json")
-		sharedmailboxRecipientpermissionsPath := path.Join(path.Dir(inputFile), "sharedmailboxrecipientPermissions-"+smt.Identity+".json")
+		dir := path.Dir(inputFile)
+		sharedmailboxpermissionsPath := path.Join(dir, "sharedmailboxpermissions-"+smt.ExchangeObjectId+".json")
+		sharedmailboxRecipientpermissionsPath := path.Join(dir, "sharedmailboxrecipientPermission-"+smt.ExchangeObjectId+".json")
 		members := []string{}
-		owners := []string{}
+		owners := strings.Split(smt.CustomAttribute1, ",")
 		readers := []string{}
 		tester := []string{}
 		mailboxAccess := io.Readfile[access](sharedmailboxpermissionsPath)
 		mailboxPermission := io.Readfile[permission](sharedmailboxRecipientpermissionsPath)
 
 		for _, mbp := range mailboxAccess {
-			members = append(members, mbp.User)
+			if strings.Contains(strings.Join(mbp.AccessRights, ","), "FullAccess") {
+				members = append(members, mbp.User)
+			} else {
+				readers = append(readers, mbp.User)
+			}
 
 		}
 		for _, mbp := range mailboxPermission {
-			tester = append(members, mbp.Trustee)
+			tester = append(tester, mbp.Trustee)
 
 		}
 		log.Println(tester)
-		filter := bson.D{{"identity", smt.Identity}}
+		filter := bson.D{{"exchangeobjectid", smt.ExchangeObjectId}}
 		result := mgm.Coll(&SharedMailbox{}).FindOne(context.Background(), filter)
 		record := &SharedMailbox{}
 		result.Decode(record)
 		if record.Identity == "" {
 			newRecord := &SharedMailbox{
-
+				ExchangeObjectId:   smt.ExchangeObjectId,
 				Identity:           smt.Identity,
 				PrimarySmtpAddress: smt.PrimarySmtpAddress,
 				DisplayName:        smt.DisplayName,
@@ -81,7 +87,7 @@ func ReadSharedMailboxes(inputFile string) {
 			log.Println("new")
 		} else {
 			changedRecord := &SharedMailbox{
-
+				Identity:           smt.Identity,
 				PrimarySmtpAddress: smt.PrimarySmtpAddress,
 				DisplayName:        smt.DisplayName,
 				Members:            members,
@@ -91,8 +97,6 @@ func ReadSharedMailboxes(inputFile string) {
 			mgm.Coll(changedRecord).Update(changedRecord)
 			log.Println("update")
 		}
-
-		//recipientPermissions := io.Readfile[model.SharedMailboxType](sharedmailboxRecipientpermissionsPath)
 
 	}
 

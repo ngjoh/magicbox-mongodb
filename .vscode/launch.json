@@ -11,7 +11,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["import", "-i", "/Users/nielsgregersjohansen/code/koksmat/koksmat-cli/storage/exchange/recipents.json" ,"-d", "exchange" ,"-s", "recipients"]
+            "args": ["import", "-i", "/Users/nielsgregersjohansen/code/koksmat/storage/exchange/recipents.json" ,"-d", "exchange" ,"-s", "recipients"]
         },
         {
             "name": "Import Shared Mailboxes",
@@ -19,7 +19,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["import", "-i", "/Users/nielsgregersjohansen/code/koksmat/koksmat-cli/storage/exchange/sharedmailboxes.json" ,"-d", "exchange" ,"-s", "sharedmailboxes"]
+            "args": ["import", "-i", "/Users/nielsgregersjohansen/code/koksmat/storage/exchange/sharedmailboxes.json" ,"-d", "exchange" ,"-s", "sharedmailboxes"]
         },
         {
             "name": "Test",

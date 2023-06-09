@@ -27,9 +27,14 @@ func Readfile[K any](filePath string) []K {
 		return recipients
 	}
 	jsonErr := json.Unmarshal(body, &recipients)
-
+	// PowerShell treats array with one element as an object
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		recipient := new(K)
+		jsonErr := json.Unmarshal(body, &recipient)
+		if jsonErr != nil {
+			log.Fatal(jsonErr)
+		}
+		recipients = []K{*recipient}
 	}
 	defer jsonFile.Close()
 	return recipients

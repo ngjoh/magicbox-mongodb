@@ -4,13 +4,16 @@ import (
 	"context"
 	"log"
 
+	"github.com/kamva/mgm/v3"
 	"github.com/koksmat-com/koksmat/db"
+	"github.com/koksmat-com/koksmat/io"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type RecipientType struct {
-	Id                   string   `json:"Id"`
-	Guid                 string   `json:"Guid"`
+type Recipient struct {
+	mgm.DefaultModel
+	Id                   string   `json:"Identity"`
+	Guid                 string   `json:"ExternalDirectoryObjectId"`
 	Alias                string   `json:"Alias"`
 	RecipientTypeDetails string   `json:"RecipientTypeDetails"`
 	EmailAddresses       []string `json:"EmailAddresses"`
@@ -18,6 +21,45 @@ type RecipientType struct {
 	DistinguishedName    string   `json:"DistinguishedName"`
 }
 
+func ReadRecipients(inputFile string) {
+	data := io.Readfile[Recipient](inputFile)
+
+	for _, rcp := range data {
+		log.Println(rcp.DisplayName)
+
+		filter := bson.D{{"id", rcp.Id}}
+		result := mgm.Coll(&Recipient{}).FindOne(context.Background(), filter)
+		record := &Recipient{}
+		result.Decode(record)
+		if record.Id == "" {
+			newRecord := &Recipient{
+
+				Id:                   rcp.Id,
+				Guid:                 rcp.Guid,
+				Alias:                rcp.Alias,
+				RecipientTypeDetails: rcp.RecipientTypeDetails,
+				EmailAddresses:       rcp.EmailAddresses,
+				DisplayName:          rcp.DisplayName,
+				DistinguishedName:    rcp.DistinguishedName,
+			}
+			mgm.Coll(newRecord).Create(newRecord)
+			log.Println("new")
+		} else {
+			changedRecord := &Recipient{
+
+				Guid:                 rcp.Guid,
+				Alias:                rcp.Alias,
+				RecipientTypeDetails: rcp.RecipientTypeDetails,
+				EmailAddresses:       rcp.EmailAddresses,
+				DisplayName:          rcp.DisplayName,
+				DistinguishedName:    rcp.DistinguishedName,
+			}
+			mgm.Coll(changedRecord).Update(changedRecord)
+			log.Println("update")
+		}
+
+	}
+}
 func SyncRecipients(database string) {
 
 	// Connect to MongoDB

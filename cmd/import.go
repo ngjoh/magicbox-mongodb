@@ -10,7 +10,6 @@ import (
 	"github.com/koksmat-com/koksmat/io"
 	"github.com/koksmat-com/koksmat/model"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var inputFile string
@@ -32,8 +31,9 @@ var importCmd = &cobra.Command{
 
 		switch subject {
 		case "recipients":
-			readAndSave[model.RecipientType]()
-			model.SyncRecipients(viper.GetString("DATABASE"))
+			model.ReadRecipients(inputFile)
+
+			//model.SyncRecipients(viper.GetString("DATABASE"))
 		case "rooms":
 			readAndSave[model.RoomType]()
 		case "sharedmailboxes":
