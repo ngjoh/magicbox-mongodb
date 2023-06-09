@@ -42,6 +42,7 @@ func GetSharedMailboxes() (cur *mongo.Cursor, err error) {
 	return mgm.Coll(&SharedMailbox{}).Find(context.TODO(), bson.M{})
 }
 func ReadSharedMailboxes(inputFile string) {
+	io.Waitfor(inputFile)
 	data := io.Readfile[SharedMailbox](inputFile)
 
 	for _, smt := range data {
