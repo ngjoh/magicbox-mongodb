@@ -22,6 +22,7 @@ type Recipient struct {
 }
 
 func ReadRecipients(inputFile string) {
+	io.Waitfor(inputFile)
 	data := io.Readfile[Recipient](inputFile)
 
 	for _, rcp := range data {
