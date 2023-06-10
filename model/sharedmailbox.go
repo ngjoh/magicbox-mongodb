@@ -146,12 +146,12 @@ func ReadSharedMailboxes(inputFile string) {
 			tester = append(tester, mbp.Trustee)
 
 		}
-		log.Println(tester)
+		//log.Println(tester)
 		filter := bson.D{{"exchangeobjectid", smt.ExchangeObjectId}}
 		result := mgm.Coll(&SharedMailbox{}).FindOne(context.Background(), filter)
 		record := &SharedMailbox{}
 		result.Decode(record)
-		if record.Identity == "" {
+		if record.ExchangeObjectId == "" {
 			newRecord := &SharedMailbox{
 				ExchangeObjectId:   smt.ExchangeObjectId,
 				Identity:           smt.Identity,
@@ -161,8 +161,9 @@ func ReadSharedMailboxes(inputFile string) {
 				Owners:             owners,
 				Readers:            readers,
 			}
+			log.Println("insert")
 			mgm.Coll(newRecord).Create(newRecord)
-			log.Println("new")
+			log.Println("inserted")
 		} else {
 			changedRecord := &SharedMailbox{
 				Identity:           smt.Identity,
@@ -172,8 +173,9 @@ func ReadSharedMailboxes(inputFile string) {
 				Owners:             owners,
 				Readers:            readers,
 			}
-			mgm.Coll(changedRecord).Update(changedRecord)
 			log.Println("update")
+			mgm.Coll(changedRecord).Update(changedRecord)
+			log.Println("updated")
 		}
 
 	}
