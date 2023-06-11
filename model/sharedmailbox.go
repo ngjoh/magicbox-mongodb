@@ -121,9 +121,11 @@ func GetSharedMailboxes() (sharedMailboxes []SharedMailbox, err error) {
 func ReadSharedMailboxes(inputFile string) {
 	io.Waitfor(inputFile)
 	data := io.Readfile[SharedMailbox](inputFile)
-
+	max := len(data)
+	i := 0
 	for _, smt := range data {
-		log.Println(smt.PrimarySmtpAddress)
+		i++
+		log.Println(i, max, smt.PrimarySmtpAddress)
 		dir := path.Dir(inputFile)
 		sharedmailboxpermissionsPath := path.Join(dir, "sharedmailboxpermissions-"+smt.ExchangeObjectId+".json")
 		sharedmailboxRecipientpermissionsPath := path.Join(dir, "sharedmailboxrecipientPermission-"+smt.ExchangeObjectId+".json")
