@@ -12,7 +12,15 @@ import (
 var tag = "Shared Mailboxes"
 
 func createSharedMailbox() usecase.Interactor {
-	u := usecase.NewInteractor(func(ctx context.Context, input model.SharedMailboxNewResponce, output *model.SharedMailboxNewResponce) error {
+	type SharedMailboxNewRequest struct {
+		DisplayName string   `json:"displayName" binding:"required"`
+		Alias       string   `json:"alias" binding:"required"`
+		Name        string   `json:"name" binding:"required"`
+		Members     []string `json:"members"`
+		Owners      []string `json:"owners"`
+		Readers     []string `json:"readers"`
+	}
+	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxNewRequest, output *model.SharedMailboxNewResponce) error {
 
 		result, err := model.CreateSharedMailbox(input.DisplayName, input.Alias, input.Name, input.Members, input.Owners, input.Readers)
 		if err != nil {
@@ -41,7 +49,7 @@ func getSharedMailbox() usecase.Interactor {
 
 	})
 
-	u.SetTitle("Get a shared Mailbox")
+	u.SetTitle("Get a Shared Mailbox")
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags(tag)
 	return u
@@ -62,8 +70,8 @@ func updateSharedMailbox() usecase.Interactor {
 		return nil
 
 	})
-	u.SetTitle("Create a Shared Mailbox")
-	u.SetDescription("Create a Shared Mailbox")
+	u.SetTitle("Update a Shared Mailbox")
+	u.SetDescription("Updates a Shared Mailbox")
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags(tag)
 	return u
