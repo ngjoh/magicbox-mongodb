@@ -2,6 +2,7 @@ package restapi
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,34 +15,33 @@ import (
 	"github.com/swaggest/rest/response/gzip"
 	"github.com/swaggest/rest/web"
 	swgui "github.com/swaggest/swgui/v4emb"
-	"github.com/swaggest/usecase"
-	"github.com/swaggest/usecase/status"
 )
 
-var mySigningKey = []byte("AllYourBase")
+func ParseIdToken(tokenString string) (appName string, appSecret string, err error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Don't forget to validate the alg is what you expect:
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
 
-func issueToken() usecase.Interactor {
-	type JWT struct {
-		Token string
-	}
-	u := usecase.NewInteractor(func(ctx context.Context, input struct{}, output *string) error {
-
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"foo": "bar",
-			"nbf": 234,
-		})
-
-		tokenString, err := token.SignedString(mySigningKey)
-		*output = tokenString
-		return err
-
+		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
+		return mySigningKey, nil
 	})
+	if err != nil {
 
-	u.SetTitle("Issue a token")
+		return "", "", err
+	}
 
-	u.SetExpectedErrors(status.InvalidArgument)
-	u.SetTags("Authentication")
-	return u
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		app := fmt.Sprint(claims["app"])
+		key := fmt.Sprint(claims["key"])
+		return app, key, nil
+
+	} else {
+
+		return "", "", errors.New("Not implemented")
+	}
+
 }
 
 // Authenticator is a default authentication middleware to enforce access from the
@@ -71,13 +71,15 @@ func Authenticator(next http.Handler) http.Handler {
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			fmt.Println(claims["foo"], claims["nbf"])
+			app := fmt.Sprint(claims["app"])
+			// Token is authenticated, pass it through
+			ctx := context.WithValue(r.Context(), "app", app)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
 		}
 
-		// Token is authenticated, pass it through
-		next.ServeHTTP(w, r)
 	})
 }
 func Run() {
@@ -86,7 +88,7 @@ func Run() {
 	// Init API documentation schema.
 	s.OpenAPI.Info.Title = "Magicbox"
 	s.OpenAPI.Info.WithDescription("MagicBox integration for managing Microsoft 365 resources")
-	s.OpenAPI.Info.Version = "v0.0.1"
+	s.OpenAPI.Info.Version = "v0.0.2"
 
 	//adminAuth := middleware.BasicAuth("Admin Access", map[string]string{"admin": "admin"})
 
@@ -97,7 +99,7 @@ func Run() {
 		gzip.Middleware, // Response compression with support for direct gzip pass through.
 	)
 
-	s.Post("/v1/login", issueToken())
+	s.Post("/v1/authorize", signin())
 	// Endpoints with user access.
 	s.Route("/v1/sharedmailboxes", func(r chi.Router) {
 		r.Group(func(r chi.Router) {

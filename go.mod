@@ -24,6 +24,7 @@ require (
 	github.com/lestrrat-go/iter v1.0.2 // indirect
 	github.com/lestrrat-go/jwx/v2 v2.0.6 // indirect
 	github.com/lestrrat-go/option v1.0.0 // indirect
+	github.com/sethvargo/go-password v0.2.0 // indirect
 )
 
 require (

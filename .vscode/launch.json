@@ -29,5 +29,14 @@
             "program": "${workspaceFolder}",
             "args": ["serve"]
         }
+        ,
+        {
+            "name": "Access Key",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["access","niels"]
+        }
     ]
 }
