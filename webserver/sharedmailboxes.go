@@ -22,7 +22,7 @@ func addSharedMailboxesRoutes(rg *gin.RouterGroup) {
 	})
 	sharedMailboxes.POST("/", func(c *gin.Context) {
 
-		var json model.NewSharedMailbox
+		var json model.SharedMailboxNewRequest
 		if err := c.ShouldBindJSON(&json); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return

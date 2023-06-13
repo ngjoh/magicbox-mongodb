@@ -4,7 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"github.com/koksmat-com/koksmat/webserver"
+	"github.com/koksmat-com/koksmat/restapi"
 	"github.com/spf13/cobra"
 )
 
@@ -14,7 +14,8 @@ var serveCmd = &cobra.Command{
 	Short: "Starts the Koksmat server",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		webserver.Run()
+		restapi.Run()
+		//webserver.Run()
 	},
 }
 
