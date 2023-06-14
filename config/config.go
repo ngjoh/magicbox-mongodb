@@ -24,8 +24,8 @@ func Setup(envPath string) {
 	databaseUrl := strings.ReplaceAll(viper.GetString("DATABASEURL"), "mongodb://", "")
 
 	connectionString := "mongodb://" + viper.GetString("DATABASEADMIN") + ":" + viper.GetString("DATABASEPASSWORD") + "@" + databaseUrl
-
-	err := mgm.SetDefaultConfig(nil, viper.GetString("DATABASE"), options.Client().ApplyURI(connectionString).SetMonitor(cmdMonitor))
+	db := viper.GetString("DATABASE")
+	err := mgm.SetDefaultConfig(nil, db, options.Client().ApplyURI(connectionString).SetMonitor(cmdMonitor))
 	if err != nil {
 		panic(err)
 	}

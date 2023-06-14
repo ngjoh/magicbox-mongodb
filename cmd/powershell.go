@@ -17,16 +17,23 @@ var pwshCmd = &cobra.Command{
 	Short: "Run PowerShell",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		type NewSharedMailboxResult struct {
+			Name               string `json:"Name"`
+			DisplayName        string `json:"DisplayName"`
+			Identity           string `json:"Identity"`
+			PrimarySmtpAddress string `json:"PrimarySmtpAddress"`
+		}
 		id := uuid.New()
 		powershellScript := "scripts/sharedmailboxes/create.ps1"
 		powershellArguments := fmt.Sprintf(` -Name "test5-%s" -DisplayName "Test5 %s"  -Alias "test5-%s" -Members "s" -Readers "s" -Owner="s"`, id, id, id)
 
-		output, console, err := powershell.Run(powershellScript, powershellArguments)
+		output, _, err := powershell.Run[NewSharedMailboxResult](powershellScript, powershellArguments)
 		if err != nil {
 			fmt.Println(err)
 		} else {
 			fmt.Println(output)
-			fmt.Println(console)
+
 		}
 	},
 }
