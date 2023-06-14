@@ -86,8 +86,20 @@ func Run() {
 	s := web.DefaultService()
 
 	// Init API documentation schema.
-	s.OpenAPI.Info.Title = "Magicbox"
-	s.OpenAPI.Info.WithDescription("MagicBox integration for managing Microsoft 365 resources")
+	s.OpenAPI.Info.Title = "Koksmat Magicbox"
+	s.OpenAPI.Info.WithDescription(`
+	
+Service  for managing Microsoft 365 resources
+
+## Getting started 
+
+### Authentication
+You need a credential key to access the API. The credential is issue by [niels.johansen@nexigroup.com](mailto:niels.johansen@nexigroup.com).
+
+Use the credential key to get an access token through the /v1/authorize end point. The access token is valid for 10 minutes.
+
+Pass the access token in the Authorization header as a Bearer token to access the API.
+	`)
 	s.OpenAPI.Info.Version = "v0.0.2"
 
 	//adminAuth := middleware.BasicAuth("Admin Access", map[string]string{"admin": "admin"})
@@ -100,7 +112,7 @@ func Run() {
 	)
 
 	s.Post("/v1/authorize", signin())
-	s.Post("/v1/demo", demo())
+	//s.Post("/v1/demo", demo())
 	// Endpoints with user access.
 	s.Route("/v1/sharedmailboxes", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
@@ -120,11 +132,19 @@ func Run() {
 			r.Method(http.MethodDelete, "/{id}", nethttp.NewHandler(deleteSharedMailbox()))
 		})
 	})
+	s.Route("/v1/info", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
+			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
 
+			r.Method(http.MethodPost, "/", nethttp.NewHandler(getInfo()))
+
+		})
+	})
 	// Swagger UI endpoint at /docs.
 	s.Docs("/docs", swgui.New)
 	s.Mount("/debug", middleware.Profiler())
-	s.Get("/info", getInfo())
+
 	// Start server.
 	log.Println("Server starting")
 	if err := http.ListenAndServe(":5001", s); err != nil {
