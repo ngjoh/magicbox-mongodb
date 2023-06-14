@@ -100,6 +100,7 @@ func Run() {
 	)
 
 	s.Post("/v1/authorize", signin())
+	s.Post("/v1/demo", demo())
 	// Endpoints with user access.
 	s.Route("/v1/sharedmailboxes", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
