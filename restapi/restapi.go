@@ -123,6 +123,7 @@ func Run() {
 	// Swagger UI endpoint at /docs.
 	s.Docs("/docs", swgui.New)
 	s.Mount("/debug", middleware.Profiler())
+	s.Get("/info", getInfo())
 	// Start server.
 	log.Println("Server starting")
 	if err := http.ListenAndServe(":5001", s); err != nil {
