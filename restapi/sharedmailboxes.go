@@ -55,19 +55,14 @@ func getSharedMailbox() usecase.Interactor {
 	return u
 }
 func updateSharedMailbox() usecase.Interactor {
-	type SharedMailboxUpdateRquest struct {
+	type SharedMailboxUpdateRequest struct {
 		Identity    string `path:"id"`
 		DisplayName string `json:"displayName" binding:"required"`
 	}
-	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxUpdateRquest, output *model.SharedMailboxNewResponce) error {
-
+	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxUpdateRequest, output *model.SharedMailbox) error {
 		result, err := model.UpdateSharedMailbox(input.Identity, input.DisplayName)
-		if err != nil {
-			return err
-		}
-
-		*output = result
-		return nil
+		*output = *result
+		return err
 
 	})
 	u.SetTitle("Update a Shared Mailbox")
@@ -82,9 +77,10 @@ func addSharedMailboxMembers() usecase.Interactor {
 		Identity string   `path:"id"`
 		Members  []string `json:"displayName" binding:"required"`
 	}
-	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailboxNewResponce) error {
-
-		return errors.New("Not implemented")
+	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
+		result, err := model.AddSharedMailboxMembers(input.Identity, input.Members)
+		*output = *result
+		return err
 
 	})
 	u.SetTitle("Add members to a Shared Mailbox")
@@ -113,9 +109,10 @@ func addSharedMailboxOwners() usecase.Interactor {
 		Identity string   `path:"id"`
 		Members  []string `json:"emails" binding:"required"`
 	}
-	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailboxNewResponce) error {
-
-		return errors.New("Not implemented")
+	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
+		result, err := model.AddSharedMailboxOwners(input.Identity, input.Members)
+		*output = *result
+		return err
 
 	})
 	u.SetTitle("Add owners to a Shared Mailbox")

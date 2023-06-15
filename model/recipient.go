@@ -11,7 +11,7 @@ import (
 )
 
 type Recipient struct {
-	mgm.DefaultModel
+	mgm.DefaultModel     `bson:",inline"`
 	Id                   string   `json:"Identity"`
 	Guid                 string   `json:"ExternalDirectoryObjectId"`
 	Alias                string   `json:"Alias"`

@@ -24,16 +24,18 @@ var pwshCmd = &cobra.Command{
 			Identity           string `json:"Identity"`
 			PrimarySmtpAddress string `json:"PrimarySmtpAddress"`
 		}
-		id := uuid.New()
-		powershellScript := "scripts/sharedmailboxes/create.ps1"
-		powershellArguments := fmt.Sprintf(` -Name "test5-%s" -DisplayName "Test5 %s"  -Alias "test5-%s" -Members "s" -Readers "s" -Owner="s"`, id, id, id)
+		id := fmt.Sprintf("%s", uuid.New())
 
-		output, _, err := powershell.Run[NewSharedMailboxResult](powershellScript, powershellArguments)
+		result, err := powershell.CreateSharedMailbox(id, id, id, []string{"s", "s"}, []string{"s", "s"}, []string{"s", "s"})
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			fmt.Println(output)
+			fmt.Println("DisplayName", result.DisplayName)
+			fmt.Println("PrimarySmtpAddress", result.PrimarySmtpAddress)
+			fmt.Println("ExchangeObjectId", result.ExchangeObjectId)
+			fmt.Println("Name", result.Name)
 
+			fmt.Println("--------------------------------------")
 		}
 	},
 }

@@ -137,7 +137,8 @@ Pass the access token in the Authorization header as a Bearer token to access th
 			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
 			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
 
-			r.Method(http.MethodPost, "/", nethttp.NewHandler(getInfo()))
+			r.Method(http.MethodGet, "/", nethttp.NewHandler(getInfo()))
+			r.Method(http.MethodGet, "/domains", nethttp.NewHandler(getDomains()))
 
 		})
 	})

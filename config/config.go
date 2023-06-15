@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"log"
 	"strings"
 
 	"github.com/kamva/mgm/v3"
@@ -17,7 +18,7 @@ func Setup(envPath string) {
 
 	cmdMonitor := &event.CommandMonitor{
 		Started: func(_ context.Context, evt *event.CommandStartedEvent) {
-			//	log.Print(evt.Command)
+			//log.Print(evt.Command)
 		},
 	}
 
@@ -29,5 +30,6 @@ func Setup(envPath string) {
 	if err != nil {
 		panic(err)
 	}
+	log.Println("Database", db)
 
 }

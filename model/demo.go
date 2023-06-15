@@ -3,8 +3,8 @@ package model
 import "github.com/kamva/mgm/v3"
 
 type Demo struct {
-	mgm.DefaultModel
-	Hello string `json:"hello"`
+	mgm.DefaultModel `bson:",inline"`
+	Hello            string `json:"hello"`
 }
 
 func NewDemo(hello string) error {

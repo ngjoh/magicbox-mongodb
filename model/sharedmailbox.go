@@ -10,14 +10,18 @@ import (
 	"time"
 
 	"github.com/kamva/mgm/v3"
+	"github.com/koksmat-com/koksmat/db"
 	"github.com/koksmat-com/koksmat/io"
 	"github.com/koksmat-com/koksmat/magicbox"
+	"github.com/koksmat-com/koksmat/powershell"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+const SharedMailboxPrimaryKey = "exchangeobjectid"
+
 type SharedMailbox struct {
-	mgm.DefaultModel
+	mgm.DefaultModel   `bson:",inline"`
 	ExchangeObjectId   string   `json:"ExchangeObjectId"`
 	Identity           string   `json:"Identity"`
 	PrimarySmtpAddress string   `json:"PrimarySmtpAddress"`
@@ -94,10 +98,108 @@ func UpdateSharedMailbox(
 	Identity string,
 	DisplayName string,
 
-) (sharedMailbox SharedMailboxNewResponce, err error) {
-	return sharedMailbox, errors.New("Not implemented")
+) (sharedMailbox *SharedMailbox, err error) {
+	r := &SharedMailbox{}
+
+	if err != nil {
+		return r, err
+	}
+	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
+		_, err = powershell.UpdateSharedMailbox(Identity, DisplayName)
+
+		m.DisplayName = DisplayName
+		return err
+	})
 
 }
+
+func AddSharedMailboxMembers(
+	Identity string,
+	Members []string,
+
+) (sharedMailbox *SharedMailbox, err error) {
+	r := &SharedMailbox{}
+
+	if err != nil {
+		return r, err
+	}
+	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
+		//	_, err = powershell.UpdateSharedMailbox(Identity, DisplayName)
+
+		m.Members = append(m.Members, Members...)
+		return err
+	})
+
+}
+
+func AddSharedMailboxReaders(
+	Identity string,
+	Members []string,
+
+) (sharedMailbox *SharedMailbox, err error) {
+	r := &SharedMailbox{}
+
+	if err != nil {
+		return r, err
+	}
+	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
+		//	_, err = powershell.UpdateSharedMailbox(Identity, DisplayName)
+
+		m.Members = append(m.Readers, Members...)
+		return err
+	})
+
+}
+
+func AddSharedMailboxOwners(
+	Identity string,
+	Members []string,
+
+) (sharedMailbox *SharedMailbox, err error) {
+	r := &SharedMailbox{}
+
+	if err != nil {
+		return r, err
+	}
+	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
+		//	_, err = powershell.UpdateSharedMailbox(Identity, DisplayName)
+
+		m.Members = append(m.Owners, Members...)
+		return err
+	})
+
+}
+
+// filter := bson.D{{"exchangeobjectid", Identity}}
+// dbResult := mgm.Coll(&SharedMailbox{}).FindOne(context.Background(), filter)
+// record := &SharedMailbox{}
+// dbResult.Decode(record)
+// id := record.GetID()
+// if id == nil {
+// 	return sharedMailbox, errors.New("Not found in database")
+// } else {
+// 	_, err := powershell.UpdateSharedMailbox(Identity, DisplayName)
+// 	if err != nil {
+// 		return sharedMailbox, err
+// 	}
+// 	record.DisplayName = DisplayName
+
+// 	log.Println("update")
+// 	err = mgm.Coll(record).Update(record)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return *record, errors.New("Exchange updated, but database not: " + fmt.Sprint(err))
+// 	}
+// 	log.Println("updated")
+// }
+
+// if err != nil {
+// 	return *record, err
+// }
+
+// return *record, nil
+
+//}
 
 func GetSharedMailboxes() (sharedMailboxes []SharedMailbox, err error) {
 

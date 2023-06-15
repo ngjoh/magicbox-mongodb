@@ -42,4 +42,4 @@ if ($readers -ne $null -and $readers -ne "" ) {
     }
 }
 
-write-output $mailbox | Select name,displayname,Identity,PrimarySmtpAddress | ConvertTo-Json | Out-File -FilePath $PSScriptRoot/output.json -Encoding:utf8NoBOM
+write-output $mailbox | Select name,displayname,Identity,PrimarySmtpAddress,ExchangeObjectId | ConvertTo-Json | Out-File -FilePath $PSScriptRoot/output.json -Encoding:utf8NoBOM
