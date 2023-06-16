@@ -123,6 +123,7 @@ Pass the access token in the Authorization header as a Bearer token to access th
 			r.Method(http.MethodGet, "/{id}", nethttp.NewHandler(getSharedMailbox()))
 			r.Method(http.MethodPatch, "/{id}", nethttp.NewHandler(updateSharedMailbox()))
 			r.Method(http.MethodPost, "/{id}/smtp", nethttp.NewHandler(addSharedMailboxEmail()))
+			r.Method(http.MethodPatch, "/{id}/primarysmtp", nethttp.NewHandler(updateSharedMailboxPrimaryEmailAddress()))
 			r.Method(http.MethodDelete, "/{id}/smtp", nethttp.NewHandler(removeSharedMailboxEmail()))
 			r.Method(http.MethodPost, "/{id}/members", nethttp.NewHandler(addSharedMailboxMembers()))
 			r.Method(http.MethodDelete, "/{id}/members", nethttp.NewHandler(removeSharedMailboxMembers()))

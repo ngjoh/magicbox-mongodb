@@ -71,6 +71,25 @@ func updateSharedMailbox() usecase.Interactor {
 	u.SetTags(tag)
 	return u
 }
+
+func updateSharedMailboxPrimaryEmailAddress() usecase.Interactor {
+
+	type SharedMailboxUpdateRequest struct {
+		Identity string `path:"id"`
+		Email    string `json:"smtpaddress" binding:"required"`
+	}
+	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxUpdateRequest, output *model.SharedMailbox) error {
+
+		result, err := model.UpdateSharedMailboxPrimaryEmailAddress(input.Identity, input.Email)
+		*output = *result
+		return err
+
+	})
+	u.SetTitle("Update a Shared Mailbox primary smtp address [NOT IMPLEMENTED]")
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags(tag)
+	return u
+}
 func addSharedMailboxMembers() usecase.Interactor {
 	type SharedMailboxAddMemberRquest struct {
 		Identity string   `path:"id"`

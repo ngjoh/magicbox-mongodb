@@ -1,21 +1,17 @@
 # Connector: Exchange
-# Commands: New-Mailbox,set-Mailbox,Add-MailboxPermission,Add-RecipientPermission 
+# Commands: Set-Mailbox 
 param (
     [Parameter(Mandatory = $true)]
     [string]$ExchangeObjectId,
     [Parameter(Mandatory = $true)]
-    [string[]]$owners
+    [string]$Email
 )
-
 $mb = Get-MailBox -Identity $ExchangeObjectId
 if ($mb -eq $null) {
     write-output "Mailbox $ExchangeObjectId not found"
     exit 1
 }
+Set-Mailbox -Identity $ExchangeObjectId  -WindowsEmailAddress $Email -Confirm:$false
 
 
-if ($owners -ne $null -and $owners -ne "" ) {
-   
-    Set-Mailbox -Identity $mailbox.ExchangeObjectId -CustomAttribute1 $mb.CustomAttribute1 + ","+$Owners
-}
-    
+Write-Output "done"

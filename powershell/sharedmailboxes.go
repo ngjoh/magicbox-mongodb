@@ -15,7 +15,7 @@ type EmptyResult struct {
 
 func CreateSharedMailbox(Name string, DisplayName string, Alias string, Owners []string, Members []string, Readers []string) (result *NewSharedMailboxResult, err error) {
 	powershellScript := "scripts/sharedmailboxes/create.ps1"
-	powershellArguments := fmt.Sprintf(` -Name "test5-%s" -DisplayName "Test5 %s"  -Alias "test5-%s" -Members "%s" -Readers "%s" -Owner="%s"`, Name, DisplayName, Alias, Members, Readers, Owners)
+	powershellArguments := fmt.Sprintf(` -Name "%s" -DisplayName "%s"  -Alias "%s" -Members "%s" -Readers "%s" -Owner="%s"`, Name, DisplayName, Alias, Members, Readers, Owners)
 	result, err = Run[NewSharedMailboxResult](powershellScript, powershellArguments)
 	if err != nil {
 		return result, err
@@ -38,6 +38,18 @@ func DeleteSharedMailbox(ExchangeObjectId string) (result *EmptyResult, err erro
 func UpdateSharedMailbox(ExchangeObjectId string, DisplayName string) (result *EmptyResult, err error) {
 	powershellScript := "scripts/sharedmailboxes/update.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -DisplayName "%s"`, ExchangeObjectId, DisplayName)
+	result, err = Run[EmptyResult](powershellScript, powershellArguments)
+	if err != nil {
+		return result, err
+	}
+
+	return result, err
+
+}
+
+func UpdateSharedMailboxPrimaryEmailAddress(ExchangeObjectId string, Email string) (result *EmptyResult, err error) {
+	powershellScript := "scripts/sharedmailboxes/updateprimaryemail.ps1"
+	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Email "%s"`, ExchangeObjectId, Email)
 	result, err = Run[EmptyResult](powershellScript, powershellArguments)
 	if err != nil {
 		return result, err

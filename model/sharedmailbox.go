@@ -127,6 +127,20 @@ func UpdateSharedMailbox(
 
 }
 
+func UpdateSharedMailboxPrimaryEmailAddress(
+	Identity string,
+	Email string,
+
+) (sharedMailbox *SharedMailbox, err error) {
+	return db.UpdateOne[*SharedMailbox](&SharedMailbox{}, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
+		_, err = powershell.UpdateSharedMailboxPrimaryEmailAddress(Identity, Email)
+
+		m.PrimarySmtpAddress = Email
+		return err
+	})
+
+}
+
 func AddSharedMailboxMembers(
 	Identity string,
 	Members []string,
