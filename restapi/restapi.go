@@ -128,6 +128,8 @@ Pass the access token in the Authorization header as a Bearer token to access th
 			r.Method(http.MethodDelete, "/{id}/members", nethttp.NewHandler(removeSharedMailboxMembers()))
 			r.Method(http.MethodPost, "/{id}/owners", nethttp.NewHandler(addSharedMailboxOwners()))
 			r.Method(http.MethodDelete, "/{id}/owners", nethttp.NewHandler(removeSharedMailboxOwners()))
+			r.Method(http.MethodPost, "/{id}/readers", nethttp.NewHandler(addSharedMailboxReaders()))
+			r.Method(http.MethodDelete, "/{id}/readers", nethttp.NewHandler(removeSharedMailboxReaders()))
 			r.Method(http.MethodGet, "/", nethttp.NewHandler(listSharedMailbox()))
 			r.Method(http.MethodDelete, "/{id}", nethttp.NewHandler(deleteSharedMailbox()))
 		})

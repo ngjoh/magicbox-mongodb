@@ -20,7 +20,7 @@ func createSharedMailbox() usecase.Interactor {
 		Owners      []string `json:"owners"`
 		Readers     []string `json:"readers"`
 	}
-	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxNewRequest, output *model.SharedMailboxNewResponce) error {
+	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxNewRequest, output *model.SharedMailbox) error {
 
 		result, err := model.CreateSharedMailbox(input.DisplayName, input.Alias, input.Name, input.Members, input.Owners, input.Readers)
 		if err != nil {
@@ -49,7 +49,7 @@ func getSharedMailbox() usecase.Interactor {
 
 	})
 
-	u.SetTitle("Get a Shared Mailbox")
+	u.SetTitle("Get a Shared Mailbox [NOT IMPLEMENTED]")
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags(tag)
 	return u
@@ -71,11 +71,10 @@ func updateSharedMailbox() usecase.Interactor {
 	u.SetTags(tag)
 	return u
 }
-
 func addSharedMailboxMembers() usecase.Interactor {
 	type SharedMailboxAddMemberRquest struct {
 		Identity string   `path:"id"`
-		Members  []string `json:"displayName" binding:"required"`
+		Members  []string `json:"members" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
 		result, err := model.AddSharedMailboxMembers(input.Identity, input.Members)
@@ -92,14 +91,46 @@ func addSharedMailboxMembers() usecase.Interactor {
 func removeSharedMailboxMembers() usecase.Interactor {
 	type SharedMailboxRemoveMemberRquest struct {
 		Identity string   `path:"id"`
-		Members  []string `json:"displayName" binding:"required"`
+		Members  []string `json:"members" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxRemoveMemberRquest, output *model.SharedMailboxNewResponce) error {
 
 		return errors.New("Not implemented")
 
 	})
-	u.SetTitle("Removes members from a Shared Mailbox")
+	u.SetTitle("Removes members from a Shared Mailbox [NOT IMPLEMENTED]")
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags(tag)
+	return u
+}
+func addSharedMailboxReaders() usecase.Interactor {
+	type SharedMailboxAddMemberRquest struct {
+		Identity string   `path:"id"`
+		Members  []string `json:"readers" binding:"required"`
+	}
+	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
+		result, err := model.AddSharedMailboxReaders(input.Identity, input.Members)
+		*output = *result
+		return err
+
+	})
+	u.SetTitle("Add readers to a Shared Mailbox")
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags(tag)
+	return u
+}
+
+func removeSharedMailboxReaders() usecase.Interactor {
+	type SharedMailboxRemoveMemberRquest struct {
+		Identity string   `path:"id"`
+		Members  []string `json:"readers" binding:"required"`
+	}
+	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxRemoveMemberRquest, output *model.SharedMailboxNewResponce) error {
+
+		return errors.New("Not implemented")
+
+	})
+	u.SetTitle("Removes readers from a Shared Mailbox [NOT IMPLEMENTED]")
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags(tag)
 	return u
@@ -107,10 +138,10 @@ func removeSharedMailboxMembers() usecase.Interactor {
 func addSharedMailboxOwners() usecase.Interactor {
 	type SharedMailboxAddMemberRquest struct {
 		Identity string   `path:"id"`
-		Members  []string `json:"emails" binding:"required"`
+		Owners   []string `json:"owners" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
-		result, err := model.AddSharedMailboxOwners(input.Identity, input.Members)
+		result, err := model.AddSharedMailboxOwners(input.Identity, input.Owners)
 		*output = *result
 		return err
 
@@ -131,7 +162,7 @@ func removeSharedMailboxOwners() usecase.Interactor {
 		return errors.New("Not implemented")
 
 	})
-	u.SetTitle("Removes owners from a Shared Mailbox")
+	u.SetTitle("Removes owners from a Shared Mailbox [NOT IMPLEMENTED]")
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags(tag)
 	return u
@@ -160,9 +191,7 @@ func deleteSharedMailbox() usecase.Interactor {
 		Identity string `path:"id"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input DeleteRequest, output *[]model.SharedMailbox) error {
-
-		return errors.New("Not implemented")
-
+		return model.DeleteSharedMailbox(input.Identity)
 	})
 
 	u.SetTitle("Delete a shared Mailboxes")
@@ -181,7 +210,7 @@ func addSharedMailboxEmail() usecase.Interactor {
 		return errors.New("Not implemented")
 
 	})
-	u.SetTitle("Add a smtp address to a Shared Mailbox")
+	u.SetTitle("Add a smtp address to a Shared Mailbox [NOT IMPLEMENTED]")
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags(tag)
 	return u
@@ -197,7 +226,7 @@ func removeSharedMailboxEmail() usecase.Interactor {
 		return errors.New("Not implemented")
 
 	})
-	u.SetTitle("Removes a smtp address from a Shared Mailbox")
+	u.SetTitle("Removes a smtp address from a Shared Mailbox [NOT IMPLEMENTED]")
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags(tag)
 	return u

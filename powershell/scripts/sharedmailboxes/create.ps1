@@ -8,7 +8,7 @@ param (
     [Parameter(Mandatory = $true)]
     [string]$Alias,
     [Parameter(Mandatory = $true)]
-    [string[]]$Owner,
+    [string[]]$Owners,
     [Parameter(Mandatory = $true)]
     [string[]]$Members,
     [Parameter(Mandatory = $true)]
@@ -22,11 +22,10 @@ if ($mailbox -eq $null) {
 }
 Start-Sleep -s 5
 
-<#
 if ($owner -ne $null -and $owner -ne "" ) {
-    set-Mailbox -Identity $mailbox.ExchangeObjectId 
+Set-Mailbox -Identity $mailbox.ExchangeObjectId -CustomAttribute1 $Owners
 }
-#>
+
 
 if ($members -ne $null -and $members -ne "" ) {
     foreach ($member in $members) {

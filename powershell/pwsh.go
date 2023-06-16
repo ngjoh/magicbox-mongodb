@@ -3,6 +3,7 @@ package powershell
 import (
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -49,9 +50,10 @@ func Run[R any](fileName, args string) (result *R, err error) {
 		fmt.Fprintln(stdin, script)
 
 	}()
-	_, err = cmd.CombinedOutput()
+	combinedOutput, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(fmt.Sprint(err) + ": " + string(combinedOutput))
+		return nil, errors.New("Could not run PowerShell script")
 	}
 	dataOut := new(R)
 	outputJson, err := os.ReadFile(path.Join(dir, "output.json"))

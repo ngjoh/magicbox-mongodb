@@ -9,6 +9,32 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+const RecordNotFound = "Not found in database"
+
+func FindOne[M mgm.Model](record M,
+	filter bson.D) (foundRecord M, err error) {
+	dbResult := mgm.Coll(record).FindOne(context.Background(), filter)
+	dbErr := dbResult.Err()
+	if dbErr != nil {
+
+		return record, errors.New(RecordNotFound)
+	}
+	dbResult.Decode(record)
+	return record, nil
+
+}
+
+func DeleteOne[M mgm.Model](record M,
+	filter bson.D) (err error) {
+	dbResult := mgm.Coll(record).FindOne(context.Background(), filter)
+	dbErr := dbResult.Err()
+	if dbErr != nil {
+		return errors.New(RecordNotFound)
+	}
+	err = mgm.Coll(record).Delete(record)
+	return nil
+
+}
 func UpdateOne[M mgm.Model](
 	record M,
 	filter bson.D,
@@ -19,7 +45,7 @@ func UpdateOne[M mgm.Model](
 	dbResult := mgm.Coll(record).FindOne(context.Background(), filter)
 	dbErr := dbResult.Err()
 	if dbErr != nil {
-		return record, errors.New("Not found in database")
+		return record, errors.New(RecordNotFound)
 	}
 	dbResult.Decode(record)
 
@@ -29,13 +55,12 @@ func UpdateOne[M mgm.Model](
 		log.Println(err)
 		return record, err
 	}
-	log.Println("update")
+
 	err = mgm.Coll(record).Update(record)
 	if err != nil {
 		log.Println(err)
 		return record, err
 	}
-	log.Println("updated")
 
 	return record, nil
 

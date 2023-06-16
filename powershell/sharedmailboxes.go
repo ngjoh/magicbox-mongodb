@@ -44,5 +44,26 @@ func UpdateSharedMailbox(ExchangeObjectId string, DisplayName string) (result *E
 	}
 
 	return result, err
-	return result, err
+
+}
+
+func AddSharedMailboxMembers(ExchangeObjectId string, Members []string) (err error) {
+	powershellScript := "scripts/sharedmailboxes/addmembers.ps1"
+	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Members "%s"`, ExchangeObjectId, Members)
+	_, err = Run[EmptyResult](powershellScript, powershellArguments)
+	return err
+}
+
+func AddSharedMailboxReaders(ExchangeObjectId string, Members []string) (err error) {
+	powershellScript := "scripts/sharedmailboxes/addreaders.ps1"
+	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Readers "%s"`, ExchangeObjectId, Members)
+	_, err = Run[EmptyResult](powershellScript, powershellArguments)
+	return err
+}
+
+func AddSharedMailboxOwners(ExchangeObjectId string, Owners []string) (err error) {
+	powershellScript := "scripts/sharedmailboxes/addowners.ps1"
+	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Owners "%s"`, ExchangeObjectId, Owners)
+	_, err = Run[EmptyResult](powershellScript, powershellArguments)
+	return err
 }
