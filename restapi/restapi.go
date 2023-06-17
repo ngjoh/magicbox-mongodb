@@ -111,7 +111,7 @@ Pass the access token in the Authorization header as a Bearer token to access th
 		gzip.Middleware, // Response compression with support for direct gzip pass through.
 	)
 
-	s.Post("/v1/authorize", signin())
+	s.Post("/authorize", signin())
 	//s.Post("/v1/demo", demo())
 	// Endpoints with user access.
 	s.Route("/v1/sharedmailboxes", func(r chi.Router) {
@@ -133,6 +133,15 @@ Pass the access token in the Authorization header as a Bearer token to access th
 			r.Method(http.MethodDelete, "/{id}/readers", nethttp.NewHandler(removeSharedMailboxReaders()))
 			r.Method(http.MethodGet, "/", nethttp.NewHandler(listSharedMailbox()))
 			r.Method(http.MethodDelete, "/{id}", nethttp.NewHandler(deleteSharedMailbox()))
+		})
+	})
+	s.Route("/v1/addresses", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
+			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
+
+			r.Method(http.MethodGet, "/{address}", nethttp.NewHandler(resolveAddress()))
+
 		})
 	})
 	s.Route("/v1/info", func(r chi.Router) {

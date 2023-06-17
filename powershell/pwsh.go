@@ -9,6 +9,8 @@ import (
 	"os"
 	"os/exec"
 	"path"
+
+	"github.com/koksmat-com/koksmat/audit"
 )
 
 //go:embed scripts
@@ -50,8 +52,10 @@ func Run[R any](fileName, args string) (result *R, err error) {
 		fmt.Fprintln(stdin, script)
 
 	}()
+	srcCode := fmt.Sprintf("[%s]", ps2Code)
 	combinedOutput, err := cmd.CombinedOutput()
 	if err != nil {
+		audit.LogPowerShell("koksmat", fileName, srcCode, args, "", true, string(combinedOutput))
 		log.Println(fmt.Sprint(err) + ": " + string(combinedOutput))
 		return nil, errors.New("Could not run PowerShell script")
 	}
@@ -65,11 +69,11 @@ func Run[R any](fileName, args string) (result *R, err error) {
 			outArray := []byte(s)
 			jsonErr := json.Unmarshal(outArray, &dataOut)
 			if jsonErr != nil {
-				return nil, jsonErr
+				audit.LogPowerShell("koksmat", fileName, srcCode, args, fmt.Sprintf("[%s]", outputJson), true, string(combinedOutput))
 			}
 		}
 	}
-
+	audit.LogPowerShell("koksmat", fileName, srcCode, args, fmt.Sprintf("[%s]", outputJson), false, string(combinedOutput))
 	result = *&dataOut // fmt.Sprintf("%s", outputJson)
 	return result, nil
 }

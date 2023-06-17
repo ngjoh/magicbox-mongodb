@@ -2,7 +2,6 @@ package config
 
 import (
 	"context"
-	"log"
 	"strings"
 
 	"github.com/kamva/mgm/v3"
@@ -11,6 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func MongoConnectionString() string {
+	databaseUrl := strings.ReplaceAll(viper.GetString("DATABASEURL"), "mongodb://", "")
+	return "mongodb://" + viper.GetString("DATABASEADMIN") + ":" + viper.GetString("DATABASEPASSWORD") + "@" + databaseUrl
+}
+
+func DatabaseName() string {
+	return viper.GetString("DATABASE")
+}
 func Setup(envPath string) {
 	viper.SetConfigFile(envPath)
 	viper.AutomaticEnv()
@@ -18,18 +25,14 @@ func Setup(envPath string) {
 
 	cmdMonitor := &event.CommandMonitor{
 		Started: func(_ context.Context, evt *event.CommandStartedEvent) {
-			//log.Print(evt.Command)
+			// log.Print(evt.Command)
 		},
 	}
 
-	databaseUrl := strings.ReplaceAll(viper.GetString("DATABASEURL"), "mongodb://", "")
-
-	connectionString := "mongodb://" + viper.GetString("DATABASEADMIN") + ":" + viper.GetString("DATABASEPASSWORD") + "@" + databaseUrl
-	db := viper.GetString("DATABASE")
-	err := mgm.SetDefaultConfig(nil, db, options.Client().ApplyURI(connectionString).SetMonitor(cmdMonitor))
+	db := DatabaseName()
+	err := mgm.SetDefaultConfig(nil, db, options.Client().ApplyURI(MongoConnectionString()).SetMonitor(cmdMonitor))
 	if err != nil {
 		panic(err)
 	}
-	log.Println("Database", db)
 
 }

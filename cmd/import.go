@@ -31,7 +31,7 @@ var importCmd = &cobra.Command{
 
 		switch subject {
 		case "recipients":
-			model.ReadRecipients(inputFile)
+			model.ImportRecipients(inputFile)
 
 			//model.SyncRecipients(viper.GetString("DATABASE"))
 		case "rooms":

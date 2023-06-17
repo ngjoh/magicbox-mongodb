@@ -5,8 +5,10 @@ import (
 	"log"
 
 	"github.com/kamva/mgm/v3"
+	"github.com/koksmat-com/koksmat/config"
 	"github.com/sethvargo/go-password/password"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -26,6 +28,22 @@ type AccessControl struct {
 	Identity    string `json:"identity"`
 	SecurityKey string `json:"key"`
 	Permissions string `json:"permissions"`
+}
+
+func (accessControl *AccessControl) Collection() *mgm.Collection {
+	// Create new client
+
+	client, err := mgm.NewClient(options.Client().ApplyURI(config.MongoConnectionString()))
+
+	if err != nil {
+		panic(err)
+	}
+
+	// Get the model's db
+	db := client.Database("magicbox")
+
+	// return the model's custom collection
+	return mgm.NewCollection(db, "access_control")
 }
 
 func Authenticate(identity string, key string) (ok bool, permissions string) {

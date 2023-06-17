@@ -85,13 +85,17 @@ func CreateSharedMailbox(DisplayName string,
 	Readers []string,
 ) (sharedMailbox SharedMailbox, err error) {
 
+	memberSMTPs, memberGUIDs := TranslateRecipients(Members)
+	readerSMTPs, readerGUIDs := TranslateRecipients(Readers)
+	ownersSMTPs, _ := TranslateRecipients(Owners)
+
 	newMailbox, err := powershell.CreateSharedMailbox(
 		Name,
 		DisplayName,
 		Alias,
-		Members,
-		Owners,
-		Readers,
+		ownersSMTPs,
+		memberGUIDs,
+		readerGUIDs,
 	)
 
 	if err != nil {
@@ -102,13 +106,12 @@ func CreateSharedMailbox(DisplayName string,
 
 		PrimarySmtpAddress: newMailbox.PrimarySmtpAddress,
 		DisplayName:        newMailbox.DisplayName,
-		Members:            Members,
-		Owners:             Owners,
-		Readers:            Readers,
+		Members:            memberSMTPs,
+		Owners:             ownersSMTPs,
+		Readers:            readerSMTPs,
 	}
-	log.Println("insert")
+
 	err = mgm.Coll(newRecord).Create(newRecord)
-	log.Println("inserted")
 
 	return *newRecord, err
 
@@ -152,9 +155,10 @@ func AddSharedMailboxMembers(
 		return r, err
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
-		err = powershell.AddSharedMailboxMembers(Identity, Members)
+		memberSMTPs, memberGUIDs := TranslateRecipients(Members)
+		err = powershell.AddSharedMailboxMembers(Identity, memberGUIDs)
 
-		m.Members = append(m.Members, Members...)
+		m.Members = append(m.Members, memberSMTPs...)
 		return err
 	})
 
@@ -171,9 +175,10 @@ func AddSharedMailboxReaders(
 		return r, err
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
-		err = powershell.AddSharedMailboxReaders(Identity, Readers)
+		readerSMTPs, readerGUIDs := TranslateRecipients(Readers)
+		err = powershell.AddSharedMailboxReaders(Identity, readerGUIDs)
 
-		m.Readers = append(m.Readers, Readers...)
+		m.Readers = append(m.Readers, readerSMTPs...)
 		return err
 	})
 
@@ -190,44 +195,14 @@ func AddSharedMailboxOwners(
 		return r, err
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
-		err = powershell.AddSharedMailboxOwners(Identity, Owners)
+		ownersSMTPs, _ := TranslateRecipients(Owners)
+		err = powershell.AddSharedMailboxOwners(Identity, ownersSMTPs)
 
-		m.Owners = append(m.Owners, Owners...)
+		m.Owners = append(m.Owners, ownersSMTPs...)
 		return err
 	})
 
 }
-
-// filter := bson.D{{"exchangeobjectid", Identity}}
-// dbResult := mgm.Coll(&SharedMailbox{}).FindOne(context.Background(), filter)
-// record := &SharedMailbox{}
-// dbResult.Decode(record)
-// id := record.GetID()
-// if id == nil {
-// 	return sharedMailbox, errors.New("Not found in database")
-// } else {
-// 	_, err := powershell.UpdateSharedMailbox(Identity, DisplayName)
-// 	if err != nil {
-// 		return sharedMailbox, err
-// 	}
-// 	record.DisplayName = DisplayName
-
-// 	log.Println("update")
-// 	err = mgm.Coll(record).Update(record)
-// 	if err != nil {
-// 		log.Println(err)
-// 		return *record, errors.New("Exchange updated, but database not: " + fmt.Sprint(err))
-// 	}
-// 	log.Println("updated")
-// }
-
-// if err != nil {
-// 	return *record, err
-// }
-
-// return *record, nil
-
-//}
 
 func GetSharedMailboxes() (sharedMailboxes []SharedMailbox, err error) {
 
@@ -296,9 +271,9 @@ func ReadSharedMailboxes(inputFile string) {
 				Owners:             owners,
 				Readers:            readers,
 			}
-			log.Println("insert")
+
 			mgm.Coll(newRecord).Create(newRecord)
-			log.Println("inserted")
+
 		} else {
 			changedRecord := &SharedMailbox{
 
@@ -308,9 +283,9 @@ func ReadSharedMailboxes(inputFile string) {
 				Owners:             owners,
 				Readers:            readers,
 			}
-			log.Println("update")
+
 			mgm.Coll(changedRecord).Update(changedRecord)
-			log.Println("updated")
+
 		}
 
 	}

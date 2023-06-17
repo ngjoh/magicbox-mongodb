@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/koksmat-com/koksmat/audit"
 	"github.com/koksmat-com/koksmat/model"
 	"github.com/swaggest/usecase"
 	"github.com/swaggest/usecase/status"
@@ -42,7 +43,7 @@ func IssueAccessToken(idToken string) (tokenString string, err error) {
 		"permissions": permissions,
 		"expire":      t.UTC(),
 	})
-	model.LogAudit(app, permissions)
+	audit.LogAudit(app, permissions)
 	tokenString, err = token.SignedString(mySigningKey)
 	return tokenString, nil
 }
