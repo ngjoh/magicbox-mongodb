@@ -15,7 +15,10 @@ if ($mb -eq $null) {
 
 
 if ($owners -ne $null -and $owners -ne "" ) {
-   
-    Set-Mailbox -Identity $mailbox.ExchangeObjectId -CustomAttribute1 $mb.CustomAttribute1 + ","+$Owners
+    $attr = "$($mb.CustomAttribute1),$($owners -join ",")"
+   write-output "Setting CustomAttribute1 to $attr on $ExchangeObjectId"
+    Set-Mailbox -Identity $ExchangeObjectId -CustomAttribute1 $attr
 }
     
+ ConvertTo-Json -InputObject $attr
+| Out-File -FilePath $PSScriptRoot/output.json -Encoding:utf8NoBOM

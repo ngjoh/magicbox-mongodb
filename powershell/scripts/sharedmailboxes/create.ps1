@@ -7,12 +7,12 @@ param (
     [string]$DisplayName,
     [Parameter(Mandatory = $true)]
     [string]$Alias,
-    [Parameter(Mandatory = $true)]
-    [string[]]$Owners,
-    [Parameter(Mandatory = $true)]
-    [string[]]$Members,
-    [Parameter(Mandatory = $true)]
-    [string[]]$Readers
+    #[Parameter(Mandatory = $true)]
+    [string[]]$Owners="",
+    #[Parameter(Mandatory = $true)]
+    [string[]]$Members="",
+    #[Parameter(Mandatory = $true)]
+    [string[]]$Readers=""
 )
 
 

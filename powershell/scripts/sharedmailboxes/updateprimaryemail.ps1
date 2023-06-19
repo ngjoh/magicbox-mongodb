@@ -11,6 +11,8 @@ if ($mb -eq $null) {
     write-output "Mailbox $ExchangeObjectId not found"
     exit 1
 }
+
+write-output "Setting $Email as primary email address on $ExchangeObjectId"
 Set-Mailbox -Identity $ExchangeObjectId  -WindowsEmailAddress $Email -Confirm:$false
 
 

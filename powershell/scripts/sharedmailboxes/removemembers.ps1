@@ -15,9 +15,9 @@ if ($mb -eq $null) {
 
 if ($members -ne $null -and $members -ne "" ) {
     foreach ($member in $members) {
-        write-output "Adding $member to $ExchangeObjectId"
-        Add-MailboxPermission -Identity $ExchangeObjectId  -User $member  -AccessRights FullAccess -InheritanceType All | Out-Null
-        Add-RecipientPermission -Identity $ExchangeObjectId  -AccessRights SendAs -Trustee $member -confirm:$false | Out-Null
+        write-output "Removing $member from $ExchangeObjectId"
+        Remove-MailboxPermission -Identity $ExchangeObjectId  -User $member  -AccessRights FullAccess -Confirm:$false | Out-Null
+        Remove-RecipientPermission -Identity $ExchangeObjectId  -AccessRights SendAs -Trustee $member -confirm:$false | Out-Null
     }
 }
 

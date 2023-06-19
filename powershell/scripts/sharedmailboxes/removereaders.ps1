@@ -15,8 +15,8 @@ if ($mb -eq $null) {
 
 if ($readers -ne $null -and $readers -ne "" ) {
     foreach ($reader in $readers) {
-        write-output "Adding $reader to $ExchangeObjectId"
-        Add-MailboxPermission -Identity $ExchangeObjectId  -User $reader  -AccessRights ReadPermission -InheritanceType All | Out-Null
+        write-output "Removing $reader from $ExchangeObjectId"
+        Remove-MailboxPermission -Identity $ExchangeObjectId  -User $reader  -AccessRights ReadPermission -Confirm:$false| Out-Null
     }
 }
 
