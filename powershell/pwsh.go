@@ -11,6 +11,7 @@ import (
 	"path"
 
 	"github.com/koksmat-com/koksmat/audit"
+	"github.com/spf13/viper"
 )
 
 //go:embed scripts
@@ -18,6 +19,13 @@ var scripts embed.FS
 
 func Execute(fileName, args string) (output []byte, err error, console string) {
 	cmd := exec.Command("pwsh", "-nologo", "-noprofile")
+	cmd.Env = os.Environ()
+
+	cmd.Env = append(cmd.Env, fmt.Sprintf("EXCHCERTIFICATEPASSWORD=%s", viper.GetString("EXCHCERTIFICATEPASSWORD")))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("EXCHAPPID=%s", viper.GetString("EXCHAPPID")))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("EXCHORGANIZATION=%s", viper.GetString("EXCHORGANIZATION")))
+	cmd.Env = append(cmd.Env, fmt.Sprintf("EXCHCERTIFICATE=%s", viper.GetString("EXCHCERTIFICATE")))
+
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		log.Fatal(err)
@@ -28,7 +36,7 @@ func Execute(fileName, args string) (output []byte, err error, console string) {
 	cmd.Dir = dir
 
 	os.Remove(path.Join(dir, "output.json"))
-	ps1Code, err := scripts.ReadFile("scripts/connectors/exchange-test.ps1")
+	ps1Code, err := scripts.ReadFile("scripts/connectors/exchange.ps1")
 	if err != nil {
 
 		return nil, err, ""

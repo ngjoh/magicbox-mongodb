@@ -1,5 +1,7 @@
 package powershell
 
+import "errors"
+
 type Domain struct {
 	DomainName string `json:"DomainName"`
 	DomainType string `json:"DomainType"`
@@ -12,7 +14,9 @@ func GetDomains() (result *[]Domain, err error) {
 	if err != nil {
 		return result, err
 	}
-
+	if result == nil {
+		return nil, errors.New("No domains found")
+	}
 	return result, err
 
 }

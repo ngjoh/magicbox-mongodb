@@ -1,4 +1,4 @@
 koksmat
 .koksmat
-.env
+.env*
 */**/*.pfx

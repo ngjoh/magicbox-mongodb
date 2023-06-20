@@ -13,13 +13,15 @@ func getInfo() usecase.Interactor {
 	type InfoRequest struct {
 	}
 	type InfoResponse struct {
-		Version string `json:"version" binding:"required"`
-		Tenant  string `json:"tenant" binding:"required"`
+		Version              string `json:"version" binding:"required"`
+		Tenant               string `json:"tenant" binding:"required"`
+		ExchangeOrganization string `json:"exchange_organisation" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input InfoRequest, output *InfoResponse) error {
 
 		*&output.Version = "0.0.1"
 		*&output.Tenant = viper.GetString("DATABASE")
+		*&output.ExchangeOrganization = viper.GetString("EXCHORGANIZATION")
 		return nil
 
 	})
