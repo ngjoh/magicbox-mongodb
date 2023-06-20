@@ -83,7 +83,7 @@ func CreateSharedMailbox(DisplayName string,
 	Members []string,
 	Owners []string,
 	Readers []string,
-) (sharedMailbox SharedMailbox, err error) {
+) (sharedMailbox *SharedMailbox, err error) {
 
 	memberSMTPs, memberGUIDs := TranslateRecipients(Members)
 	readerSMTPs, readerGUIDs := TranslateRecipients(Readers)
@@ -113,7 +113,7 @@ func CreateSharedMailbox(DisplayName string,
 
 	err = mgm.Coll(newRecord).Create(newRecord)
 
-	return *newRecord, err
+	return newRecord, err
 
 }
 func UpdateSharedMailbox(

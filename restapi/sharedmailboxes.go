@@ -27,7 +27,7 @@ func createSharedMailbox() usecase.Interactor {
 			return err
 		}
 
-		*output = result
+		*output = *result
 		return nil
 
 	})
@@ -45,7 +45,8 @@ func getSharedMailbox() usecase.Interactor {
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input GetRequest, output *model.SharedMailbox) error {
 
-		output, err := model.GetSharedMailbox(input.Identity)
+		data, err := model.GetSharedMailbox(input.Identity)
+		*output = *data
 		return err
 
 	})
@@ -149,7 +150,8 @@ func removeSharedMailboxReaders() usecase.Interactor {
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxRemoveMemberRquest, output *model.SharedMailbox) error {
 
-		output, err := model.RemoveSharedMailboxReaders(input.Identity, input.Members)
+		data, err := model.RemoveSharedMailboxReaders(input.Identity, input.Members)
+		*output = *data
 		return err
 
 	})
