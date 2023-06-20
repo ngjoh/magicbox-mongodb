@@ -22,8 +22,15 @@ if ($readers -ne $null -and $readers -ne "" ) {
 
 Start-Sleep -s 2
 
-Get-MailboxPermission -Identity $ExchangeObjectId     
+$resultingSetOfMembers = Get-MailboxPermission -Identity $ExchangeObjectId     
 | Where-Object { ($_.User -like '*@*')  -and ($_.AccessRights -like '*ReadPermission*')}
 | Select User,AccessRights,IsInherited 
-| ConvertTo-Json 
+
+if (!($resultingSetOfMembers -is [array])){
+    $resultingSetOfMembers = @($resultingSetOfMembers)
+}
+$result = @{
+    Members = $resultingSetOfMembers
+}
+ConvertTo-Json -InputObject $result
 | Out-File -FilePath $PSScriptRoot/output.json -Encoding:utf8NoBOM

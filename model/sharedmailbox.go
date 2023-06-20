@@ -17,7 +17,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-const SharedMailboxPrimaryKey = "exchangeobjectid"
+const SharedMailboxPrimaryKey string = "exchangeobjectid"
 
 type SharedMailbox struct {
 	mgm.DefaultModel `bson:",inline"`
@@ -130,6 +130,14 @@ func UpdateSharedMailbox(
 
 }
 
+func GetSharedMailbox(
+	Identity string,
+
+) (sharedMailbox *SharedMailbox, err error) {
+	return db.FindOne[*SharedMailbox](&SharedMailbox{}, bson.D{{SharedMailboxPrimaryKey, Identity}})
+
+}
+
 func UpdateSharedMailboxPrimaryEmailAddress(
 	Identity string,
 	Email string,
@@ -155,15 +163,42 @@ func AddSharedMailboxMembers(
 		return r, err
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
-		memberSMTPs, memberGUIDs := TranslateRecipients(Members)
-		err = powershell.AddSharedMailboxMembers(Identity, memberGUIDs)
-
-		m.Members = append(m.Members, memberSMTPs...)
+		_, memberGUIDs := TranslateRecipients(Members)
+		response, err := powershell.AddSharedMailboxMembers(Identity, memberGUIDs)
+		members := []string{}
+		for _, reader := range response.Members {
+			members = append(members, reader.User)
+		}
+		m.Members = members
 		return err
 	})
 
 }
 
+func RemoveSharedMailboxMembers(
+	Identity string,
+	Members []string,
+
+) (sharedMailbox *SharedMailbox, err error) {
+	r := &SharedMailbox{}
+
+	if err != nil {
+		return r, err
+	}
+	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
+		_, memberGUIDs := TranslateRecipients(Members)
+		response, err := powershell.RemoveSharedMailboxMembers(Identity, memberGUIDs)
+
+		members := []string{}
+		for _, reader := range response.Members {
+			members = append(members, reader.User)
+		}
+
+		m.Members = members
+		return err
+	})
+
+}
 func AddSharedMailboxReaders(
 	Identity string,
 	Readers []string,
@@ -175,16 +210,44 @@ func AddSharedMailboxReaders(
 		return r, err
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
-		readerSMTPs, readerGUIDs := TranslateRecipients(Readers)
-		err = powershell.AddSharedMailboxReaders(Identity, readerGUIDs)
+		_, readerGUIDs := TranslateRecipients(Readers)
+		response, err := powershell.AddSharedMailboxReaders(Identity, readerGUIDs)
+		readers := []string{}
+		for _, reader := range response.Members {
+			readers = append(readers, reader.User)
+		}
 
-		m.Readers = append(m.Readers, readerSMTPs...)
+		m.Readers = readers
 		return err
 	})
 
 }
 
-func AddSharedMailboxOwners(
+func RemoveSharedMailboxReaders(
+	Identity string,
+	Readers []string,
+
+) (sharedMailbox *SharedMailbox, err error) {
+	r := &SharedMailbox{}
+
+	if err != nil {
+		return r, err
+	}
+	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
+		_, memberGUIDs := TranslateRecipients(Readers)
+		response, err := powershell.RemoveSharedMailboxReaders(Identity, memberGUIDs)
+
+		members := []string{}
+		for _, reader := range response.Members {
+			members = append(members, reader.User)
+		}
+
+		m.Members = members
+		return err
+	})
+
+}
+func SetSharedMailboxOwners(
 	Identity string,
 	Owners []string,
 
@@ -196,9 +259,9 @@ func AddSharedMailboxOwners(
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
 		ownersSMTPs, _ := TranslateRecipients(Owners)
-		err = powershell.AddSharedMailboxOwners(Identity, ownersSMTPs)
+		response, err := powershell.SetSharedMailboxOwners(Identity, ownersSMTPs)
 
-		m.Owners = append(m.Owners, ownersSMTPs...)
+		m.Owners = []string{response.Owners}
 		return err
 	})
 

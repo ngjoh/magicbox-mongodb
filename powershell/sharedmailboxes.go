@@ -14,6 +14,19 @@ type NewSharedMailboxResult struct {
 type EmptyResult struct {
 }
 
+type Member struct {
+	User         string `json:"User"`
+	AccessRights string `json:"AccessRights"`
+	IsInherited  bool   `json:"IsInherited"`
+}
+type MembersResponse struct {
+	Members []Member `json:"Members"`
+}
+
+type OwnersResponse struct {
+	Owners string `json:"Owners"`
+}
+
 func PwshArray(members []string) string {
 
 	pwshArray := strings.Join(members, ",")
@@ -26,7 +39,7 @@ func PwshArray(members []string) string {
 }
 func CreateSharedMailbox(Name string, DisplayName string, Alias string, Owners []string, Members []string, Readers []string) (result *NewSharedMailboxResult, err error) {
 	powershellScript := "scripts/sharedmailboxes/create.ps1"
-	powershellArguments := fmt.Sprintf(` -Name "%s" -DisplayName "%s"  -Alias "%s" -Members %s -Readers %s -Owners="%s"`, Name, DisplayName, Alias, PwshArray(Members), strings.Join(Readers, ","), strings.Join(Owners, ","))
+	powershellArguments := fmt.Sprintf(` -Name "%s" -DisplayName "%s"  -Alias "%s" -Members %s -Readers %s -Owners="%s"`, Name, DisplayName, Alias, PwshArray(Members), PwshArray(Readers), PwshArray(Owners))
 	result, err = Run[NewSharedMailboxResult](powershellScript, powershellArguments)
 	if err != nil {
 		return result, err
@@ -70,23 +83,37 @@ func UpdateSharedMailboxPrimaryEmailAddress(ExchangeObjectId string, Email strin
 
 }
 
-func AddSharedMailboxMembers(ExchangeObjectId string, Members []string) (err error) {
+func AddSharedMailboxMembers(ExchangeObjectId string, Members []string) (members *MembersResponse, err error) {
 	powershellScript := "scripts/sharedmailboxes/addmembers.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Members %s`, ExchangeObjectId, PwshArray(Members))
-	_, err = Run[EmptyResult](powershellScript, powershellArguments)
-	return err
+	members, err = Run[MembersResponse](powershellScript, powershellArguments)
+	return members, err
 }
 
-func AddSharedMailboxReaders(ExchangeObjectId string, Readers []string) (err error) {
+func AddSharedMailboxReaders(ExchangeObjectId string, Readers []string) (members *MembersResponse, err error) {
 	powershellScript := "scripts/sharedmailboxes/addreaders.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Readers %s`, ExchangeObjectId, PwshArray(Readers))
-	_, err = Run[EmptyResult](powershellScript, powershellArguments)
-	return err
+	members, err = Run[MembersResponse](powershellScript, powershellArguments)
+	return members, err
 }
 
-func AddSharedMailboxOwners(ExchangeObjectId string, Owners []string) (err error) {
+func SetSharedMailboxOwners(ExchangeObjectId string, Owners []string) (res *OwnersResponse, err error) {
 	powershellScript := "scripts/sharedmailboxes/addowners.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Owners %s`, ExchangeObjectId, PwshArray(Owners))
-	_, err = Run[EmptyResult](powershellScript, powershellArguments)
-	return err
+	res, err = Run[OwnersResponse](powershellScript, powershellArguments)
+	return res, err
+}
+
+func RemoveSharedMailboxMembers(ExchangeObjectId string, Members []string) (members *MembersResponse, err error) {
+	powershellScript := "scripts/sharedmailboxes/removemembers.ps1"
+	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Members %s`, ExchangeObjectId, PwshArray(Members))
+	members, err = Run[MembersResponse](powershellScript, powershellArguments)
+	return members, err
+}
+
+func RemoveSharedMailboxReaders(ExchangeObjectId string, Readers []string) (members *MembersResponse, err error) {
+	powershellScript := "scripts/sharedmailboxes/removereaders.ps1"
+	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Readers %s`, ExchangeObjectId, PwshArray(Readers))
+	members, err = Run[MembersResponse](powershellScript, powershellArguments)
+	return members, err
 }

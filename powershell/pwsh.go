@@ -71,7 +71,8 @@ func Run[R any](fileName string, args string) (result *R, err error) {
 
 	output, err, _ := Execute(fileName, args)
 	dataOut := new(R)
-	if output != nil {
+	textOutput := fmt.Sprintf("%s", output)
+	if (output != nil) && (textOutput != "") {
 
 		jsonErr := json.Unmarshal(output, &dataOut)
 		if jsonErr != nil {

@@ -23,7 +23,7 @@ if ($mailbox -eq $null) {
 Start-Sleep -s 5
 
 if ($owner -ne $null -and $owner -ne "" ) {
-Set-Mailbox -Identity $mailbox.ExchangeObjectId -CustomAttribute1 $Owners
+Set-Mailbox -Identity $mailbox.ExchangeObjectId -CustomAttribute1 ($Owners -join "," )
 }
 
 

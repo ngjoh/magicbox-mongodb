@@ -100,7 +100,7 @@ Use the credential key to get an access token through the /v1/authorize end poin
 
 Pass the access token in the Authorization header as a Bearer token to access the API.
 	`)
-	s.OpenAPI.Info.Version = "v0.0.2"
+	s.OpenAPI.Info.Version = "v1.0.0"
 
 	//adminAuth := middleware.BasicAuth("Admin Access", map[string]string{"admin": "admin"})
 
@@ -127,8 +127,8 @@ Pass the access token in the Authorization header as a Bearer token to access th
 			r.Method(http.MethodDelete, "/{id}/smtp", nethttp.NewHandler(removeSharedMailboxEmail()))
 			r.Method(http.MethodPost, "/{id}/members", nethttp.NewHandler(addSharedMailboxMembers()))
 			r.Method(http.MethodDelete, "/{id}/members", nethttp.NewHandler(removeSharedMailboxMembers()))
-			r.Method(http.MethodPost, "/{id}/owners", nethttp.NewHandler(addSharedMailboxOwners()))
-			r.Method(http.MethodDelete, "/{id}/owners", nethttp.NewHandler(removeSharedMailboxOwners()))
+			r.Method(http.MethodPatch, "/{id}/owners", nethttp.NewHandler(setSharedMailboxOwners()))
+
 			r.Method(http.MethodPost, "/{id}/readers", nethttp.NewHandler(addSharedMailboxReaders()))
 			r.Method(http.MethodDelete, "/{id}/readers", nethttp.NewHandler(removeSharedMailboxReaders()))
 			r.Method(http.MethodGet, "/", nethttp.NewHandler(listSharedMailbox()))
