@@ -3,7 +3,7 @@ package restapi
 import (
 	"context"
 
-	"github.com/koksmat-com/koksmat/powershell"
+	"github.com/koksmat-com/koksmat/model"
 	"github.com/spf13/viper"
 	"github.com/swaggest/usecase"
 	"github.com/swaggest/usecase/status"
@@ -37,9 +37,9 @@ func getDomains() usecase.Interactor {
 	type InfoRequest struct {
 	}
 
-	u := usecase.NewInteractor(func(ctx context.Context, input InfoRequest, output *[]powershell.Domain) error {
-		domains, err := powershell.GetDomains()
-		*output = *domains
+	u := usecase.NewInteractor(func(ctx context.Context, input InfoRequest, output *[]model.Domain) error {
+		domains, err := model.GetDomains()
+		*output = domains
 		return err
 
 	})
