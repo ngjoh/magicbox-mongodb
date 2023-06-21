@@ -44,7 +44,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["access","niels"]
+            "args": ["access","servicenow-test"]
         }
         ,        {
             "name": "Find User",

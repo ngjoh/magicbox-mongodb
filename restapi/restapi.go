@@ -1,87 +1,17 @@
 package restapi
 
 import (
-	"context"
-	"errors"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/jwtauth/v5"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/swaggest/rest/nethttp"
 	"github.com/swaggest/rest/response/gzip"
 	"github.com/swaggest/rest/web"
 	swgui "github.com/swaggest/swgui/v4emb"
 )
 
-func ParseIdToken(tokenString string) (appName string, appSecret string, err error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
-
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return mySigningKey, nil
-	})
-	if err != nil {
-
-		return "", "", err
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		app := fmt.Sprint(claims["app"])
-		key := fmt.Sprint(claims["key"])
-		return app, key, nil
-
-	} else {
-
-		return "", "", errors.New("Not implemented")
-	}
-
-}
-
-// Authenticator is a default authentication middleware to enforce access from the
-// Verifier middleware request context values. The Authenticator sends a 401 Unauthorized
-// response for any unverified tokens and passes the good ones through. It's just fine
-// until you decide to write something similar and customize your client response.
-func Authenticator(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenString := jwtauth.TokenFromHeader(r)
-		// Parse takes the token string and a function for looking up the key. The latter is especially
-		// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
-		// head of the token to identify which key to use, but the parsed token (head and claims) is provided
-		// to the callback, providing flexibility.
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			// Don't forget to validate the alg is what you expect:
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-			}
-
-			// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-			return mySigningKey, nil
-		})
-		if err != nil {
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-			return
-		}
-
-		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			fmt.Println(claims["foo"], claims["nbf"])
-			app := fmt.Sprint(claims["app"])
-			// Token is authenticated, pass it through
-			ctx := context.WithValue(r.Context(), "app", app)
-			next.ServeHTTP(w, r.WithContext(ctx))
-		} else {
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-			return
-		}
-
-	})
-}
 func Run() {
 	s := web.DefaultService()
 

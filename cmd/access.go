@@ -6,8 +6,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/atotto/clipboard"
 	"github.com/koksmat-com/koksmat/model"
-
 	"github.com/koksmat-com/koksmat/restapi"
 	"github.com/spf13/cobra"
 )
@@ -30,6 +30,8 @@ var accessCmd = &cobra.Command{
 		token, _ := restapi.IssueIdToken(id, key)
 
 		fmt.Println(colorYellow + token + colorReset)
+		clipboard.WriteAll(token)
+		fmt.Println("Copied to clipboard")
 	},
 }
 

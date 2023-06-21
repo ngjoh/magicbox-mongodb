@@ -1,11 +1,11 @@
 package model
 
 import (
-	"context"
 	"log"
 
 	"github.com/kamva/mgm/v3"
 	"github.com/koksmat-com/koksmat/config"
+	"github.com/koksmat-com/koksmat/db"
 	"github.com/sethvargo/go-password/password"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -24,10 +24,10 @@ func CheckPasswordHash(password, hash string) bool {
 }
 
 type AccessControl struct {
-	mgm.DefaultModel
-	Identity    string `json:"identity"`
-	SecurityKey string `json:"key"`
-	Permissions string `json:"permissions"`
+	mgm.DefaultModel `bson:",inline"`
+	Identity         string `json:"identity"`
+	SecurityKey      string `json:"key"`
+	Permissions      string `json:"permissions"`
 }
 
 func (accessControl *AccessControl) Collection() *mgm.Collection {
@@ -51,11 +51,10 @@ func Authenticate(identity string, key string) (ok bool, permissions string) {
 	//log.Println(tester)
 	log.Println("Looking for", identity)
 	filter := bson.D{{"identity", identity}}
-	result := mgm.Coll(&AccessControl{}).FindOne(context.Background(), filter)
-	record := &AccessControl{}
-	result.Decode(record)
 
-	if record.Identity == "" {
+	record, err := db.FindOne[*AccessControl](&AccessControl{}, filter)
+
+	if err != nil {
 		log.Println("Not found")
 		return false, ""
 	}
@@ -72,7 +71,7 @@ func Authenticate(identity string, key string) (ok bool, permissions string) {
 func IssueAccessKey(identity string) (key string, hash string, err error) {
 	// Generate a password that is 64 characters long with 10 digits, 10 symbols,
 	// allowing upper and lower case letters, disallowing repeat characters.
-	key, err = password.Generate(64, 10, 10, false, false)
+	key, err = password.Generate(32, 10, 10, false, false)
 	if err != nil {
 		return key, hash, err
 	}
@@ -83,10 +82,9 @@ func IssueAccessKey(identity string) (key string, hash string, err error) {
 
 	//log.Println(tester)
 	filter := bson.D{{"identity", identity}}
-	result := mgm.Coll(&AccessControl{}).FindOne(context.Background(), filter)
-	record := &AccessControl{}
-	result.Decode(record)
-	if record.Identity != "" {
+	record, err := db.FindOne[*AccessControl](&AccessControl{}, filter)
+
+	if err == nil {
 
 		record.SecurityKey = hash
 		mgm.Coll(record).Update(record)
