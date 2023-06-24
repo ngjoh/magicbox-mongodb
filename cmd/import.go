@@ -35,7 +35,7 @@ var importCmd = &cobra.Command{
 
 			//model.SyncRecipients(viper.GetString("DATABASE"))
 		case "rooms":
-			readAndSave[model.RoomType]()
+			readAndSave[model.Rooms]()
 		case "sharedmailboxes":
 			model.ReadSharedMailboxes(inputFile)
 

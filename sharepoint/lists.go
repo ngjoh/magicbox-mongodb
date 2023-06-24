@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func GetListItems[T any](sharePointSiteUrl string, listName string, selectedFields string) ([]T, error) {
+func GetListItems[T any](sharePointSiteUrl string, listName string, selectedFields string, expand string) ([]T, error) {
 	sp, err := GetClient(sharePointSiteUrl)
 	if err != nil {
 		return nil, err
@@ -16,9 +16,9 @@ func GetListItems[T any](sharePointSiteUrl string, listName string, selectedFiel
 	itemsResp, err := list.Items().
 		Select(selectedFields). // OData $select modifier, limit what props are retrieved
 		OrderBy("Id", true).    // OData $orderby modifier, defines sort order
-		//Expand("Provisioning_x0020_Status").                   // OData $expand modifier, expands lookup fields
-		Top(1). // OData $top modifier, limits page size
-		Get()   // Finalizes API constructor and sends a response
+		Expand(expand).         // OData $expand modifier, expands lookup fields
+		Top(2000).              // OData $top modifier, limits page size
+		Get()                   // Finalizes API constructor and sends a response
 
 	if err != nil {
 		return nil, err
@@ -34,6 +34,8 @@ func GetListItems[T any](sharePointSiteUrl string, listName string, selectedFiel
 		}
 		//	itemData := item.Data()
 		results = append(results, *i)
+
+		//fmt.Println(fmt.Sprintf("%s", item))
 
 	}
 

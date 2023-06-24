@@ -27,6 +27,12 @@ var syncCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalln(err)
 			}
+		case "rooms":
+
+			err := model.ImportRooms()
+			if err != nil {
+				log.Fatalln(err)
+			}
 
 		default:
 
