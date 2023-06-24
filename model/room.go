@@ -6,3 +6,5 @@ type RoomType struct {
 	DisplayName        string `json:"DisplayName"`
 	ResourceCapacity   int16  `json:"ResourceCapacity"`
 }
+
+//"Id,Title,Capacity,Provisioning_x0020_Status"

@@ -61,14 +61,14 @@
             "mode": "auto",
             "program": "${workspaceFolder}",
             "args": ["ping","nats"]
+        },        {
+            "name": "Read Users from Excel",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["excel","-f","/Users/nielsgregersjohansen/code/koksmat/koksmat-cli/excel/nexi.xlsx"]
         }
     ]
-    ,        {
-        "name": "Worker",
-        "type": "go",
-        "request": "launch",
-        "mode": "auto",
-        "program": "${workspaceFolder}",
-        "args": ["worker"]
-    }
+   
 }

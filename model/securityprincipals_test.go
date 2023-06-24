@@ -2,10 +2,7 @@ package model
 
 import (
 	"log"
-	"os"
 	"testing"
-
-	"github.com/koksmat-com/koksmat/config"
 )
 
 func TestHelloName(t *testing.T) {
@@ -18,11 +15,4 @@ func TestHelloName(t *testing.T) {
 	if !valid {
 		t.Fatalf("Didn't work")
 	}
-}
-
-func TestMain(m *testing.M) {
-	config.Setup("../.env")
-	code := m.Run()
-
-	os.Exit(code)
 }

@@ -69,7 +69,7 @@ func Work() {
 			return
 		}
 
-		outout, err, console := powershell.Execute(request.ScriptName, request.Input)
+		outout, err, console := powershell.Execute(request.ScriptName, request.Input, powershell.SetupExchange)
 
 		response.Output = string(outout)
 		response.AppId = request.AppId

@@ -16,7 +16,7 @@ var excelCmd = &cobra.Command{
 	Short: "Excel stuff",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		excel.New(file)
+		excel.Read(file)
 	},
 }
 

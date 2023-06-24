@@ -11,32 +11,41 @@ import (
 	"path"
 
 	"github.com/koksmat-com/koksmat/audit"
+	"github.com/koksmat-com/koksmat/sharepoint"
 	"github.com/spf13/viper"
 )
 
 //go:embed scripts
 var scripts embed.FS
 
-func Execute(fileName, args string) (output []byte, err error, console string) {
-	cmd := exec.Command("pwsh", "-nologo", "-noprofile")
-	cmd.Env = os.Environ()
+type Setup func() (string, []string, error)
 
-	cmd.Env = append(cmd.Env, fmt.Sprintf("EXCHCERTIFICATEPASSWORD=%s", viper.GetString("EXCHCERTIFICATEPASSWORD")))
-	cmd.Env = append(cmd.Env, fmt.Sprintf("EXCHAPPID=%s", viper.GetString("EXCHAPPID")))
-	cmd.Env = append(cmd.Env, fmt.Sprintf("EXCHORGANIZATION=%s", viper.GetString("EXCHORGANIZATION")))
-	cmd.Env = append(cmd.Env, fmt.Sprintf("EXCHCERTIFICATE=%s", viper.GetString("EXCHCERTIFICATE")))
+func PwshCwd() string {
+	dir := ".koksmat/powershell"
+	os.MkdirAll(dir, os.ModePerm)
+	return dir
+}
+
+func Execute(fileName, args string, setEnvironment Setup) (output []byte, err error, console string,
+) {
+	cmd := exec.Command("pwsh", "-nologo", "-noprofile")
+
+	initScript, environment, err := setEnvironment()
+	if err != nil {
+		return nil, err, ""
+	}
+
+	cmd.Env = environment
 
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	dir := ".koksmat/powershell"
-	os.MkdirAll(dir, os.ModePerm)
-	cmd.Dir = dir
+	cmd.Dir = PwshCwd()
 
-	os.Remove(path.Join(dir, "output.json"))
-	ps1Code, err := scripts.ReadFile("scripts/connectors/exchange.ps1")
+	os.Remove(path.Join(cmd.Dir, "output.json"))
+	ps1Code, err := scripts.ReadFile(fmt.Sprintf("scripts/connectors/%s.ps1", initScript))
 	if err != nil {
 
 		return nil, err, ""
@@ -45,11 +54,11 @@ func Execute(fileName, args string) (output []byte, err error, console string) {
 	if err != nil {
 		return nil, err, ""
 	}
-	err = os.WriteFile(path.Join(dir, "run.ps1"), ps2Code, 0644)
+	err = os.WriteFile(path.Join(cmd.Dir, "run.ps1"), ps2Code, 0644)
 	if err != nil {
 		return nil, err, ""
 	}
-	err = os.WriteFile(path.Join(dir, "init.ps1"), ps1Code, 0644)
+	err = os.WriteFile(path.Join(cmd.Dir, "init.ps1"), ps1Code, 0644)
 	if err != nil {
 		return nil, err, ""
 	}
@@ -68,16 +77,16 @@ func Execute(fileName, args string) (output []byte, err error, console string) {
 		return nil, errors.New("Could not run PowerShell script"), string(combinedOutput)
 	}
 
-	outputJson, err := os.ReadFile(path.Join(dir, "output.json"))
+	outputJson, err := os.ReadFile(path.Join(cmd.Dir, "output.json"))
 
 	audit.LogPowerShell("koksmat", fileName, srcCode, args, fmt.Sprintf("[%s]", outputJson), false, string(combinedOutput))
 
 	return outputJson, nil, string(combinedOutput)
 }
 
-func Run[R any](fileName string, args string) (result *R, err error) {
+func Run[R any](fileName string, args string, setup Setup) (result *R, err error) {
 
-	output, err, _ := Execute(fileName, args)
+	output, err, _ := Execute(fileName, args, setup)
 	dataOut := new(R)
 	textOutput := fmt.Sprintf("%s", output)
 	if (output != nil) && (textOutput != "") {
@@ -94,4 +103,45 @@ func Run[R any](fileName string, args string) (result *R, err error) {
 	}
 	result = *&dataOut // fmt.Sprintf("%s", outputJson)
 	return result, err
+}
+
+var SetupExchange = func() (string, []string, error) {
+	env := os.Environ()
+
+	env = append(env, fmt.Sprintf("EXCHCERTIFICATEPASSWORD=%s", viper.GetString("EXCHCERTIFICATEPASSWORD")))
+	env = append(env, fmt.Sprintf("EXCHAPPID=%s", viper.GetString("EXCHAPPID")))
+	env = append(env, fmt.Sprintf("EXCHORGANIZATION=%s", viper.GetString("EXCHORGANIZATION")))
+	env = append(env, fmt.Sprintf("EXCHCERTIFICATE=%s", viper.GetString("EXCHCERTIFICATE")))
+	return "exchange", env, nil
+
+}
+
+var SetupPNP = func() (string, []string, error) {
+
+	ps2Code, err := sharepoint.Assets.ReadFile("assets/template-filtered.xml")
+	if err != nil {
+		return "", []string{}, err
+	}
+	err = os.WriteFile(path.Join(PwshCwd(), "template.xml"), ps2Code, 0644)
+	if err != nil {
+		return "", []string{}, err
+	}
+	env := os.Environ()
+
+	env = append(env, fmt.Sprintf("PNPAPPID=%s", viper.GetString("PNPAPPID")))
+	env = append(env, fmt.Sprintf("PNPTENANTID=%s", viper.GetString("PNPTENANTID")))
+	env = append(env, fmt.Sprintf("PNPSITE=%s", viper.GetString("PNPSITE")))
+	env = append(env, fmt.Sprintf("PNPCERTIFICATE=%s", viper.GetString("PNPCERTIFICATE")))
+	return "pnp", env, nil
+
+}
+
+func RunExchange[R any](fileName string, args string) (result *R, err error) {
+
+	return Run[R](fileName, args, SetupExchange)
+}
+
+func RunPNP[R any](fileName string, args string) (result *R, err error) {
+
+	return Run[R](fileName, args, SetupPNP)
 }
