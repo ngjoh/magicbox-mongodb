@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"time"
 
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
@@ -64,4 +65,28 @@ func UpdateOne[M mgm.Model](
 
 	return record, nil
 
+}
+
+func GetAll[T mgm.Model](record T) (result []T, err error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	records := []T{}
+	defer cancel()
+
+	results, err := mgm.Coll(record).Find(context.TODO(), bson.M{})
+	if err != nil {
+
+		return nil, err
+	}
+	defer results.Close(ctx)
+	for results.Next(ctx) {
+		var record T
+		if err = results.Decode(&record); err != nil {
+			return nil, err
+		}
+
+		records = append(records, record)
+	}
+
+	return records, nil
 }

@@ -115,3 +115,10 @@ func TestGetCavaCountriesList(t *testing.T) {
 	assert.True(t, foundCountryCode, "Expected country code to be set")
 
 }
+
+func TestGetChanges(t *testing.T) {
+	err := GetChanges("https://christianiabpos.sharepoint.com/sites/Cava3", "Test Changes")
+
+	assert.Nil(t, err)
+
+}

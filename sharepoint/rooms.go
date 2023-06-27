@@ -73,7 +73,7 @@ type Building struct {
 	} `json:"__metadata"`
 }
 
-type Locations struct {
+type Location struct {
 	Buildings struct {
 		Results []struct {
 			ID       int    `json:"Id"`
@@ -156,8 +156,8 @@ func BuildingsList() (*[]Building, error) {
 	}
 	return &items, nil
 }
-func LocationsList() (*[]Locations, error) {
-	items, err := GetListItems[Locations](
+func LocationsList() (*[]Location, error) {
+	items, err := GetListItems[Location](
 		"https://christianiabpos.sharepoint.com/sites/Cava3",
 		"Locations",
 		"Id,Title,Buildings/Id,Buildings/Title",

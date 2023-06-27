@@ -4,17 +4,33 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"log"
+
 	"github.com/koksmat-com/koksmat/restapi"
 	"github.com/spf13/cobra"
 )
 
 // serveCmd represents the serve command
 var serveCmd = &cobra.Command{
-	Use:   "serve",
+	Use:   "serve [[service]]",
 	Short: "Starts the Koksmat server",
 	Long:  ``,
+
 	Run: func(cmd *cobra.Command, args []string) {
-		restapi.Run()
+		if len(args) == 0 {
+			restapi.Run()
+			return
+		}
+		service := args[0]
+		switch service {
+		case "sharepoint":
+			restapi.SharePoint()
+
+		default:
+
+			log.Fatalln("Unknown service", service)
+			return
+		}
 		//webserver.Run()
 	},
 }
