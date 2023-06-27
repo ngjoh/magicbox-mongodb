@@ -17,7 +17,7 @@ type Room struct {
 	} `json:"Price_x0020_List"`
 	Production         any    `json:"Production"`
 	ProvisioningStatus string `json:"Provisioning_x0020_Status"`
-	RestrictedTo       any    `json:"RestrictedTo"`
+	RestrictedTo       string `json:"RestrictedTo"`
 	TeamsMeetingRoom   any    `json:"TeamsMeetingRoom"`
 	Title              string `json:"Title"`
 	Metadata           struct {

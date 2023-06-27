@@ -90,3 +90,27 @@ func GetAll[T mgm.Model](record T) (result []T, err error) {
 
 	return records, nil
 }
+
+func GetFiltered[T mgm.Model](record T, filter interface{}) (result []T, err error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	records := []T{}
+	defer cancel()
+
+	results, err := mgm.Coll(record).Find(context.TODO(), filter)
+	if err != nil {
+
+		return nil, err
+	}
+	defer results.Close(ctx)
+	for results.Next(ctx) {
+		var record T
+		if err = results.Decode(&record); err != nil {
+			return nil, err
+		}
+
+		records = append(records, record)
+	}
+
+	return records, nil
+}

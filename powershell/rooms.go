@@ -2,6 +2,7 @@ package powershell
 
 import (
 	"fmt"
+	"strings"
 )
 
 type NewRoomResult struct {
@@ -28,4 +29,22 @@ func RemoveRoom(Email string) (result *EmptyResult, err error) {
 	}
 
 	return result, err
+}
+
+func BuildPolicyScriptArguments(Email string, ListOfAllowedEmails []string) (string, string) {
+	sharedArguments := fmt.Sprintf(` -Mail "%s" -BookingWindowInDays 601`, Email)
+
+	if len(ListOfAllowedEmails) == 0 {
+		return "scripts/rooms/set-roompolicy-standard.ps1", fmt.Sprintf(`%s `, sharedArguments)
+	} else {
+		return "scripts/rooms/set-roompolicy-restricted.ps1", fmt.Sprintf(`%s -MailTip "This room has restrictions on who can book it" -AllowedBooker %s `, sharedArguments, PwshArray(ListOfAllowedEmails))
+	}
+
+}
+
+func SetPolicy(Email string, ListOfAllowedEmails string) (result *EmptyResult, err error) {
+
+	powershellScript, powershellArguments := BuildPolicyScriptArguments(Email, strings.Split(ListOfAllowedEmails, ","))
+	return RunExchange[EmptyResult](powershellScript, powershellArguments)
+
 }
