@@ -89,8 +89,15 @@ You need a credential key to access the API. The credential is issue by [niels.j
 Use the credential key to get an access token through the /v1/authorize end point. The access token is valid for 10 minutes.
 
 Pass the access token in the Authorization header as a Bearer token to access the API.
+
+## Version History
+### V2.0.0 - Parameter name changed
+Changed parameter names from id to exchangeObjectId in relevant endpoints, breaking compatibility with previous versions hence relasing as a new major version
+
+### V1.0.0 - Initial version
+
 	`)
-	s.OpenAPI.Info.Version = "v1.0.0"
+	s.OpenAPI.Info.Version = "v2.0.0"
 
 	//adminAuth := middleware.BasicAuth("Admin Access", map[string]string{"admin": "admin"})
 
@@ -110,19 +117,19 @@ Pass the access token in the Authorization header as a Bearer token to access th
 			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
 
 			r.Method(http.MethodPost, "/", nethttp.NewHandler(createSharedMailbox()))
-			r.Method(http.MethodGet, "/{id}", nethttp.NewHandler(getSharedMailbox()))
-			r.Method(http.MethodPatch, "/{id}", nethttp.NewHandler(updateSharedMailbox()))
-			r.Method(http.MethodPost, "/{id}/smtp", nethttp.NewHandler(addSharedMailboxEmail()))
-			r.Method(http.MethodPatch, "/{id}/primarysmtp", nethttp.NewHandler(updateSharedMailboxPrimaryEmailAddress()))
-			r.Method(http.MethodDelete, "/{id}/smtp", nethttp.NewHandler(removeSharedMailboxEmail()))
-			r.Method(http.MethodPost, "/{id}/members", nethttp.NewHandler(addSharedMailboxMembers()))
-			r.Method(http.MethodDelete, "/{id}/members", nethttp.NewHandler(removeSharedMailboxMembers()))
-			r.Method(http.MethodPatch, "/{id}/owners", nethttp.NewHandler(setSharedMailboxOwners()))
+			r.Method(http.MethodGet, "/{exchangeObjectId}", nethttp.NewHandler(getSharedMailbox()))
+			r.Method(http.MethodPatch, "/{exchangeObjectId}", nethttp.NewHandler(updateSharedMailbox()))
+			r.Method(http.MethodPost, "/{exchangeObjectId}/smtp", nethttp.NewHandler(addSharedMailboxEmail()))
+			r.Method(http.MethodPatch, "/{exchangeObjectId}/primarysmtp", nethttp.NewHandler(updateSharedMailboxPrimaryEmailAddress()))
+			r.Method(http.MethodDelete, "/{exchangeObjectId}/smtp", nethttp.NewHandler(removeSharedMailboxEmail()))
+			r.Method(http.MethodPost, "/{exchangeObjectId}/members", nethttp.NewHandler(addSharedMailboxMembers()))
+			r.Method(http.MethodDelete, "/{exchangeObjectId}/members", nethttp.NewHandler(removeSharedMailboxMembers()))
+			r.Method(http.MethodPatch, "/{exchangeObjectId}/owners", nethttp.NewHandler(setSharedMailboxOwners()))
 
-			r.Method(http.MethodPost, "/{id}/readers", nethttp.NewHandler(addSharedMailboxReaders()))
-			r.Method(http.MethodDelete, "/{id}/readers", nethttp.NewHandler(removeSharedMailboxReaders()))
+			r.Method(http.MethodPost, "/{exchangeObjectId}/readers", nethttp.NewHandler(addSharedMailboxReaders()))
+			r.Method(http.MethodDelete, "/{exchangeObjectId}/readers", nethttp.NewHandler(removeSharedMailboxReaders()))
 			r.Method(http.MethodGet, "/", nethttp.NewHandler(listSharedMailbox()))
-			r.Method(http.MethodDelete, "/{id}", nethttp.NewHandler(deleteSharedMailbox()))
+			r.Method(http.MethodDelete, "/{exchangeObjectId}", nethttp.NewHandler(deleteSharedMailbox()))
 		})
 	})
 	s.Route("/v1/addresses", func(r chi.Router) {

@@ -13,9 +13,9 @@ var tag = "Shared Mailboxes"
 
 func createSharedMailbox() usecase.Interactor {
 	type SharedMailboxNewRequest struct {
-		DisplayName string   `json:"displayName" binding:"required"`
-		Alias       string   `json:"alias" binding:"required"`
-		Name        string   `json:"name" binding:"required"`
+		DisplayName string   `json:"displayName" binding:"required" example:"Shared Mailbox Name"`
+		Alias       string   `json:"alias" binding:"required" example:"shared-mailbox-alias" `
+		Name        string   `json:"name" binding:"required" example:"shared-mailbox-name"`
 		Members     []string `json:"members"`
 		Owners      []string `json:"owners"`
 		Readers     []string `json:"readers"`
@@ -41,7 +41,7 @@ func createSharedMailbox() usecase.Interactor {
 
 func getSharedMailbox() usecase.Interactor {
 	type GetRequest struct {
-		Identity string `path:"id"`
+		Identity string `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input GetRequest, output *model.SharedMailbox) error {
 
@@ -58,8 +58,8 @@ func getSharedMailbox() usecase.Interactor {
 }
 func updateSharedMailbox() usecase.Interactor {
 	type SharedMailboxUpdateRequest struct {
-		Identity    string `path:"id"`
-		DisplayName string `json:"displayName" binding:"required"`
+		Identity    string `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
+		DisplayName string `json:"displayName" binding:"required" example:"New Display Name for Shared Mailbox"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxUpdateRequest, output *model.SharedMailbox) error {
 		result, err := model.UpdateSharedMailbox(input.Identity, input.DisplayName)
@@ -77,8 +77,8 @@ func updateSharedMailbox() usecase.Interactor {
 func updateSharedMailboxPrimaryEmailAddress() usecase.Interactor {
 
 	type SharedMailboxUpdateRequest struct {
-		Identity string `path:"id"`
-		Email    string `json:"smtpaddress" binding:"required"`
+		Identity string `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
+		Email    string `json:"smtpaddress" binding:"required" example:"contact@contoso.com"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxUpdateRequest, output *model.SharedMailbox) error {
 
@@ -94,7 +94,7 @@ func updateSharedMailboxPrimaryEmailAddress() usecase.Interactor {
 }
 func addSharedMailboxMembers() usecase.Interactor {
 	type SharedMailboxAddMemberRquest struct {
-		Identity string   `path:"id"`
+		Identity string   `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
 		Members  []string `json:"members" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
@@ -111,7 +111,7 @@ func addSharedMailboxMembers() usecase.Interactor {
 
 func removeSharedMailboxMembers() usecase.Interactor {
 	type SharedMailboxRemoveMemberRquest struct {
-		Identity string   `path:"id"`
+		Identity string   `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
 		Members  []string `json:"members" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxRemoveMemberRquest, output *model.SharedMailbox) error {
@@ -128,7 +128,7 @@ func removeSharedMailboxMembers() usecase.Interactor {
 }
 func addSharedMailboxReaders() usecase.Interactor {
 	type SharedMailboxAddMemberRquest struct {
-		Identity string   `path:"id"`
+		Identity string   `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
 		Members  []string `json:"readers" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
@@ -145,7 +145,7 @@ func addSharedMailboxReaders() usecase.Interactor {
 
 func removeSharedMailboxReaders() usecase.Interactor {
 	type SharedMailboxRemoveMemberRquest struct {
-		Identity string   `path:"id"`
+		Identity string   `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
 		Members  []string `json:"readers" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxRemoveMemberRquest, output *model.SharedMailbox) error {
@@ -162,7 +162,7 @@ func removeSharedMailboxReaders() usecase.Interactor {
 }
 func setSharedMailboxOwners() usecase.Interactor {
 	type SharedMailboxAddMemberRquest struct {
-		Identity string   `path:"id"`
+		Identity string   `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
 		Owners   []string `json:"owners" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
@@ -198,7 +198,7 @@ func listSharedMailbox() usecase.Interactor {
 
 func deleteSharedMailbox() usecase.Interactor {
 	type DeleteRequest struct {
-		Identity string `path:"id"`
+		Identity string `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input DeleteRequest, output *[]model.SharedMailbox) error {
 		return model.DeleteSharedMailbox(input.Identity)
@@ -212,8 +212,8 @@ func deleteSharedMailbox() usecase.Interactor {
 
 func addSharedMailboxEmail() usecase.Interactor {
 	type SharedMailboxAddEmailRquest struct {
-		Identity string `path:"id"`
-		Email    string `json:"smtpaddress" binding:"required"`
+		Identity string `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
+		Email    string `json:"smtpaddress" binding:"required" example:"contact@contosoelectronics.com`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddEmailRquest, output *model.SharedMailboxNewResponce) error {
 
@@ -228,7 +228,7 @@ func addSharedMailboxEmail() usecase.Interactor {
 
 func removeSharedMailboxEmail() usecase.Interactor {
 	type SharedMailboxRemoveEmailRquest struct {
-		Identity string   `path:"id"`
+		Identity string   `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
 		Members  []string `json:"emails" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxRemoveEmailRquest, output *struct{}) error {

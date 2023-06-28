@@ -134,6 +134,7 @@ func RoomsToProvision() error {
 	}
 
 	r.Room.ProvisioningStatus = newStatus
+	r.Room.Email = result.MailAddress
 	return mgm.Coll(r).Update(r)
 
 }
