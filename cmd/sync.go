@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var hubSiteID string = ""
+
 // importCmd represents the import command
 var syncCmd = &cobra.Command{
 	Use:   "sync [collection name]",
@@ -33,7 +35,18 @@ var syncCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalln(err)
 			}
-
+		case "sites":
+			if hubSiteID == "" {
+				log.Fatalln("Need to specify hubSiteId")
+			}
+			err := model.SyncHubSitePages(hubSiteID)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			err = model.SyncSitesNavigation()
+			if err != nil {
+				log.Fatalln(err)
+			}
 		default:
 
 			log.Fatalln("Cannot use that collection name", subject)
@@ -46,5 +59,6 @@ var syncCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(syncCmd)
+	syncCmd.Flags().StringVarP(&hubSiteID, "hubSiteId", "hub", "", "Hub Site ID")
 
 }

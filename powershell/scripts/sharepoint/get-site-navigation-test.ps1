@@ -1,0 +1,1 @@
+. "$psscriptroot/get-site-navigation.ps1" -childSite "https://christianiabpos.sharepoint.com/sites/nexiintra-country-de"
