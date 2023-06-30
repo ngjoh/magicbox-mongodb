@@ -59,6 +59,6 @@ var syncCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(syncCmd)
-	syncCmd.Flags().StringVarP(&hubSiteID, "hubSiteId", "hub", "", "Hub Site ID")
+	syncCmd.Flags().StringVarP(&hubSiteID, "hubSiteId", "", "", "Hub Site ID")
 
 }
