@@ -13,6 +13,7 @@ RUN apt update && apt install -y powershell
 
 
 RUN pwsh -c "Install-Module -Name ExchangeOnlineManagement -force"
+RUN pwsh -c "Install-Module -Name PnP.PowerShell -Force -AllowPrerelease -Scope AllUsers;" 
 WORKDIR /app.
 COPY . .
 RUN go install
