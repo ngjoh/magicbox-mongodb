@@ -32,6 +32,7 @@ foreach ($childSite in $childSites) {
     $sites += @{
         siteurl = $childSite 
         title   = $web.Title
+        HubSiteId = $HubSiteId
         WelcomePage = $web.WelcomePage
         pages   = $PagesDataColl
        

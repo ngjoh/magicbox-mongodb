@@ -2,6 +2,14 @@ package powershell
 
 import "time"
 
+type HubSite struct {
+	ID          string      `json:"ID"`
+	Description interface{} `json:"Description"`
+	Title       string      `json:"Title"`
+	SiteURL     string      `json:"SiteUrl"`
+}
+
+type HubSites []HubSite
 type Pages []struct {
 	HubSiteID   string    `json:"HubSiteId"`
 	Editor      string    `json:"Editor"`
@@ -17,6 +25,7 @@ type SitePages []struct {
 	Pages       Pages  `json:"pages"`
 	WelcomePage string `json:"WelcomePage"`
 	Siteurl     string `json:"siteurl"`
+	HubSiteID   string `json:"HubSiteId"`
 }
 type NavigationNode struct {
 	Childs      []NavigationNode `json:"Childs"`
@@ -41,4 +50,10 @@ func GetSiteNavigation(siteURL string) (*SiteNavigation, error) {
 	powershellScript := "scripts/sharepoint/get-site-navigation.ps1"
 	powershellArguments := " -childSite " + siteURL
 	return RunPNP[SiteNavigation](powershellScript, powershellArguments)
+}
+
+func GetHubSites() (*[]HubSite, error) {
+	powershellScript := "scripts/sharepoint/get-hubsites.ps1"
+	powershellArguments := ""
+	return RunPNP[[]HubSite](powershellScript, powershellArguments)
 }

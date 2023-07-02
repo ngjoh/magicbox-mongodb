@@ -1,10 +1,15 @@
 package restapi
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/koksmat-com/koksmat/model"
+	"github.com/swaggest/usecase"
+	"github.com/swaggest/usecase/status"
 )
 
 func validateSubscription(w http.ResponseWriter, r *http.Request) {
@@ -35,4 +40,44 @@ func validateSubscription(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+}
+
+func getBlobb(path string) (*string, error) {
+	return nil, nil
+}
+
+func getBlob() usecase.Interactor {
+	type BlobRequest struct {
+		Tag string `json:"tag" path:"tag" example:"SITEMAP%7Chttps%3A%2F%2Fchristianiabpos.sharepoint.com%2Fsites%2Fnexiintra-home"  binding:"required"`
+	}
+	type BlobResponse struct {
+		Content map[string]interface{} `json:"content,inline"`
+		Cache   string                 `header:"Cache-Control" json:"-"`
+	}
+
+	u := usecase.NewInteractor(func(ctx context.Context, input BlobRequest, output *BlobResponse) error {
+
+		o, err := model.GetBlob(input.Tag)
+		if err != nil {
+			return err
+		}
+		br := &BlobResponse{
+			Content: *o,
+			Cache:   "public, max-age=60",
+		}
+		*output = *br
+		return err
+
+	})
+
+	u.SetTitle("Reading blob")
+	u.SetDescription(`
+
+
+Returns a piece of unstructured data 
+
+`)
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags(authenticationTag)
+	return u
 }

@@ -67,6 +67,51 @@ func UpdateOne[M mgm.Model](
 
 }
 
+func CreateOne[M mgm.Model](record M, interact func() (M, error)) (newR *M, err error) {
+
+	newRecord, err := interact()
+	if err != nil {
+		return nil, err
+
+	}
+
+	err = mgm.Coll(record).Create(newRecord)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return &newRecord, nil
+}
+
+func CreateOrUpdate[M mgm.Model](
+	record M,
+	filter bson.D,
+	create func() (M, error),
+	update func(record M) error) (r *M, err error) {
+
+	foundRecord, err := FindOne(record, filter)
+
+	if err != nil {
+		createdRecord, err := CreateOne[M](record, create)
+		return createdRecord, err
+	} else {
+
+		err = update(foundRecord)
+		if err != nil {
+			return nil, err
+		}
+
+		err = mgm.Coll(record).Update(foundRecord)
+		if err != nil {
+
+			return nil, err
+		}
+		return &foundRecord, nil
+	}
+
+}
+
 func GetAll[T mgm.Model](record T) (result []T, err error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

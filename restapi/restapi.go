@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/swaggest/rest/nethttp"
 	"github.com/swaggest/rest/response/gzip"
 	"github.com/swaggest/rest/web"
@@ -51,8 +52,21 @@ Pass the access token in the Authorization header as a Bearer token to access th
 	s.Wrap(
 		gzip.Middleware, // Response compression with support for direct gzip pass through.
 	)
-
+	// Basic CORS
+	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
+	s.Use(cors.Handler(cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
 	s.Post("/authorize", signin())
+	//s.Get("/blob/{tag}", getBlob())
+	s.Method(http.MethodGet, "/blob/{tag}", nethttp.NewHandler(getBlob()))
 	s.MethodFunc(http.MethodPost, "/api/v1/subscription/notify", validateSubscription)
 
 	s.Route("/v1/info", func(r chi.Router) {
@@ -107,7 +121,18 @@ Changed parameter names from id to exchangeObjectId in relevant endpoints, break
 	s.Wrap(
 		gzip.Middleware, // Response compression with support for direct gzip pass through.
 	)
-
+	// Basic CORS
+	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
+	s.Use(cors.Handler(cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
 	s.Post("/authorize", signin())
 	//s.Post("/v1/demo", demo())
 	// Endpoints with user access.
