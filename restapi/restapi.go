@@ -67,14 +67,15 @@ Pass the access token in the Authorization header as a Bearer token to access th
 	s.Post("/authorize", signin())
 	//s.Get("/blob/{tag}", getBlob())
 	s.Method(http.MethodGet, "/blob/{tag}", nethttp.NewHandler(getBlob()))
+
 	s.MethodFunc(http.MethodPost, "/api/v1/subscription/notify", validateSubscription)
+	s.Method(http.MethodGet, "/v1/business/countries", nethttp.NewHandler(getCountries()))
+	s.Method(http.MethodGet, "/v1/business/units", nethttp.NewHandler(getBusinessAndGroupUnits()))
 
 	s.Route("/v1/info", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
-
 			r.Method(http.MethodGet, "/", nethttp.NewHandler(getInfo()))
-
 		})
 	})
 
