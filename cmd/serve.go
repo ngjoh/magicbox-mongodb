@@ -23,8 +23,8 @@ var serveCmd = &cobra.Command{
 		}
 		service := args[0]
 		switch service {
-		case "sharepoint":
-			restapi.SharePoint()
+		case "core":
+			restapi.Core()
 
 		default:
 

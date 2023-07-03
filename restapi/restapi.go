@@ -26,11 +26,11 @@ type ListNotication struct {
 	} `json:"value"`
 }
 
-func SharePoint() {
+func Core() {
 	s := web.DefaultService()
 
 	// Init API documentation schema.
-	s.OpenAPI.Info.Title = "Koksmat Magicbox for SharePoint"
+	s.OpenAPI.Info.Title = "Koksmat Magicbox CORE"
 	s.OpenAPI.Info.WithDescription(`
 	
 Service  for managing Microsoft 365 resources
@@ -79,8 +79,8 @@ Pass the access token in the Authorization header as a Bearer token to access th
 		})
 	})
 
-	s.Docs("/docs/sharepoint", swgui.New)
-	s.Mount("/debug/sharepoint", middleware.Profiler())
+	s.Docs("/docs/core", swgui.New)
+	s.Mount("/debug/core", middleware.Profiler())
 
 	log.Println("Server starting")
 	if err := http.ListenAndServe(":4321", s); err != nil {
