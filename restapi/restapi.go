@@ -79,8 +79,8 @@ Pass the access token in the Authorization header as a Bearer token to access th
 		})
 	})
 
-	s.Docs("/docs", swgui.New)
-	s.Mount("/debug", middleware.Profiler())
+	s.Docs("/docs/sharepoint", swgui.New)
+	s.Mount("/debug/sharepoint", middleware.Profiler())
 
 	log.Println("Server starting")
 	if err := http.ListenAndServe(":4321", s); err != nil {
