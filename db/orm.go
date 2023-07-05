@@ -8,10 +8,24 @@ import (
 
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const RecordNotFound = "Not found in database"
 
+func FindOneById[M mgm.Model](record M,
+	id string) (foundRecord M, err error) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+	dbResult := mgm.Coll(record).FindOne(context.Background(), bson.M{"_id": objectId})
+	dbErr := dbResult.Err()
+	if dbErr != nil {
+
+		return record, errors.New(RecordNotFound)
+	}
+	dbResult.Decode(record)
+	return record, nil
+
+}
 func FindOne[M mgm.Model](record M,
 	filter bson.D) (foundRecord M, err error) {
 	dbResult := mgm.Coll(record).FindOne(context.Background(), filter)

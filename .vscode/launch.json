@@ -31,15 +31,23 @@
         }
         ,
         {
-            "name": "SharePoint API",
+            "name": "Core API",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["serve","sharepoint"]
+            "args": ["serve","core"]
         }
         ,
         {
+            "name": "Admin API",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["serve","admin"]
+        }
+        ,        {
             "name": "PowerShell",
             "type": "go",
             "request": "launch",

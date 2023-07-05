@@ -1,6 +1,7 @@
 package restapi
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -26,12 +27,7 @@ type ListNotication struct {
 	} `json:"value"`
 }
 
-func Core() {
-	s := web.DefaultService()
-
-	// Init API documentation schema.
-	s.OpenAPI.Info.Title = "Koksmat Magicbox CORE"
-	s.OpenAPI.Info.WithDescription(`
+const description = `
 	
 Service  for managing Microsoft 365 resources
 
@@ -43,7 +39,14 @@ You need a credential key to access the API. The credential is issue by [niels.j
 Use the credential key to get an access token through the /v1/authorize end point. The access token is valid for 10 minutes.
 
 Pass the access token in the Authorization header as a Bearer token to access the API.
-	`)
+	`
+
+func Core() {
+	s := web.DefaultService()
+
+	// Init API documentation schema.
+	s.OpenAPI.Info.Title = "Koksmat Magicbox CORE"
+	s.OpenAPI.Info.WithDescription(description)
 	s.OpenAPI.Info.Version = "v1.0.0"
 
 	jwtAuth := Authenticator
@@ -92,33 +95,18 @@ func Run() {
 
 	// Init API documentation schema.
 	s.OpenAPI.Info.Title = "Koksmat Magicbox"
-	s.OpenAPI.Info.WithDescription(`
-	
-Service  for managing Microsoft 365 resources
-
-## Getting started 
-
-### Authentication
-You need a credential key to access the API. The credential is issue by [niels.johansen@nexigroup.com](mailto:niels.johansen@nexigroup.com).
-
-Use the credential key to get an access token through the /v1/authorize end point. The access token is valid for 10 minutes.
-
-Pass the access token in the Authorization header as a Bearer token to access the API.
-
+	s.OpenAPI.Info.WithDescription(fmt.Sprintf("%s %s", description, `
 ## Version History
 ### V2.0.0 - Parameter name changed
 Changed parameter names from id to exchangeObjectId in relevant endpoints, breaking compatibility with previous versions hence relasing as a new major version
 
 ### V1.0.0 - Initial version
 
-	`)
+	`))
 	s.OpenAPI.Info.Version = "v2.0.0"
-
-	//adminAuth := middleware.BasicAuth("Admin Access", map[string]string{"admin": "admin"})
 
 	jwtAuth := Authenticator
 
-	// Setup middlewares.
 	s.Wrap(
 		gzip.Middleware, // Response compression with support for direct gzip pass through.
 	)
@@ -184,6 +172,50 @@ Changed parameter names from id to exchangeObjectId in relevant endpoints, break
 	// Start server.
 	log.Println("Server starting")
 	if err := http.ListenAndServe(":5001", s); err != nil {
+		log.Fatal(err)
+	}
+}
+func Admin() {
+	s := web.DefaultService()
+
+	// Init API documentation schema.
+	s.OpenAPI.Info.Title = "Koksmat Magicbox ADMIN"
+	s.OpenAPI.Info.WithDescription(description)
+	s.OpenAPI.Info.Version = "v0.0.1"
+
+	jwtAuth := Authenticator
+
+	// Setup middlewares.
+	s.Wrap(
+		gzip.Middleware, // Response compression with support for direct gzip pass through.
+	)
+	// Basic CORS
+	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
+	s.Use(cors.Handler(cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
+	s.Post("/authorize", signin())
+
+	s.Route("/v1/admin", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
+			r.Method(http.MethodGet, "/auditlogs/date/{date}", nethttp.NewHandler(getAuditLogs()))
+			r.Method(http.MethodGet, "/auditlogs/powershell/{objectId}", nethttp.NewHandler(getAuditLogPowershell()))
+		})
+	})
+
+	s.Docs("/docs/admin", swgui.New)
+	s.Mount("/debug/admin", middleware.Profiler())
+
+	log.Println("Server starting")
+	if err := http.ListenAndServe(":4322", s); err != nil {
 		log.Fatal(err)
 	}
 }

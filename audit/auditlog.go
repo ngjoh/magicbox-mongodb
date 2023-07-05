@@ -1,8 +1,11 @@
 package audit
 
 import (
+	"time"
+
 	"github.com/kamva/mgm/v3"
 	"github.com/koksmat-com/koksmat/config"
+	"github.com/koksmat-com/koksmat/db"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -89,4 +92,12 @@ func LogPowerShell(app string, scriptName string, scriptSrc string, input string
 		panic(err)
 	}
 
+}
+
+func GetAuditLogs(date time.Time) ([]*AuditLog, error) {
+	return db.GetAll[*AuditLog](&AuditLog{})
+}
+
+func GetPowerShellLog(id string) (*PowerShellLog, error) {
+	return db.FindOneById[*PowerShellLog](&PowerShellLog{}, id)
 }
