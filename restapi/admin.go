@@ -2,7 +2,6 @@ package restapi
 
 import (
 	"context"
-	"time"
 
 	"github.com/koksmat-com/koksmat/audit"
 	"github.com/swaggest/usecase"
@@ -17,19 +16,16 @@ func getAuditLogs() usecase.Interactor {
 	}
 
 	type GetResponse struct {
-		Auditlogs       []*audit.AuditLog `json:"auditlogs"`
-		NumberOfRecords int64             `json:"numberofrecords"`
-		Pages           int64             `json:"pages"`
-		CurrentPage     int64             `json:"currentpage"`
-		PageSize        int64             `json:"pagesize"`
+		AuditlogsSum    []*audit.AuditLogSum `json:"auditlogs"`
+		NumberOfRecords int64                `json:"numberofrecords"`
+		Pages           int64                `json:"pages"`
+		CurrentPage     int64                `json:"currentpage"`
+		PageSize        int64                `json:"pagesize"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input GetRequest, output *GetResponse) error {
-		date, err := time.Parse("2006-01-02", input.DateString)
-		if err != nil {
-			return err
-		}
-		data, err := audit.GetAuditLogs(date)
-		output.Auditlogs = data
+
+		data, err := audit.GetAuditLogs(input.DateString)
+		output.AuditlogsSum = data
 		output.NumberOfRecords = int64(len(data))
 		output.Pages = 1
 		output.CurrentPage = 1

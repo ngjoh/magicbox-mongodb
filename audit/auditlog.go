@@ -1,11 +1,12 @@
 package audit
 
 import (
-	"time"
+	"context"
 
 	"github.com/kamva/mgm/v3"
 	"github.com/koksmat-com/koksmat/config"
 	"github.com/koksmat-com/koksmat/db"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -18,6 +19,12 @@ type AuditLog struct {
 	Subject          string `json:"subject"`
 }
 
+type AuditLogSum struct {
+	mgm.DefaultModel `bson:",inline"`
+	Date             string `json:"date"`
+	Subject          string `json:"subject"`
+	Hour             string `json:"hour"`
+}
 type PowerShellLog struct {
 	mgm.DefaultModel `bson:",inline"`
 	Database         string `json:"database"`
@@ -94,10 +101,61 @@ func LogPowerShell(app string, scriptName string, scriptSrc string, input string
 
 }
 
-func GetAuditLogs(date time.Time) ([]*AuditLog, error) {
-	return db.GetAll[*AuditLog](&AuditLog{})
+func GetAuditLogs(day string) ([]*AuditLogSum, error) {
+	return db.GetFiltered[*AuditLogSum](&AuditLogSum{}, bson.D{{"date", day}})
 }
 
 func GetPowerShellLog(id string) (*PowerShellLog, error) {
 	return db.FindOneById[*PowerShellLog](&PowerShellLog{}, id)
+}
+
+func Aggregate() error {
+	ctx := context.TODO()
+	pipeline := bson.A{
+		bson.D{
+			{"$addFields",
+				bson.D{
+					{"datepart",
+						bson.D{
+							{"$substr",
+								bson.A{
+									"$created_at",
+									0,
+									10,
+								},
+							},
+						},
+					},
+					{"hour",
+						bson.D{
+							{"$substr",
+								bson.A{
+									"$created_at",
+									11,
+									2,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		bson.D{
+			{"$group",
+				bson.D{
+					{"_id", "$datepart"},
+					{"subject", bson.D{{"$first", "$subject"}}},
+					{"hour", bson.D{{"$first", "$hour"}}},
+					{"count", bson.D{{"$sum", 1}}},
+				},
+			},
+		},
+		bson.D{{"$set", bson.D{{"date", "$_id"}}}},
+		bson.D{{"$project", bson.D{{"_id", 0}}}},
+		bson.D{{"$out", "audit_log_sums"}},
+	}
+
+	_, err := mgm.Coll(&AuditLog{}).Aggregate(ctx, pipeline)
+	return err
+
 }

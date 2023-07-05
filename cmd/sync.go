@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/koksmat-com/koksmat/audit"
 	"github.com/koksmat-com/koksmat/model"
 	"github.com/spf13/cobra"
 )
@@ -20,9 +21,15 @@ var syncCmd = &cobra.Command{
 	Long:  ``,
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("Importing")
+		log.Println("Syncing")
 
 		switch fmt.Sprint(args[0]) {
+		case "auditlog":
+
+			err := audit.Aggregate()
+			if err != nil {
+				log.Fatalln(err)
+			}
 		case "domains":
 
 			err := model.SyncDomains()
