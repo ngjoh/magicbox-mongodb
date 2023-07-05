@@ -206,7 +206,8 @@ func Admin() {
 	s.Route("/v1/admin", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
-			r.Method(http.MethodGet, "/auditlogs/date/{date}", nethttp.NewHandler(getAuditLogs()))
+			r.Method(http.MethodGet, "/auditlogsummary", nethttp.NewHandler(GetAuditLogSummarys()))
+			r.Method(http.MethodGet, "/auditlogs/date/{date}/{hour}", nethttp.NewHandler(getAuditLogs()))
 			r.Method(http.MethodGet, "/auditlogs/powershell/{objectId}", nethttp.NewHandler(getAuditLogPowershell()))
 		})
 	})

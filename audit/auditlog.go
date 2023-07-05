@@ -2,11 +2,15 @@ package audit
 
 import (
 	"context"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/kamva/mgm/v3"
 	"github.com/koksmat-com/koksmat/config"
 	"github.com/koksmat-com/koksmat/db"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/event"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -24,6 +28,7 @@ type AuditLogSum struct {
 	Date             string `json:"date"`
 	Subject          string `json:"subject"`
 	Hour             string `json:"hour"`
+	Count            int    `json:"count"`
 }
 type PowerShellLog struct {
 	mgm.DefaultModel `bson:",inline"`
@@ -53,6 +58,25 @@ func (auditLog *PowerShellLog) Collection() *mgm.Collection {
 	db := client.Database("magicbox")
 	// return the model's custom collection
 	return mgm.NewCollection(db, "audit_log")
+}
+
+func (auditLog *AuditLogSum) Collection() *mgm.Collection {
+	// Create new client
+
+	cmdMonitor := &event.CommandMonitor{
+		Started: func(_ context.Context, evt *event.CommandStartedEvent) {
+			// log.Print(evt.Command)
+		},
+	}
+
+	client, err := mgm.NewClient(options.Client().ApplyURI(config.MongoConnectionString()).SetMonitor(cmdMonitor))
+	if err != nil {
+		panic(err)
+	}
+	// Get the model's db
+	db := client.Database("magicbox")
+	// return the model's custom collection
+	return mgm.NewCollection(db, "audit_log_sums")
 }
 func (auditLog *AuditLog) Collection() *mgm.Collection {
 	// Create new client
@@ -101,8 +125,36 @@ func LogPowerShell(app string, scriptName string, scriptSrc string, input string
 
 }
 
-func GetAuditLogs(day string) ([]*AuditLogSum, error) {
-	return db.GetFiltered[*AuditLogSum](&AuditLogSum{}, bson.D{{"date", day}})
+func GetAuditLogs(dateString string, hourString string) ([]*PowerShellLog, error) {
+	ar := strings.Split(dateString, "-")
+	year, _ := strconv.Atoi(ar[0])
+	month, _ := strconv.Atoi(ar[1])
+	day, _ := strconv.Atoi(ar[2])
+	hour, _ := strconv.Atoi(hourString)
+
+	from := time.Date(year, time.Month(month), day, hour, 0, 0, 0, time.UTC)
+	to := from.Add(time.Hour * 1)
+	filter := bson.D{
+		{"$and",
+			bson.A{
+				bson.D{{"subject", "powershell"}},
+				bson.D{
+					{"created_at",
+						bson.D{
+							{"$gte", from},
+							{"$lt", to},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	return db.GetFiltered[*PowerShellLog](&PowerShellLog{}, filter)
+}
+
+func GetAuditLogSummarys() ([]*AuditLogSum, error) {
+	return db.GetAll[*AuditLogSum](&AuditLogSum{})
 }
 
 func GetPowerShellLog(id string) (*PowerShellLog, error) {
@@ -143,14 +195,20 @@ func Aggregate() error {
 		bson.D{
 			{"$group",
 				bson.D{
-					{"_id", "$datepart"},
+					{"_id",
+						bson.A{
+							"$datepart",
+							"$subject",
+							"$hour",
+						},
+					},
 					{"subject", bson.D{{"$first", "$subject"}}},
+					{"date", bson.D{{"$first", "$datepart"}}},
 					{"hour", bson.D{{"$first", "$hour"}}},
 					{"count", bson.D{{"$sum", 1}}},
 				},
 			},
 		},
-		bson.D{{"$set", bson.D{{"date", "$_id"}}}},
 		bson.D{{"$project", bson.D{{"_id", 0}}}},
 		bson.D{{"$out", "audit_log_sums"}},
 	}
