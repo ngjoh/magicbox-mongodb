@@ -26,7 +26,7 @@ var pwshCmd = &cobra.Command{
 		}
 		id := fmt.Sprintf("%s", uuid.New())
 
-		result, err := powershell.CreateSharedMailbox(id, id, id, []string{"s", "s"}, []string{"s", "s"}, []string{"s", "s"})
+		result, err := powershell.CreateSharedMailbox("CLI", id, id, id, []string{"s", "s"}, []string{"s", "s"}, []string{"s", "s"})
 		if err != nil {
 			fmt.Println(err)
 		} else {

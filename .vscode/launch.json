@@ -22,7 +22,7 @@
             "args": ["import", "-i", "/Users/nielsgregersjohansen/code/koksmat/storage/exchange/sharedmailboxes.json" ,"-d", "exchange" ,"-s", "sharedmailboxes"]
         },
         {
-            "name": "Web",
+            "name": "ShareMailbox API",
             "type": "go",
             "request": "launch",
             "mode": "auto",

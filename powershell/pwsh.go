@@ -26,7 +26,7 @@ func PwshCwd() string {
 	return dir
 }
 
-func Execute(fileName, args string, setEnvironment Setup) (output []byte, err error, console string,
+func Execute(appId string, fileName, args string, setEnvironment Setup) (output []byte, err error, console string,
 ) {
 	cmd := exec.Command("pwsh", "-nologo", "-noprofile")
 
@@ -72,21 +72,21 @@ func Execute(fileName, args string, setEnvironment Setup) (output []byte, err er
 	srcCode := fmt.Sprintf("[%s]", ps2Code)
 	combinedOutput, err := cmd.CombinedOutput()
 	if err != nil {
-		audit.LogPowerShell("koksmat", fileName, srcCode, args, "", true, string(combinedOutput))
+		audit.LogPowerShell(appId, fileName, srcCode, args, "", true, string(combinedOutput))
 		log.Println(fmt.Sprint(err) + ": " + string(combinedOutput))
 		return nil, errors.New("Could not run PowerShell script"), string(combinedOutput)
 	}
 
 	outputJson, err := os.ReadFile(path.Join(cmd.Dir, "output.json"))
 
-	audit.LogPowerShell("koksmat", fileName, srcCode, args, fmt.Sprintf("[%s]", outputJson), false, string(combinedOutput))
+	audit.LogPowerShell(appId, fileName, srcCode, args, fmt.Sprintf("[%s]", outputJson), false, string(combinedOutput))
 
 	return outputJson, nil, string(combinedOutput)
 }
 
-func Run[R any](fileName string, args string, setup Setup) (result *R, err error) {
+func Run[R any](appId string, fileName string, args string, setup Setup) (result *R, err error) {
 
-	output, err, _ := Execute(fileName, args, setup)
+	output, err, _ := Execute(appId, fileName, args, setup)
 	dataOut := new(R)
 	textOutput := fmt.Sprintf("%s", output)
 	if (output != nil) && (textOutput != "") {
@@ -136,12 +136,12 @@ var SetupPNP = func() (string, []string, error) {
 
 }
 
-func RunExchange[R any](fileName string, args string) (result *R, err error) {
+func RunExchange[R any](appId string, fileName string, args string) (result *R, err error) {
 
-	return Run[R](fileName, args, SetupExchange)
+	return Run[R](appId, fileName, args, SetupExchange)
 }
 
-func RunPNP[R any](fileName string, args string) (result *R, err error) {
+func RunPNP[R any](appId string, fileName string, args string) (result *R, err error) {
 
-	return Run[R](fileName, args, SetupPNP)
+	return Run[R](appId, fileName, args, SetupPNP)
 }

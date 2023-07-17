@@ -22,7 +22,7 @@ func createSharedMailbox() usecase.Interactor {
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxNewRequest, output *model.SharedMailbox) error {
 
-		result, err := model.CreateSharedMailbox(input.DisplayName, input.Alias, input.Name, input.Members, input.Owners, input.Readers)
+		result, err := model.CreateSharedMailbox(ctx.Value("auth").(model.Authorization), input.DisplayName, input.Alias, input.Name, input.Members, input.Owners, input.Readers)
 		if err != nil {
 			return err
 		}
@@ -45,7 +45,7 @@ func getSharedMailbox() usecase.Interactor {
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input GetRequest, output *model.SharedMailbox) error {
 
-		data, err := model.GetSharedMailbox(input.Identity)
+		data, err := model.GetSharedMailbox(ctx.Value("auth").(model.Authorization), input.Identity)
 		*output = *data
 		return err
 
@@ -62,7 +62,7 @@ func updateSharedMailbox() usecase.Interactor {
 		DisplayName string `json:"displayName" binding:"required" example:"New Display Name for Shared Mailbox"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxUpdateRequest, output *model.SharedMailbox) error {
-		result, err := model.UpdateSharedMailbox(input.Identity, input.DisplayName)
+		result, err := model.UpdateSharedMailbox(ctx.Value("auth").(model.Authorization), input.Identity, input.DisplayName)
 		*output = *result
 		return err
 
@@ -82,7 +82,7 @@ func updateSharedMailboxPrimaryEmailAddress() usecase.Interactor {
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxUpdateRequest, output *model.SharedMailbox) error {
 
-		result, err := model.UpdateSharedMailboxPrimaryEmailAddress(input.Identity, input.Email)
+		result, err := model.UpdateSharedMailboxPrimaryEmailAddress(ctx.Value("auth").(model.Authorization), input.Identity, input.Email)
 		*output = *result
 		return err
 
@@ -98,7 +98,7 @@ func addSharedMailboxMembers() usecase.Interactor {
 		Members  []string `json:"members" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
-		result, err := model.AddSharedMailboxMembers(input.Identity, input.Members)
+		result, err := model.AddSharedMailboxMembers(ctx.Value("auth").(model.Authorization), input.Identity, input.Members)
 		*output = *result
 		return err
 
@@ -116,7 +116,7 @@ func removeSharedMailboxMembers() usecase.Interactor {
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxRemoveMemberRquest, output *model.SharedMailbox) error {
 
-		result, err := model.RemoveSharedMailboxMembers(input.Identity, input.Members)
+		result, err := model.RemoveSharedMailboxMembers(ctx.Value("auth").(model.Authorization), input.Identity, input.Members)
 		*output = *result
 		return err
 
@@ -132,7 +132,7 @@ func addSharedMailboxReaders() usecase.Interactor {
 		Members  []string `json:"readers" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
-		result, err := model.AddSharedMailboxReaders(input.Identity, input.Members)
+		result, err := model.AddSharedMailboxReaders(ctx.Value("auth").(model.Authorization), input.Identity, input.Members)
 		*output = *result
 		return err
 
@@ -150,7 +150,7 @@ func removeSharedMailboxReaders() usecase.Interactor {
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxRemoveMemberRquest, output *model.SharedMailbox) error {
 
-		data, err := model.RemoveSharedMailboxReaders(input.Identity, input.Members)
+		data, err := model.RemoveSharedMailboxReaders(ctx.Value("auth").(model.Authorization), input.Identity, input.Members)
 		*output = *data
 		return err
 
@@ -166,7 +166,7 @@ func setSharedMailboxOwners() usecase.Interactor {
 		Owners   []string `json:"owners" binding:"required"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input SharedMailboxAddMemberRquest, output *model.SharedMailbox) error {
-		result, err := model.SetSharedMailboxOwners(input.Identity, input.Owners)
+		result, err := model.SetSharedMailboxOwners(ctx.Value("auth").(model.Authorization), input.Identity, input.Owners)
 		*output = *result
 		return err
 
@@ -179,7 +179,8 @@ func setSharedMailboxOwners() usecase.Interactor {
 
 func listSharedMailbox() usecase.Interactor {
 	u := usecase.NewInteractor(func(ctx context.Context, input struct{}, output *[]model.SharedMailbox) error {
-		result, err := model.GetSharedMailboxes()
+
+		result, err := model.GetSharedMailboxes(ctx.Value("auth").(model.Authorization))
 		if err != nil {
 			return err
 		}
@@ -201,7 +202,7 @@ func deleteSharedMailbox() usecase.Interactor {
 		Identity string `path:"exchangeObjectId" example:"6ebef668-9d8b-4fe3-9d40-f641751f5944"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input DeleteRequest, output *[]model.SharedMailbox) error {
-		return model.DeleteSharedMailbox(input.Identity)
+		return model.DeleteSharedMailbox(ctx.Value("auth").(model.Authorization), input.Identity)
 	})
 
 	u.SetTitle("Delete a shared Mailboxes")

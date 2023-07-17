@@ -8,9 +8,12 @@ import (
 	"net/http"
 
 	"github.com/koksmat-com/koksmat/model"
+	"github.com/koksmat-com/koksmat/powershell"
 	"github.com/swaggest/usecase"
 	"github.com/swaggest/usecase/status"
 )
+
+const sharePointTag = "SharePoint"
 
 func validateSubscription(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("validationtoken")
@@ -79,5 +82,63 @@ Returns a piece of unstructured data
 `)
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags(authenticationTag)
+	return u
+}
+
+func copyLibrary() usecase.Interactor {
+	type CopyLibraryRequest struct {
+		FromUrl    string `json:"fromurl"  example:"https://christianiabpos.sharepoint.com/sites/nexi"  binding:"required"`
+		ToUrl      string `json:"tourl" example:"https://christianiabpos.sharepoint.com/sites/nexiintra-home"  binding:"required"`
+		FromLibray string `json:"fromlibrary"  example:"Shared Documents"  binding:"required"`
+		ToLibrary  string `json:"tolibrary" example:"Copy of Shared Documents"  binding:"required"`
+	}
+	type CopyLibraryResponse struct {
+	}
+
+	u := usecase.NewInteractor(func(ctx context.Context, input CopyLibraryRequest, output *CopyLibraryResponse) error {
+
+		_, err := powershell.CopyLibrary(input.FromUrl, input.ToUrl, input.FromLibray, input.ToLibrary)
+
+		return err
+
+	})
+
+	u.SetTitle("Copy a library ")
+	u.SetDescription(`
+	Copy a library from one site to another site, can also copy internally in the same site
+
+	Future: Copy a library from one site to another site, cross tenancy
+
+`)
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags(sharePointTag)
+	return u
+}
+
+func renameLibrary() usecase.Interactor {
+	type CopyLibraryRequest struct {
+		SiteUrl        string `json:"siteurl"  example:"https://christianiabpos.sharepoint.com/sites/nexiintra"  binding:"required"`
+		OldLibraryName string `json:"oldlibraryname" example:"Import1"  binding:"required"`
+		NewLibraryName string `json:"newlibraryname"  example:"Regulatory Documents"  binding:"required"`
+		NewLibraryURL  string `json:"newurl" example:"regulatory_documents"  binding:"required"`
+	}
+	type CopyLibraryResponse struct {
+	}
+
+	u := usecase.NewInteractor(func(ctx context.Context, input CopyLibraryRequest, output *CopyLibraryResponse) error {
+
+		_, err := powershell.RenameLibrary(input.SiteUrl, input.OldLibraryName, input.NewLibraryName, input.NewLibraryURL)
+
+		return err
+
+	})
+
+	u.SetTitle("Rename a Library or List ")
+	u.SetDescription(`
+	Rename a library title and URL
+
+`)
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags(sharePointTag)
 	return u
 }

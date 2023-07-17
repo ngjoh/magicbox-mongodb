@@ -12,6 +12,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type Authorization struct {
+	AppId       string `json:"appid"`
+	Permissions string `json:"permissions"`
+}
+
 func HashPassword(password string) (string, error) {
 	//log.Println("Password", password)
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)

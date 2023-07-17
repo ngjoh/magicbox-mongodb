@@ -62,8 +62,8 @@ type statistics struct {
 	LastReceived string    `json:"LastReceived"`
 }
 
-func DeleteSharedMailbox(Identity string) error {
-	_, err := powershell.DeleteSharedMailbox(Identity)
+func DeleteSharedMailbox(auth Authorization, Identity string) error {
+	_, err := powershell.DeleteSharedMailbox(auth.AppId, Identity)
 
 	err2 := db.DeleteOne[*SharedMailbox](&SharedMailbox{}, bson.D{{SharedMailboxPrimaryKey, Identity}})
 	if err2 != nil {
@@ -77,7 +77,7 @@ func DeleteSharedMailbox(Identity string) error {
 	return nil
 }
 
-func CreateSharedMailbox(DisplayName string,
+func CreateSharedMailbox(auth Authorization, DisplayName string,
 	Alias string,
 	Name string,
 	Members []string,
@@ -89,7 +89,7 @@ func CreateSharedMailbox(DisplayName string,
 	readerSMTPs, readerGUIDs := TranslateRecipients(Readers)
 	ownersSMTPs, _ := TranslateRecipients(Owners)
 
-	newMailbox, err := powershell.CreateSharedMailbox(
+	newMailbox, err := powershell.CreateSharedMailbox(auth.AppId,
 		Name,
 		DisplayName,
 		Alias,
@@ -117,12 +117,13 @@ func CreateSharedMailbox(DisplayName string,
 
 }
 func UpdateSharedMailbox(
+	auth Authorization,
 	Identity string,
 	DisplayName string,
 
 ) (sharedMailbox *SharedMailbox, err error) {
 	return db.UpdateOne[*SharedMailbox](&SharedMailbox{}, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
-		_, err = powershell.UpdateSharedMailbox(Identity, DisplayName)
+		_, err = powershell.UpdateSharedMailbox(auth.AppId, Identity, DisplayName)
 
 		m.DisplayName = DisplayName
 		return err
@@ -131,6 +132,7 @@ func UpdateSharedMailbox(
 }
 
 func GetSharedMailbox(
+	auth Authorization,
 	Identity string,
 
 ) (sharedMailbox *SharedMailbox, err error) {
@@ -139,12 +141,13 @@ func GetSharedMailbox(
 }
 
 func UpdateSharedMailboxPrimaryEmailAddress(
+	auth Authorization,
 	Identity string,
 	Email string,
 
 ) (sharedMailbox *SharedMailbox, err error) {
 	return db.UpdateOne[*SharedMailbox](&SharedMailbox{}, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
-		_, err = powershell.UpdateSharedMailboxPrimaryEmailAddress(Identity, Email)
+		_, err = powershell.UpdateSharedMailboxPrimaryEmailAddress(auth.AppId, Identity, Email)
 
 		m.PrimarySmtpAddress = Email
 		return err
@@ -153,6 +156,7 @@ func UpdateSharedMailboxPrimaryEmailAddress(
 }
 
 func AddSharedMailboxMembers(
+	auth Authorization,
 	Identity string,
 	Members []string,
 
@@ -164,7 +168,7 @@ func AddSharedMailboxMembers(
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
 		_, memberGUIDs := TranslateRecipients(Members)
-		response, err := powershell.AddSharedMailboxMembers(Identity, memberGUIDs)
+		response, err := powershell.AddSharedMailboxMembers(auth.AppId, Identity, memberGUIDs)
 		members := []string{}
 		for _, reader := range response.Members {
 			members = append(members, reader.User)
@@ -176,6 +180,7 @@ func AddSharedMailboxMembers(
 }
 
 func RemoveSharedMailboxMembers(
+	auth Authorization,
 	Identity string,
 	Members []string,
 
@@ -187,7 +192,7 @@ func RemoveSharedMailboxMembers(
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
 		_, memberGUIDs := TranslateRecipients(Members)
-		response, err := powershell.RemoveSharedMailboxMembers(Identity, memberGUIDs)
+		response, err := powershell.RemoveSharedMailboxMembers(auth.AppId, Identity, memberGUIDs)
 
 		members := []string{}
 		for _, reader := range response.Members {
@@ -200,6 +205,7 @@ func RemoveSharedMailboxMembers(
 
 }
 func AddSharedMailboxReaders(
+	auth Authorization,
 	Identity string,
 	Readers []string,
 
@@ -211,7 +217,7 @@ func AddSharedMailboxReaders(
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
 		_, readerGUIDs := TranslateRecipients(Readers)
-		response, err := powershell.AddSharedMailboxReaders(Identity, readerGUIDs)
+		response, err := powershell.AddSharedMailboxReaders(auth.AppId, Identity, readerGUIDs)
 		readers := []string{}
 		for _, reader := range response.Members {
 			readers = append(readers, reader.User)
@@ -224,6 +230,7 @@ func AddSharedMailboxReaders(
 }
 
 func RemoveSharedMailboxReaders(
+	auth Authorization,
 	Identity string,
 	Readers []string,
 
@@ -235,7 +242,7 @@ func RemoveSharedMailboxReaders(
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
 		_, memberGUIDs := TranslateRecipients(Readers)
-		response, err := powershell.RemoveSharedMailboxReaders(Identity, memberGUIDs)
+		response, err := powershell.RemoveSharedMailboxReaders(auth.AppId, Identity, memberGUIDs)
 
 		members := []string{}
 		for _, reader := range response.Members {
@@ -248,6 +255,7 @@ func RemoveSharedMailboxReaders(
 
 }
 func SetSharedMailboxOwners(
+	auth Authorization,
 	Identity string,
 	Owners []string,
 
@@ -259,7 +267,7 @@ func SetSharedMailboxOwners(
 	}
 	return db.UpdateOne[*SharedMailbox](r, bson.D{{SharedMailboxPrimaryKey, Identity}}, func(m *SharedMailbox) error {
 		ownersSMTPs, _ := TranslateRecipients(Owners)
-		response, err := powershell.SetSharedMailboxOwners(Identity, ownersSMTPs)
+		response, err := powershell.SetSharedMailboxOwners(auth.AppId, Identity, ownersSMTPs)
 
 		m.Owners = []string{response.Owners}
 		return err
@@ -267,7 +275,7 @@ func SetSharedMailboxOwners(
 
 }
 
-func GetSharedMailboxes() (sharedMailboxes []SharedMailbox, err error) {
+func GetSharedMailboxes(auth Authorization) (sharedMailboxes []SharedMailbox, err error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 

@@ -1,0 +1,2 @@
+. "$psscriptroot/copy-library.ps1" -SourceSiteURL "https://christianiabpos.sharepoint.com/sites/nexi" -DestinationSiteURL  "https://christianiabpos.sharepoint.com/sites/nexiintra-home" -SourceLibraryName "Regulations" -DestinationLibraryName  "Test_import3"
+   

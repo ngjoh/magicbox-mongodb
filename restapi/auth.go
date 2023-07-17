@@ -192,7 +192,8 @@ func Authenticator(next http.Handler) http.Handler {
 			}
 			log.Println("Permission granted")
 			// Token is authenticated, pass it through
-			ctx := context.WithValue(r.Context(), "app", app)
+			authorization := model.Authorization{AppId: app, Permissions: permissions}
+			ctx := context.WithValue(r.Context(), "auth", authorization)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
