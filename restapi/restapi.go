@@ -82,7 +82,7 @@ func Core() {
 		})
 	})
 
-	s.Docs("/docs/core", swgui.New)
+	s.Docs("/openapi/core", swgui.New)
 	s.Mount("/debug/core", middleware.Profiler())
 
 	log.Println("Server starting")
@@ -94,7 +94,7 @@ func Run() {
 	s := web.DefaultService()
 
 	// Init API documentation schema.
-	s.OpenAPI.Info.Title = "Koksmat Magicbox"
+	s.OpenAPI.Info.Title = "Koksmat Magicbox EXCHANGE"
 	s.OpenAPI.Info.WithDescription(fmt.Sprintf("%s %s", description, `
 ## Version History
 ### V2.0.0 - Parameter name changed
@@ -166,7 +166,7 @@ Changed parameter names from id to exchangeObjectId in relevant endpoints, break
 		})
 	})
 	// Swagger UI endpoint at /docs.
-	s.Docs("/docs", swgui.New)
+	s.Docs("/openapi/exchange", swgui.New)
 	s.Mount("/debug", middleware.Profiler())
 
 	// Start server.
@@ -214,7 +214,7 @@ func Admin() {
 		})
 	})
 
-	s.Docs("/docs/admin", swgui.New)
+	s.Docs("/openapi/admin", swgui.New)
 	s.Mount("/debug/admin", middleware.Profiler())
 
 	log.Println("Server starting")
