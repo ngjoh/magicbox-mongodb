@@ -186,9 +186,9 @@ func Admin() {
 	jwtAuth := Authenticator
 
 	// Setup middlewares.
-	s.Wrap(
-		gzip.Middleware, // Response compression with support for direct gzip pass through.
-	)
+	// s.Wrap(
+	// 	gzip.Middleware, // Response compression with support for direct gzip pass through.
+	// )
 	// Basic CORS
 	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
 	s.Use(cors.Handler(cors.Options{
