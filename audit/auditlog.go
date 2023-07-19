@@ -43,6 +43,16 @@ type PowerShellLog struct {
 	Console          string `json:"console"`
 }
 
+type PowerShellLogMetadata struct {
+	mgm.DefaultModel `bson:",inline"`
+	Database         string `json:"database"`
+	AppId            string `json:"appid"`
+	Subject          string `json:"subject"`
+	ScriptName       string `json:"scriptname"`
+
+	HasError bool `json:"haserror"`
+}
+
 // func (model *PowerShellLog) CollectionName() string {
 // 	return AuditlogCollectionName
 
@@ -125,7 +135,7 @@ func LogPowerShell(app string, scriptName string, scriptSrc string, input string
 
 }
 
-func GetAuditLogs(dateString string, hourString string) ([]*PowerShellLog, error) {
+func GetAuditLogs(dateString string, hourString string) ([]*PowerShellLogMetadata, error) {
 	ar := strings.Split(dateString, "-")
 	year, _ := strconv.Atoi(ar[0])
 	month, _ := strconv.Atoi(ar[1])
@@ -150,7 +160,24 @@ func GetAuditLogs(dateString string, hourString string) ([]*PowerShellLog, error
 		},
 	}
 
-	return db.GetFiltered[*PowerShellLog](&PowerShellLog{}, filter)
+	data, err := db.GetFiltered[*PowerShellLog](&PowerShellLog{}, filter)
+	if err != nil {
+		return nil, err
+	}
+	records := []*PowerShellLogMetadata{}
+	for _, item := range data {
+		metaData := PowerShellLogMetadata{
+			DefaultModel: item.DefaultModel,
+			Database:     item.Database,
+			AppId:        item.AppId,
+			Subject:      item.Subject,
+			ScriptName:   item.ScriptName,
+			HasError:     item.HasError,
+		}
+
+		records = append(records, &metaData)
+	}
+	return records, nil
 }
 
 func GetAuditLogSummarys() ([]*AuditLogSum, error) {

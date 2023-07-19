@@ -43,11 +43,11 @@ func getAuditLogs() usecase.Interactor {
 	}
 
 	type GetResponse struct {
-		AuditlogsSum    []*audit.PowerShellLog `json:"auditlogs"`
-		NumberOfRecords int64                  `json:"numberofrecords"`
-		Pages           int64                  `json:"pages"`
-		CurrentPage     int64                  `json:"currentpage"`
-		PageSize        int64                  `json:"pagesize"`
+		AuditlogsSum    []*audit.PowerShellLogMetadata `json:"auditlogs"`
+		NumberOfRecords int64                          `json:"numberofrecords"`
+		Pages           int64                          `json:"pages"`
+		CurrentPage     int64                          `json:"currentpage"`
+		PageSize        int64                          `json:"pagesize"`
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input GetRequest, output *GetResponse) error {
 
@@ -62,7 +62,7 @@ func getAuditLogs() usecase.Interactor {
 
 	})
 
-	u.SetTitle("Get audit logs ")
+	u.SetTitle("Get audit logs metadata ")
 	u.SetDescription("Get audit logs by date and hour - timezone is  GMT")
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags(
