@@ -41,22 +41,10 @@ Use the credential key to get an access token through the /v1/authorize end poin
 Pass the access token in the Authorization header as a Bearer token to access the API.
 	`
 
-func Core() {
-	s := web.DefaultService()
-
-	// Init API documentation schema.
-	s.OpenAPI.Info.Title = "Koksmat Magicbox CORE"
-	s.OpenAPI.Info.WithDescription(description)
-	s.OpenAPI.Info.Version = "v1.0.0"
-
-	jwtAuth := Authenticator
-
-	// Setup middlewares.
+func sharedSettings(s *web.Service) {
 	s.Wrap(
 		gzip.Middleware, // Response compression with support for direct gzip pass through.
 	)
-	// Basic CORS
-	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
 	s.Use(cors.Handler(cors.Options{
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
 		AllowedOrigins: []string{"https://*", "http://*"},
@@ -68,22 +56,18 @@ func Core() {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 	s.Post("/authorize", signin())
-	//s.Get("/blob/{tag}", getBlob())
-	s.Method(http.MethodGet, "/blob/{tag}", nethttp.NewHandler(getBlob()))
+}
+func Core() {
+	s := web.DefaultService()
 
-	s.MethodFunc(http.MethodPost, "/api/v1/subscription/notify", validateSubscription)
-	s.Method(http.MethodGet, "/v1/business/countries", nethttp.NewHandler(getCountries()))
-	s.Method(http.MethodGet, "/v1/business/units", nethttp.NewHandler(getBusinessAndGroupUnits()))
+	// Init API documentation schema.
+	s.OpenAPI.Info.Title = "Koksmat Magicbox CORE"
+	s.OpenAPI.Info.WithDescription(description)
+	s.OpenAPI.Info.Version = "v1.0.0"
 
-	s.Route("/v1/info", func(r chi.Router) {
-		r.Group(func(r chi.Router) {
-			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
-			r.Method(http.MethodGet, "/", nethttp.NewHandler(getInfo()))
-		})
-	})
-
+	sharedSettings(s)
+	addCoreEndpoints(s, Authenticator)
 	s.Docs("/openapi/core", swgui.New)
-	s.Mount("/debug/core", middleware.Profiler())
 
 	log.Println("Server starting")
 	if err := http.ListenAndServe(":4321", s); err != nil {
@@ -105,26 +89,20 @@ Changed parameter names from id to exchangeObjectId in relevant endpoints, break
 	`))
 	s.OpenAPI.Info.Version = "v2.0.0"
 
-	jwtAuth := Authenticator
-
 	s.Wrap(
 		gzip.Middleware, // Response compression with support for direct gzip pass through.
 	)
-	// Basic CORS
-	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
-	s.Use(cors.Handler(cors.Options{
-		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		AllowedOrigins: []string{"https://*", "http://*"},
-		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
-		MaxAge:           300, // Maximum value not ignored by any of major browsers
-	}))
-	s.Post("/authorize", signin())
-	//s.Post("/v1/demo", demo())
-	// Endpoints with user access.
+	sharedSettings(s)
+
+	addExchangeEndpoints(s, Authenticator)
+	s.Docs("/openapi/exchange", swgui.New)
+	// Start server.
+	log.Println("Server starting")
+	if err := http.ListenAndServe(":5001", s); err != nil {
+		log.Fatal(err)
+	}
+}
+func addExchangeEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) {
 	s.Route("/v1/sharedmailboxes", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
@@ -165,44 +143,20 @@ Changed parameter names from id to exchangeObjectId in relevant endpoints, break
 
 		})
 	})
-	// Swagger UI endpoint at /docs.
-	s.Docs("/openapi/exchange", swgui.New)
+
 	s.Mount("/debug", middleware.Profiler())
-
-	// Start server.
-	log.Println("Server starting")
-	if err := http.ListenAndServe(":5001", s); err != nil {
-		log.Fatal(err)
-	}
 }
-func Admin() {
-	s := web.DefaultService()
+func addCoreEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) {
+	s.Method(http.MethodGet, "/blob/{tag}", nethttp.NewHandler(getBlob()))
 
-	// Init API documentation schema.
-	s.OpenAPI.Info.Title = "Koksmat Magicbox ADMIN"
-	s.OpenAPI.Info.WithDescription(description)
-	s.OpenAPI.Info.Version = "v0.0.1"
+	s.MethodFunc(http.MethodPost, "/api/v1/subscription/notify", validateSubscription)
+	s.Method(http.MethodGet, "/v1/business/countries", nethttp.NewHandler(getCountries()))
+	s.Method(http.MethodGet, "/v1/business/units", nethttp.NewHandler(getBusinessAndGroupUnits()))
 
-	jwtAuth := Authenticator
+	s.Mount("/debug/core", middleware.Profiler())
+}
 
-	// Setup middlewares.
-	// s.Wrap(
-	// 	gzip.Middleware, // Response compression with support for direct gzip pass through.
-	// )
-	// Basic CORS
-	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
-	s.Use(cors.Handler(cors.Options{
-		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		AllowedOrigins: []string{"https://*", "http://*"},
-		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
-		MaxAge:           300, // Maximum value not ignored by any of major browsers
-	}))
-	s.Post("/authorize", signin())
-
+func addAdminEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) {
 	s.Route("/v1/admin", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
@@ -214,8 +168,39 @@ func Admin() {
 		})
 	})
 
-	s.Docs("/openapi/admin", swgui.New)
 	s.Mount("/debug/admin", middleware.Profiler())
+}
+
+func All() {
+	s := web.DefaultService()
+
+	// Init API documentation schema.
+	s.OpenAPI.Info.Title = "Magicbox"
+	s.OpenAPI.Info.WithDescription(description)
+	s.OpenAPI.Info.Version = "v0.0.1"
+
+	sharedSettings(s)
+
+	addAdminEndpoints(s, Authenticator)
+	addExchangeEndpoints(s, Authenticator)
+	addCoreEndpoints(s, Authenticator)
+	s.Docs("/openapi/all", swgui.New)
+	log.Println("Server starting")
+	if err := http.ListenAndServe(":4300", s); err != nil {
+		log.Fatal(err)
+	}
+}
+func Admin() {
+	s := web.DefaultService()
+
+	// Init API documentation schema.
+	s.OpenAPI.Info.Title = "Koksmat Magicbox ADMIN"
+	s.OpenAPI.Info.WithDescription(description)
+	s.OpenAPI.Info.Version = "v0.0.1"
+
+	sharedSettings(s)
+	addAdminEndpoints(s, Authenticator)
+	s.Docs("/openapi/admin", swgui.New)
 
 	log.Println("Server starting")
 	if err := http.ListenAndServe(":4322", s); err != nil {

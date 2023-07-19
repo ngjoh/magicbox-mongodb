@@ -23,6 +23,8 @@ var serveCmd = &cobra.Command{
 		}
 		service := args[0]
 		switch service {
+		case "all":
+			restapi.All()
 		case "core":
 			restapi.Core()
 		case "admin":

@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path"
 
+	"github.com/google/uuid"
 	"github.com/koksmat-com/koksmat/audit"
 	"github.com/koksmat-com/koksmat/sharepoint"
 	"github.com/spf13/viper"
@@ -18,19 +19,23 @@ import (
 //go:embed scripts
 var scripts embed.FS
 
-type Setup func() (string, []string, error)
+type Setup func(workingDirectory string) (string, []string, error)
 
-func PwshCwd() string {
+func PwshCwd(appId string) string {
+
 	dir := ".koksmat/powershell"
 	os.MkdirAll(dir, os.ModePerm)
+	dir = path.Join(dir, fmt.Sprintf("%s-%s", appId, uuid.New()))
+	os.MkdirAll(dir, os.ModePerm)
+
 	return dir
 }
 
 func Execute(appId string, fileName, args string, setEnvironment Setup) (output []byte, err error, console string,
 ) {
 	cmd := exec.Command("pwsh", "-nologo", "-noprofile")
-
-	initScript, environment, err := setEnvironment()
+	workingDirectory := PwshCwd(appId)
+	initScript, environment, err := setEnvironment(workingDirectory)
 	if err != nil {
 		return nil, err, ""
 	}
@@ -42,7 +47,7 @@ func Execute(appId string, fileName, args string, setEnvironment Setup) (output 
 		log.Fatal(err)
 	}
 
-	cmd.Dir = PwshCwd()
+	cmd.Dir = workingDirectory
 
 	os.Remove(path.Join(cmd.Dir, "output.json"))
 	ps1Code, err := scripts.ReadFile(fmt.Sprintf("scripts/connectors/%s.ps1", initScript))
@@ -105,7 +110,7 @@ func Run[R any](appId string, fileName string, args string, setup Setup) (result
 	return result, err
 }
 
-var SetupExchange = func() (string, []string, error) {
+var SetupExchange = func(workingDirectory string) (string, []string, error) {
 	env := os.Environ()
 
 	env = append(env, fmt.Sprintf("EXCHCERTIFICATEPASSWORD=%s", viper.GetString("EXCHCERTIFICATEPASSWORD")))
@@ -116,13 +121,13 @@ var SetupExchange = func() (string, []string, error) {
 
 }
 
-var SetupPNP = func() (string, []string, error) {
+var SetupPNP = func(workingDirectory string) (string, []string, error) {
 
 	ps2Code, err := sharepoint.Assets.ReadFile("assets/template-filtered.xml")
 	if err != nil {
 		return "", []string{}, err
 	}
-	err = os.WriteFile(path.Join(PwshCwd(), "template.xml"), ps2Code, 0644)
+	err = os.WriteFile(path.Join(workingDirectory, "template.xml"), ps2Code, 0644)
 	if err != nil {
 		return "", []string{}, err
 	}
