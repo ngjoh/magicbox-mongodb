@@ -10,6 +10,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/httplog"
+	"github.com/go-chi/httprate"
+	"github.com/koksmat-com/koksmat/model"
 	"github.com/swaggest/rest/nethttp"
 	"github.com/swaggest/rest/response/gzip"
 	"github.com/swaggest/rest/web"
@@ -62,6 +64,7 @@ func sharedSettings(s *web.Service) {
 		LogLevel: "info",
 	})
 	s.Use(httplog.RequestLogger(logger))
+
 	s.Post("/authorize", signin())
 }
 func Core() {
@@ -109,12 +112,37 @@ Changed parameter names from id to exchangeObjectId in relevant endpoints, break
 		log.Fatal(err)
 	}
 }
+
+func rateLimitByAppId(maxRequestsPerMinute int) func(next http.Handler) http.Handler {
+	return httprate.Limit(
+		maxRequestsPerMinute, // requests
+		1*time.Minute,        // per duration
+		// an oversimplified example of rate limiting by a custom header
+		httprate.WithKeyFuncs(func(r *http.Request) (string, error) {
+
+			token := r.Context().Value("auth").(model.Authorization).AppId
+			return token, nil
+		}),
+	)
+}
+func rateLimitByIpAddress(maxRequestsPerMinute int) func(next http.Handler) http.Handler {
+	return httprate.Limit(
+		maxRequestsPerMinute, // requests
+		1*time.Minute,        // per duration
+		// an oversimplified example of rate limiting by a custom header
+		httprate.WithKeyFuncs(func(r *http.Request) (string, error) {
+
+			token := r.Context().Value("auth").(model.Authorization).AppId
+			return token, nil
+		}),
+	)
+}
 func addExchangeEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) {
 	s.Route("/v1/sharedmailboxes", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
 			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
-
+			r.Use(rateLimitByAppId(50))
 			r.Method(http.MethodPost, "/", nethttp.NewHandler(createSharedMailbox()))
 			r.Method(http.MethodGet, "/{exchangeObjectId}", nethttp.NewHandler(getSharedMailbox()))
 			r.Method(http.MethodPatch, "/{exchangeObjectId}", nethttp.NewHandler(updateSharedMailbox()))
@@ -135,7 +163,7 @@ func addExchangeEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handle
 		r.Group(func(r chi.Router) {
 			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
 			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
-
+			r.Use(rateLimitByAppId(50))
 			r.Method(http.MethodGet, "/{address}", nethttp.NewHandler(resolveAddress()))
 
 		})
@@ -144,7 +172,7 @@ func addExchangeEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handle
 		r.Group(func(r chi.Router) {
 			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
 			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
-
+			r.Use(rateLimitByAppId(50))
 			r.Method(http.MethodGet, "/", nethttp.NewHandler(getInfo()))
 			r.Method(http.MethodGet, "/domains", nethttp.NewHandler(getDomains()))
 
@@ -156,6 +184,7 @@ func addExchangeEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handle
 func addCoreEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) {
 	s.Method(http.MethodGet, "/blob/{tag}", nethttp.NewHandler(getBlob()))
 
+	//s.Use(rateLimitByAppId(50))
 	s.MethodFunc(http.MethodPost, "/api/v1/subscription/notify", validateSubscription)
 	s.Method(http.MethodGet, "/v1/business/countries", nethttp.NewHandler(getCountries()))
 	s.Method(http.MethodGet, "/v1/business/units", nethttp.NewHandler(getBusinessAndGroupUnits()))
@@ -167,6 +196,7 @@ func addAdminEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) 
 	s.Route("/v1/admin", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
+			r.Use(rateLimitByAppId(50))
 			r.Method(http.MethodGet, "/auditlogsummary", nethttp.NewHandler(GetAuditLogSummarys()))
 			r.Method(http.MethodGet, "/auditlogs/date/{date}/{hour}", nethttp.NewHandler(getAuditLogs()))
 			r.Method(http.MethodGet, "/auditlogs/powershell/{objectId}", nethttp.NewHandler(getAuditLogPowershell()))
