@@ -190,7 +190,7 @@ func Authenticator(next http.Handler) http.Handler {
 				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
 			}
-			log.Println("Permission granted")
+			//log.Println("Permission granted")
 			// Token is authenticated, pass it through
 			authorization := model.Authorization{AppId: app, Permissions: permissions}
 			ctx := context.WithValue(r.Context(), "auth", authorization)

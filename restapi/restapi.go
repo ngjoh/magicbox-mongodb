@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/httplog"
 	"github.com/swaggest/rest/nethttp"
 	"github.com/swaggest/rest/response/gzip"
 	"github.com/swaggest/rest/web"
@@ -55,6 +56,12 @@ func sharedSettings(s *web.Service) {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+
+	logger := httplog.NewLogger("httplog-example", httplog.Options{
+		JSON:     false,
+		LogLevel: "info",
+	})
+	s.Use(httplog.RequestLogger(logger))
 	s.Post("/authorize", signin())
 }
 func Core() {
