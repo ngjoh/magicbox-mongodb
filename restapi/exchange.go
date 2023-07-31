@@ -242,3 +242,44 @@ func removeSharedMailboxEmail() usecase.Interactor {
 	u.SetTags(tag)
 	return u
 }
+
+func provisionRoom() usecase.Interactor {
+	type RoomProvisionRequest struct {
+		SharepointId int `json:"sharepointid" example:421`
+	}
+	type RoomProvisionResponse struct {
+		Email string `json:"email" example:room-zzz@domain.com`
+	}
+	u := usecase.NewInteractor(func(ctx context.Context, input RoomProvisionRequest, output *RoomProvisionResponse) error {
+
+		email, err := model.ProvisionRoomBySharePointID(input.SharepointId)
+		output.Email = *email
+		return err
+
+	})
+	u.SetTitle("Provision a room")
+	u.SetDescription("Provision a room by referencing to a sharepoint item id")
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags("Room Management (legacy)")
+	return u
+}
+
+func deleteRoom() usecase.Interactor {
+	type RoomDeleteRequest struct {
+		SharepointId int `path:"sharepointitemid" example:421`
+	}
+	type RoomDeleteResponse struct {
+	}
+	u := usecase.NewInteractor(func(ctx context.Context, input RoomDeleteRequest, output *RoomDeleteResponse) error {
+
+		_, err := model.DeleteRoomBySharePointID(input.SharepointId)
+
+		return err
+
+	})
+	u.SetTitle("Deletes a room")
+	u.SetDescription("Deletes a room by referencing to a sharepoint item id")
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags("Room Management (legacy)")
+	return u
+}

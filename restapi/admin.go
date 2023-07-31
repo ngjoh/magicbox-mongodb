@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/koksmat-com/koksmat/audit"
+	"github.com/koksmat-com/koksmat/model"
 	"github.com/swaggest/usecase"
 	"github.com/swaggest/usecase/status"
 )
@@ -93,5 +94,34 @@ func getAuditLogPowershell() usecase.Interactor {
 	u.SetTags(
 		auditTag,
 	)
+	return u
+}
+
+func setAccess() usecase.Interactor {
+	type AccessControlRequest struct {
+		Email       string `json:"smtpaddress" binding:"required" example:"contact@contosoelectronics.com`
+		Permissions string `json:"permissions" binding:"required" example:"user.read sharepoint.manager"`
+	}
+	type AccessControlResponse struct {
+		token string `json:"token" binding:"required" example:"fdskl234kl23nm,snnmf,anemw,nrm23m,sadfdasf"`
+	}
+	u := usecase.NewInteractor(func(ctx context.Context, input AccessControlRequest, output *AccessControlResponse) error {
+
+		key, _, err := model.IssueAccessKey(input.Email)
+		if err != nil {
+			return err
+		}
+		token, err := IssueIdToken(input.Email, key)
+		if err != nil {
+			return err
+		}
+		output.token = token
+		return err
+
+	})
+	u.SetTitle("Grant access to a smtp address or app id")
+	u.SetDescription("Grant access to a smtp address or app id")
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags(tag)
 	return u
 }

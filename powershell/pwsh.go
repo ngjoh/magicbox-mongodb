@@ -59,6 +59,7 @@ func Execute(appId string, fileName, args string, setEnvironment Setup) (output 
 	if err != nil {
 		return nil, err, ""
 	}
+
 	err = os.WriteFile(path.Join(cmd.Dir, "run.ps1"), ps2Code, 0644)
 	if err != nil {
 		return nil, err, ""
@@ -67,7 +68,9 @@ func Execute(appId string, fileName, args string, setEnvironment Setup) (output 
 	if err != nil {
 		return nil, err, ""
 	}
-	script := fmt.Sprintf(`. ./run.ps1  %s`, args)
+	script := fmt.Sprintf(`
+	$ErrorActionPreference = "Stop"
+	. ./run.ps1  %s`, args)
 	go func() {
 		defer stdin.Close()
 		fmt.Fprintln(stdin, ". ./init.ps1")
@@ -76,6 +79,7 @@ func Execute(appId string, fileName, args string, setEnvironment Setup) (output 
 	}()
 	srcCode := fmt.Sprintf("[%s]", ps2Code)
 	combinedOutput, err := cmd.CombinedOutput()
+
 	if err != nil {
 		audit.LogPowerShell(appId, fileName, srcCode, args, "", true, string(combinedOutput))
 		log.Println(fmt.Sprint(err) + ": " + string(combinedOutput))

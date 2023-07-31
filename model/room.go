@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -96,6 +97,80 @@ func ImportRooms() error {
 
 	}
 	return nil
+}
+
+func ProvisionRoomBySharePointID(id int) (*string, error) {
+
+	sp, err := sharepoint.GetClient("https://christianiabpos.sharepoint.com/sites/Cava3")
+	list := sp.Web().GetList(fmt.Sprintf("Lists/%s", "Rooms"))
+
+	itemID := id
+
+	item, err := list.Items().GetByID(itemID).Get()
+	if err != nil {
+		log.Println("Rooms not found in SharePoint")
+		return nil, err
+	}
+
+	result, err := powershell.CreateRoom(item.Data().Title, 1)
+	if err != nil {
+		log.Println("PowerShell returned error")
+		return nil, err
+	}
+	newStatus := "Provisioned"
+	itemUpdatePayload := []byte(fmt.Sprintf(`{
+	"Provisioning_x0020_Status": "%s",
+	"Email": "%s"}`, newStatus, result.MailAddress))
+
+	_, err = list.Items().GetByID(itemID).Update(itemUpdatePayload)
+
+	if err != nil {
+		log.Println("Could not update SharePoint")
+		return nil, err
+	}
+
+	return &result.MailAddress, nil
+
+}
+
+func DeleteRoomBySharePointID(id int) (*string, error) {
+
+	sp, err := sharepoint.GetClient("https://christianiabpos.sharepoint.com/sites/Cava3")
+	list := sp.Web().GetList(fmt.Sprintf("Lists/%s", "Rooms"))
+
+	itemID := id
+
+	data, err := list.Items().Select("Id,Title,Capacity,Provisioning_x0020_Status,Email,RestrictedTo,TeamsMeetingRoom,Canbeusedforreceptions,DeviceSerialNumber,Price_x0020_List/Deliverto,CiscoVideo,Production").GetByID(itemID).Get()
+	if err != nil {
+		log.Println("Rooms not found in SharePoint")
+		return nil, err
+	}
+
+	i := new(sharepoint.Room)
+	err = json.Unmarshal(data.Normalized(), i)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = powershell.RemoveRoom(i.Email)
+	if err != nil {
+		log.Println("PowerShell returned error")
+		return nil, err
+	}
+	newStatus := "Deleted"
+	itemUpdatePayload := []byte(fmt.Sprintf(`{
+	"Provisioning_x0020_Status": "%s"
+	}`, newStatus))
+
+	_, err = list.Items().GetByID(itemID).Update(itemUpdatePayload)
+
+	if err != nil {
+		log.Println("Could not update SharePoint")
+		return nil, err
+	}
+
+	return nil, nil
+
 }
 
 func RoomsToProvision() error {

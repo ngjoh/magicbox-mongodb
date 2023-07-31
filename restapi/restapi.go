@@ -159,6 +159,16 @@ func addExchangeEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handle
 			r.Method(http.MethodDelete, "/{exchangeObjectId}", nethttp.NewHandler(deleteSharedMailbox()))
 		})
 	})
+	s.Route("/v1/rooms", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
+			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
+			r.Use(rateLimitByAppId(5))
+			r.Method(http.MethodPost, "/sharepoint/provision", nethttp.NewHandler(provisionRoom()))
+			r.Method(http.MethodDelete, "/sharepoint/{sharepointitemid}", nethttp.NewHandler(deleteRoom()))
+
+		})
+	})
 	s.Route("/v1/addresses", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
@@ -202,6 +212,9 @@ func addAdminEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) 
 			r.Method(http.MethodGet, "/auditlogs/powershell/{objectId}", nethttp.NewHandler(getAuditLogPowershell()))
 			r.Method(http.MethodPost, "/sharepoint/copylibrary", nethttp.NewHandler(copyLibrary()))
 			r.Method(http.MethodPost, "/sharepoint/renamelibrary", nethttp.NewHandler(renameLibrary()))
+			r.Method(http.MethodGet, "/user/", nethttp.NewHandler(getUsers()))
+			r.Method(http.MethodPost, "/user/", nethttp.NewHandler(addUser()))
+			r.Method(http.MethodPatch, "/user/{upn}/credentials", nethttp.NewHandler(updateUserCredentials()))
 		})
 	})
 
