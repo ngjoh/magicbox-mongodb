@@ -1,6 +1,10 @@
+param (
+    [Parameter(Mandatory = $true)]
+    [string]$Url
+)
 $filename = "$PSScriptRoot/template.xml"
 
-$url = "https://christianiabpos.sharepoint.com/sites/nexiintra-country-dk"
+# $url = "https://christianiabpos.sharepoint.com/sites/cava3"
 Connect-PnPOnline -Url $url  -ClientId $PNPAPPID -Tenant $PNPTENANTID -CertificatePath "$PNPCERTIFICATEPATH"
 # Install-PnPApp -Identity "b0713514-2f12-46d9-833c-990ec907830b" #-Scope Site
 
