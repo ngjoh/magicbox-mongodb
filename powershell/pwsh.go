@@ -31,7 +31,7 @@ func PwshCwd(appId string) string {
 	return dir
 }
 
-func Execute(appId string, fileName, args string, setEnvironment Setup) (output []byte, err error, console string,
+func Execute(appId string, fileName, args string, setEnvironment Setup, src string) (output []byte, err error, console string,
 ) {
 	cmd := exec.Command("pwsh", "-nologo", "-noprofile")
 	workingDirectory := PwshCwd(appId)
@@ -55,9 +55,13 @@ func Execute(appId string, fileName, args string, setEnvironment Setup) (output 
 
 		return nil, err, ""
 	}
-	ps2Code, err := scripts.ReadFile(fileName)
-	if err != nil {
-		return nil, err, ""
+
+	ps2Code := []byte(src)
+	if src == "" {
+		ps2Code, err = scripts.ReadFile(fileName)
+		if err != nil {
+			return nil, err, ""
+		}
 	}
 
 	err = os.WriteFile(path.Join(cmd.Dir, "run.ps1"), ps2Code, 0644)
@@ -93,9 +97,9 @@ func Execute(appId string, fileName, args string, setEnvironment Setup) (output 
 	return outputJson, nil, string(combinedOutput)
 }
 
-func Run[R any](appId string, fileName string, args string, setup Setup) (result *R, err error) {
+func Run[R any](appId string, fileName string, args string, setup Setup, src string) (result *R, err error) {
 
-	output, err, _ := Execute(appId, fileName, args, setup)
+	output, err, _ := Execute(appId, fileName, args, setup, src)
 	dataOut := new(R)
 	textOutput := fmt.Sprintf("%s", output)
 	if (output != nil) && (textOutput != "") {
@@ -111,6 +115,13 @@ func Run[R any](appId string, fileName string, args string, setup Setup) (result
 		}
 	}
 	result = *&dataOut // fmt.Sprintf("%s", outputJson)
+	return result, err
+}
+func RunRaw(appId string, fileName string, args string, setup Setup, src string) (result string, err error) {
+
+	output, err, _ := Execute(appId, fileName, args, setup, src)
+	result = fmt.Sprintf("%s", output)
+
 	return result, err
 }
 
@@ -145,12 +156,22 @@ var SetupPNP = func(workingDirectory string) (string, []string, error) {
 
 }
 
-func RunExchange[R any](appId string, fileName string, args string) (result *R, err error) {
+func RunExchange[R any](appId string, fileName string, args string, src string) (result *R, err error) {
 
-	return Run[R](appId, fileName, args, SetupExchange)
+	return Run[R](appId, fileName, args, SetupExchange, src)
 }
 
-func RunPNP[R any](appId string, fileName string, args string) (result *R, err error) {
+func RunPNP[R any](appId string, fileName string, args string, src string) (result *R, err error) {
 
-	return Run[R](appId, fileName, args, SetupPNP)
+	return Run[R](appId, fileName, args, SetupPNP, src)
+}
+
+func RunRawExchange(appId string, fileName string, args string, src string) (result string, err error) {
+
+	return RunRaw(appId, fileName, args, SetupExchange, src)
+}
+
+func RunRawPNP(appId string, fileName string, args string, src string) (result string, err error) {
+
+	return RunRaw(appId, fileName, args, SetupPNP, src)
 }

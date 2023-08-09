@@ -40,7 +40,7 @@ func PwshArray(members []string) string {
 func CreateSharedMailbox(appid string, Name string, DisplayName string, Alias string, Owners []string, Members []string, Readers []string) (result *NewSharedMailboxResult, err error) {
 	powershellScript := "scripts/sharedmailboxes/create.ps1"
 	powershellArguments := fmt.Sprintf(` -Name "%s" -DisplayName "%s"  -Alias "%s" -Members %s -Readers %s -Owners="%s"`, Name, DisplayName, Alias, PwshArray(Members), PwshArray(Readers), PwshArray(Owners))
-	result, err = RunExchange[NewSharedMailboxResult](appid, powershellScript, powershellArguments)
+	result, err = RunExchange[NewSharedMailboxResult](appid, powershellScript, powershellArguments, "")
 	if err != nil {
 		return result, err
 	}
@@ -51,7 +51,7 @@ func CreateSharedMailbox(appid string, Name string, DisplayName string, Alias st
 func DeleteSharedMailbox(appid string, ExchangeObjectId string) (result *EmptyResult, err error) {
 	powershellScript := "scripts/sharedmailboxes/remove.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s`, ExchangeObjectId)
-	result, err = RunExchange[EmptyResult](appid, powershellScript, powershellArguments)
+	result, err = RunExchange[EmptyResult](appid, powershellScript, powershellArguments, "")
 	if err != nil {
 		return result, err
 	}
@@ -62,7 +62,7 @@ func DeleteSharedMailbox(appid string, ExchangeObjectId string) (result *EmptyRe
 func UpdateSharedMailbox(appid string, ExchangeObjectId string, DisplayName string) (result *EmptyResult, err error) {
 	powershellScript := "scripts/sharedmailboxes/update.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -DisplayName "%s"`, ExchangeObjectId, DisplayName)
-	result, err = RunExchange[EmptyResult](appid, powershellScript, powershellArguments)
+	result, err = RunExchange[EmptyResult](appid, powershellScript, powershellArguments, "")
 	if err != nil {
 		return result, err
 	}
@@ -74,7 +74,7 @@ func UpdateSharedMailbox(appid string, ExchangeObjectId string, DisplayName stri
 func UpdateSharedMailboxPrimaryEmailAddress(appid string, ExchangeObjectId string, Email string) (result *EmptyResult, err error) {
 	powershellScript := "scripts/sharedmailboxes/updateprimaryemail.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Email "%s"`, ExchangeObjectId, Email)
-	result, err = RunExchange[EmptyResult](appid, powershellScript, powershellArguments)
+	result, err = RunExchange[EmptyResult](appid, powershellScript, powershellArguments, "")
 	if err != nil {
 		return result, err
 	}
@@ -86,34 +86,34 @@ func UpdateSharedMailboxPrimaryEmailAddress(appid string, ExchangeObjectId strin
 func AddSharedMailboxMembers(appid string, ExchangeObjectId string, Members []string) (members *MembersResponse, err error) {
 	powershellScript := "scripts/sharedmailboxes/addmembers.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Members %s`, ExchangeObjectId, PwshArray(Members))
-	members, err = RunExchange[MembersResponse](appid, powershellScript, powershellArguments)
+	members, err = RunExchange[MembersResponse](appid, powershellScript, powershellArguments, "")
 	return members, err
 }
 
 func AddSharedMailboxReaders(appid string, ExchangeObjectId string, Readers []string) (members *MembersResponse, err error) {
 	powershellScript := "scripts/sharedmailboxes/addreaders.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Readers %s`, ExchangeObjectId, PwshArray(Readers))
-	members, err = RunExchange[MembersResponse](appid, powershellScript, powershellArguments)
+	members, err = RunExchange[MembersResponse](appid, powershellScript, powershellArguments, "")
 	return members, err
 }
 
 func SetSharedMailboxOwners(appid string, ExchangeObjectId string, Owners []string) (res *OwnersResponse, err error) {
 	powershellScript := "scripts/sharedmailboxes/addowners.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Owners %s`, ExchangeObjectId, PwshArray(Owners))
-	res, err = RunExchange[OwnersResponse](appid, powershellScript, powershellArguments)
+	res, err = RunExchange[OwnersResponse](appid, powershellScript, powershellArguments, "")
 	return res, err
 }
 
 func RemoveSharedMailboxMembers(appid string, ExchangeObjectId string, Members []string) (members *MembersResponse, err error) {
 	powershellScript := "scripts/sharedmailboxes/removemembers.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Members %s`, ExchangeObjectId, PwshArray(Members))
-	members, err = RunExchange[MembersResponse](appid, powershellScript, powershellArguments)
+	members, err = RunExchange[MembersResponse](appid, powershellScript, powershellArguments, "")
 	return members, err
 }
 
 func RemoveSharedMailboxReaders(appid string, ExchangeObjectId string, Readers []string) (members *MembersResponse, err error) {
 	powershellScript := "scripts/sharedmailboxes/removereaders.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Readers %s`, ExchangeObjectId, PwshArray(Readers))
-	members, err = RunExchange[MembersResponse](appid, powershellScript, powershellArguments)
+	members, err = RunExchange[MembersResponse](appid, powershellScript, powershellArguments, "")
 	return members, err
 }

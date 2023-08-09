@@ -39,10 +39,10 @@ func GetField(field Field) (string, string) {
 			fmt.Sprintf(`%s : z.string().nullable()`, field.Name)
 	case "Choice":
 
-		return fmt.Sprintf(`item.fields.%s`, field.Name),
+		return fmt.Sprintf(`item.fields.%s ?? ""`, field.Name),
 			fmt.Sprintf(`%s : z.string().nullable()`, field.Name)
 	case "MultiChoice":
-		return fmt.Sprintf(`item.fields.%s`, field.Name),
+		return fmt.Sprintf(`item.fields.%s ?? []`, field.Name),
 			fmt.Sprintf(`%s : z.string().nullable()`, field.Name)
 	case "Calculated":
 		return fmt.Sprintf(`item.fields.%s`, field.Name),

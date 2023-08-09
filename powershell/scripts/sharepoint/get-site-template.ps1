@@ -8,7 +8,7 @@ $filename = "$PSScriptRoot/template.xml"
 Connect-PnPOnline -Url $url  -ClientId $PNPAPPID -Tenant $PNPTENANTID -CertificatePath "$PNPCERTIFICATEPATH"
 # Install-PnPApp -Identity "b0713514-2f12-46d9-833c-990ec907830b" #-Scope Site
 
-Get-PnPSiteTemplate -Out  $filename -force  -Handlers All -Debug
+Get-PnPSiteTemplate -Out  $filename -force  -Handlers All -Debug -IncludeAllPages:$false -IncludeSiteGroups:$false -IncludeAllTermGroups:$false 
 $result = @{
     siteurl = $siteUrl
     type="sitetemplate"

@@ -12,7 +12,7 @@ type NewRoomResult struct {
 func CreateRoom(Name string, Capacity int) (result *NewRoomResult, err error) {
 	powershellScript := "scripts/rooms/create-room.ps1"
 	powershellArguments := fmt.Sprintf(` -Name "%s" -Capacity %d `, Name, Capacity)
-	result, err = RunExchange[NewRoomResult]("koksmat", powershellScript, powershellArguments)
+	result, err = RunExchange[NewRoomResult]("koksmat", powershellScript, powershellArguments, "")
 	if err != nil {
 		return result, err
 	}
@@ -23,7 +23,7 @@ func CreateRoom(Name string, Capacity int) (result *NewRoomResult, err error) {
 func RemoveRoom(Email string) (result *EmptyResult, err error) {
 	powershellScript := "scripts/rooms/remove-room.ps1"
 	powershellArguments := fmt.Sprintf(` -Mail "%s" `, Email)
-	result, err = RunExchange[EmptyResult]("koksmat", powershellScript, powershellArguments)
+	result, err = RunExchange[EmptyResult]("koksmat", powershellScript, powershellArguments, "")
 	if err != nil {
 		return result, err
 	}
@@ -45,6 +45,6 @@ func BuildPolicyScriptArguments(Email string, ListOfAllowedEmails []string) (str
 func SetPolicy(Email string, ListOfAllowedEmails string) (result *EmptyResult, err error) {
 
 	powershellScript, powershellArguments := BuildPolicyScriptArguments(Email, strings.Split(ListOfAllowedEmails, ","))
-	return RunExchange[EmptyResult]("koksmat", powershellScript, powershellArguments)
+	return RunExchange[EmptyResult]("koksmat", powershellScript, powershellArguments, "")
 
 }

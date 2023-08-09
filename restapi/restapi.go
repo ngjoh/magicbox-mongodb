@@ -215,6 +215,8 @@ func addAdminEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) 
 			r.Method(http.MethodGet, "/user/", nethttp.NewHandler(getUsers()))
 			r.Method(http.MethodPost, "/user/", nethttp.NewHandler(addUser()))
 			r.Method(http.MethodPatch, "/user/{upn}/credentials", nethttp.NewHandler(updateUserCredentials()))
+			r.MethodFunc(http.MethodPost, "/powershell", executePowerShell)
+
 		})
 	})
 
