@@ -98,7 +98,7 @@ func AddSharedMailboxReaders(appid string, ExchangeObjectId string, Readers []st
 }
 
 func SetSharedMailboxOwners(appid string, ExchangeObjectId string, Owners []string) (res *OwnersResponse, err error) {
-	powershellScript := "scripts/sharedmailboxes/addowners.ps1"
+	powershellScript := "scripts/sharedmailboxes/setowners.ps1"
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Owners %s`, ExchangeObjectId, PwshArray(Owners))
 	res, err = RunExchange[OwnersResponse](appid, powershellScript, powershellArguments, "")
 	return res, err

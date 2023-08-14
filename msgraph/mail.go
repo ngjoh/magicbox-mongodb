@@ -1,27 +1,27 @@
 package msgraph
 
 import (
-	"log"
+	"context"
 
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
 	"github.com/microsoftgraph/msgraph-sdk-go/models"
 	"github.com/microsoftgraph/msgraph-sdk-go/users"
 )
 
-func SendMailMessage(c *msgraphsdk.GraphServiceClient, subject *string, body *string, recipient *string) error {
+func SendMailMessage(client *msgraphsdk.GraphServiceClient, subject string, body string, recipient string) error {
 
 	message := models.NewMessage()
-	message.SetSubject(subject)
+	message.SetSubject(&subject)
 
 	messageBody := models.NewItemBody()
-	messageBody.SetContent(body)
+	messageBody.SetContent(&body)
 	contentType := models.TEXT_BODYTYPE
 	messageBody.SetContentType(&contentType)
 	message.SetBody(messageBody)
 
 	toRecipient := models.NewRecipient()
 	emailAddress := models.NewEmailAddress()
-	emailAddress.SetAddress(recipient)
+	emailAddress.SetAddress(&recipient)
 	toRecipient.SetEmailAddress(emailAddress)
 	message.SetToRecipients([]models.Recipientable{
 		toRecipient,
@@ -30,12 +30,19 @@ func SendMailMessage(c *msgraphsdk.GraphServiceClient, subject *string, body *st
 	sendMailBody := users.NewItemSendMailPostRequestBody()
 	sendMailBody.SetMessage(message)
 
-	// Send the message
-	u := c.Users().ByUserId("niels.johansen@nexigroup.com")
+	// mailTips, err := c.Me().GetMailTips().Post(context.Background(), nil, nil)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return err
+	// }
+	// log.Println(mailTips)
+	client.Domains().Get(context.Background(), nil)
+	return client.Me().SendMail().Post(context.Background(), sendMailBody, nil)
 
-	mt := u.GetMailTips()
-	log.Println(mt)
-	//.userClient.Me().SendMail().Post(context.Background(), sendMailBody, nil)
+}
 
-	return nil
+func GetDomains(client *msgraphsdk.GraphServiceClient) (models.DomainCollectionResponseable, error) {
+
+	return client.Domains().Get(context.Background(), nil)
+
 }

@@ -21,8 +21,8 @@ func GetSubscriptions(name string) ([]*Subscription, error) {
 	return db.GetAll[*Subscription](&Subscription{})
 }
 
-func NewSubscription(name string, sharePointSiteUrl string, listname string) error {
-	s, err := sharepoint.CreateSubscription(sharePointSiteUrl, listname, "https://niels-mac.nets-intranets.com/api/v1/subscription/notify", time.Now().Add(time.Hour*10), "xx")
+func NewSubscription(name string, sharePointSiteUrl string, listname string, callbackUrl string) error {
+	s, err := sharepoint.CreateSubscription(sharePointSiteUrl, listname, callbackUrl, time.Now().Add(time.Hour*10), "xx")
 	if err != nil {
 		return err
 	}

@@ -45,9 +45,9 @@ func printOdataError(err error) {
 	case *odataerrors.ODataError:
 		typed := err.(*odataerrors.ODataError)
 		fmt.Println("error:", typed.Error())
-		if terr := typed.GetError(); terr != nil {
-			fmt.Printf("code: %s", *terr.GetCode())
-			fmt.Printf("msg: %s", *terr.GetMessage())
+		if terr := typed.Error(); terr != "" {
+
+			fmt.Printf("msg: %s", terr)
 		}
 	default:
 		fmt.Printf("%T > error: %#v", err, err)

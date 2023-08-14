@@ -171,7 +171,7 @@ func setSharedMailboxOwners() usecase.Interactor {
 		return err
 
 	})
-	u.SetTitle("Add owners to a Shared Mailbox")
+	u.SetTitle("Set the owners of a Shared Mailbox")
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags(tag)
 	return u

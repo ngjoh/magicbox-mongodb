@@ -71,9 +71,9 @@ func Core() {
 	s := web.DefaultService()
 
 	// Init API documentation schema.
-	s.OpenAPI.Info.Title = "Koksmat Magicbox CORE"
+	s.OpenAPI.Info.Title = "Magicbox API"
 	s.OpenAPI.Info.WithDescription(description)
-	s.OpenAPI.Info.Version = "v1.0.0"
+	s.OpenAPI.Info.Version = "v3.0.0"
 
 	sharedSettings(s)
 	addCoreEndpoints(s, Authenticator)
@@ -88,16 +88,21 @@ func Run() {
 	s := web.DefaultService()
 
 	// Init API documentation schema.
-	s.OpenAPI.Info.Title = "Koksmat Magicbox EXCHANGE"
+	s.OpenAPI.Info.Title = "Magicbox EXCHANGE"
 	s.OpenAPI.Info.WithDescription(fmt.Sprintf("%s %s", description, `
 ## Version History
+
+### V3.0.0 - Endpoint path and method changed for adding and removing members
+- Changed the add/remove member methods to be based on the POST method with a subpath of /add and /remove, breaking compatibility with previous versions hence relasing as a new major version
+- Bug - Renamed the Add Owner to Set Owners - The method was not working as it referred to a non existing powershell script
+
 ### V2.0.0 - Parameter name changed
-Changed parameter names from id to exchangeObjectId in relevant endpoints, breaking compatibility with previous versions hence relasing as a new major version
+- Changed parameter names from id to exchangeObjectId in relevant endpoints, breaking compatibility with previous versions hence relasing as a new major version
 
 ### V1.0.0 - Initial version
 
 	`))
-	s.OpenAPI.Info.Version = "v2.0.0"
+	s.OpenAPI.Info.Version = "v3.0.0"
 
 	s.Wrap(
 		gzip.Middleware, // Response compression with support for direct gzip pass through.
@@ -146,15 +151,15 @@ func addExchangeEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handle
 			r.Method(http.MethodPost, "/", nethttp.NewHandler(createSharedMailbox()))
 			r.Method(http.MethodGet, "/{exchangeObjectId}", nethttp.NewHandler(getSharedMailbox()))
 			r.Method(http.MethodPatch, "/{exchangeObjectId}", nethttp.NewHandler(updateSharedMailbox()))
-			r.Method(http.MethodPost, "/{exchangeObjectId}/smtp", nethttp.NewHandler(addSharedMailboxEmail()))
+			r.Method(http.MethodPost, "/{exchangeObjectId}/smtp/add", nethttp.NewHandler(addSharedMailboxEmail()))
 			r.Method(http.MethodPatch, "/{exchangeObjectId}/primarysmtp", nethttp.NewHandler(updateSharedMailboxPrimaryEmailAddress()))
-			r.Method(http.MethodDelete, "/{exchangeObjectId}/smtp", nethttp.NewHandler(removeSharedMailboxEmail()))
-			r.Method(http.MethodPost, "/{exchangeObjectId}/members", nethttp.NewHandler(addSharedMailboxMembers()))
-			r.Method(http.MethodDelete, "/{exchangeObjectId}/members", nethttp.NewHandler(removeSharedMailboxMembers()))
+			r.Method(http.MethodPost, "/{exchangeObjectId}/smtp/remove", nethttp.NewHandler(removeSharedMailboxEmail()))
+			r.Method(http.MethodPost, "/{exchangeObjectId}/members/add", nethttp.NewHandler(addSharedMailboxMembers()))
+			r.Method(http.MethodPost, "/{exchangeObjectId}/members/remove", nethttp.NewHandler(removeSharedMailboxMembers()))
 			r.Method(http.MethodPatch, "/{exchangeObjectId}/owners", nethttp.NewHandler(setSharedMailboxOwners()))
 
-			r.Method(http.MethodPost, "/{exchangeObjectId}/readers", nethttp.NewHandler(addSharedMailboxReaders()))
-			r.Method(http.MethodDelete, "/{exchangeObjectId}/readers", nethttp.NewHandler(removeSharedMailboxReaders()))
+			r.Method(http.MethodPost, "/{exchangeObjectId}/readers/add", nethttp.NewHandler(addSharedMailboxReaders()))
+			r.Method(http.MethodPost, "/{exchangeObjectId}/readers/remove", nethttp.NewHandler(removeSharedMailboxReaders()))
 			r.Method(http.MethodGet, "/", nethttp.NewHandler(listSharedMailbox()))
 			r.Method(http.MethodDelete, "/{exchangeObjectId}", nethttp.NewHandler(deleteSharedMailbox()))
 		})
@@ -246,7 +251,7 @@ func Admin() {
 	s := web.DefaultService()
 
 	// Init API documentation schema.
-	s.OpenAPI.Info.Title = "Koksmat Magicbox ADMIN"
+	s.OpenAPI.Info.Title = "Magicbox ADMIN"
 	s.OpenAPI.Info.WithDescription(description)
 	s.OpenAPI.Info.Version = "v0.0.1"
 
