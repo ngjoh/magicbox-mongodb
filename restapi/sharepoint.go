@@ -16,7 +16,8 @@ import (
 const sharePointTag = "SharePoint"
 
 func validateSubscription(w http.ResponseWriter, r *http.Request) {
-	token := r.URL.Query().Get("validationtoken")
+
+	token := r.URL.Query().Get("validationToken")
 	if token != "" {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.Header().Set("X-Content-Type-Options", "nosniff")

@@ -203,7 +203,15 @@ func addCoreEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) {
 	s.MethodFunc(http.MethodPost, "/api/v1/subscription/notify", validateSubscription)
 	s.Method(http.MethodGet, "/v1/business/countries", nethttp.NewHandler(getCountries()))
 	s.Method(http.MethodGet, "/v1/business/units", nethttp.NewHandler(getBusinessAndGroupUnits()))
+	s.Route("/v1/webhooks", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
+			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
+			r.Use(rateLimitByAppId(50))
+			r.Method(http.MethodGet, "/", nethttp.NewHandler(getWebHooks()))
 
+		})
+	})
 	s.Mount("/debug/core", middleware.Profiler())
 }
 
