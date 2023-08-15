@@ -9,17 +9,17 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GetClient() (*ClientWithResponses, error, string) {
+func GetClient() (*ClientWithResponses, string, error) {
 	//client, err := ConnectUsingClientSecret(viper.GetString("SPAUTH_DOMAIN"), viper.GetString("SPAUTH_CLIENTID"), viper.GetString("SPAUTH_CLIENTSECRET"))
 	cred, err := azidentity.NewClientSecretCredential(viper.GetString("SPAUTH_DOMAIN"), viper.GetString("SPAUTH_CLIENTID"), viper.GetString("SPAUTH_CLIENTSECRET"), &azidentity.ClientSecretCredentialOptions{})
 	if err != nil {
-		return nil, err, ""
+		return nil, "", err
 	}
 	ctx := context.Background()
 	opts := &policy.TokenRequestOptions{Scopes: []string{"https://graph.microsoft.com/.default"}, TenantID: viper.GetString("SPAUTH_DOMAIN")}
 	token, err := cred.GetToken(ctx, *opts)
 	if err != nil {
-		return nil, err, ""
+		return nil, "", err
 	}
 	// Example BearerToken
 	// See: https://swagger.io/docs/specification/authentication/bearer-authentication/
@@ -36,6 +36,6 @@ func GetClient() (*ClientWithResponses, error, string) {
 
 	client, _ := NewClient("https://graph.microsoft.com/v1.0/", WithRequestEditorFn(bearerTokenProvider.Intercept))
 	c := &ClientWithResponses{client}
-	return c, nil, token.Token
+	return c, token.Token, nil
 
 }

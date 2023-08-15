@@ -10,7 +10,7 @@ import (
 )
 
 func RemoveSubscription(id string) (*http.Response, error) {
-	c, err, _ := GetClient() //NewClient("https://graph.microsoft.com/v1.0/")
+	c, _, err := GetClient() //NewClient("https://graph.microsoft.com/v1.0/")
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +19,7 @@ func RemoveSubscription(id string) (*http.Response, error) {
 	return c.SubscriptionsSubscriptionDeleteSubscription(ctx, id, &SubscriptionsSubscriptionDeleteSubscriptionParams{})
 }
 func SubscriptionList() (items []*MicrosoftGraphSubscription, err error) {
-	c, err, token := GetClient() //NewClient("https://graph.microsoft.com/v1.0/")
+	c, token, err := GetClient() //NewClient("https://graph.microsoft.com/v1.0/")
 	if err != nil {
 		return
 	}
