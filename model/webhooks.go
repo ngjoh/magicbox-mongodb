@@ -79,6 +79,7 @@ type WebhookEventStruct struct {
 type WebhookEvent struct {
 	mgm.DefaultModel   `bson:",inline"`
 	WebhookEventStruct `bson:",inline"`
+	Version            string `json:"version"`
 	EventStruct        `bson:"event"`
 	CavaId             string `json:"cavaId"`
 }
@@ -91,6 +92,7 @@ func SaveWebhookUserEvent(data WebhookEventStruct, userevents EventStruct, cavaI
 
 	newRecord := &WebhookEvent{
 		DefaultModel:       mgm.DefaultModel{},
+		Version:            "1",
 		WebhookEventStruct: data,
 		EventStruct:        userevents,
 		CavaId:             cavaId,
@@ -102,6 +104,7 @@ func SaveWebhookEvent(data WebhookEventStruct) error {
 
 	newRecord := &WebhookEvent{
 		DefaultModel:       mgm.DefaultModel{},
+		Version:            "1",
 		WebhookEventStruct: data,
 	}
 	return mgm.Coll(newRecord).Create(newRecord)

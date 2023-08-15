@@ -32,10 +32,6 @@ func validateSubscription(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// bodyBytes, _ := io.ReadAll(r.Body)
-	// defer func() { _ = r.Body.Close() }()
-	// log.Println(string(bodyBytes))
-
 	p := &Callback{}
 	err := json.NewDecoder(r.Body).Decode(&p)
 	if err != nil {
@@ -83,23 +79,10 @@ func validateSubscription(w http.ResponseWriter, r *http.Request) {
 			} else {
 				model.SaveWebhookEvent(v)
 			}
-		} else {
-			model.SaveWebhookEvent(v)
 		}
 
 	}
 
-	// for _, v := range p.Value {
-
-	// 	log.Println("Resource", v.Resource)
-	// 	log.Println("SiteURL", v.SiteURL)
-	// 	log.Println("WebID", v.WebID)
-	// 	log.Println("SubscriptionID", v.SubscriptionID)
-	// 	log.Println("ClientState", v.ClientState)
-	// 	log.Println("ExpirationDateTime", v.ExpirationDateTime)
-	// 	log.Println("TenantID", v.TenantID)
-
-	// }
 	w.WriteHeader(200)
 	fmt.Fprint(w, "received")
 

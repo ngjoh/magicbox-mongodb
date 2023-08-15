@@ -127,7 +127,7 @@ func TestAddRoomProd(t *testing.T) {
 		ExpirationDateTime: &time,
 
 		NotificationUrl: s("https://magicbox.nexi-intra.com/api/v1/subscription/notify"),
-		ClientState:     s("zz"),
+		ClientState:     s("room"),
 	}
 
 	response, err := c.SubscriptionsSubscriptionCreateSubscription(ctx, *sub)
