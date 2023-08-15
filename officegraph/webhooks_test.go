@@ -27,17 +27,23 @@ func TestList(t *testing.T) {
 	}
 }
 
-func TestRemove(t *testing.T) {
+func TestRemover(t *testing.T) {
 	items, err := SubscriptionList()
 	if err != nil {
 		t.Fatalf("Should not return error")
 	}
+
+	fmt.Println("Removing", len(items), "items")
+	x := len(items)
 	for _, item := range items {
-		log.Println("Removing", *item.Resource)
+
+		log.Println("Removing", *item.Resource, x, "remaining")
 		_, err = RemoveSubscription(*item.Id)
 		if err != nil {
+			log.Println("Removing", *item.Resource)
 			t.Fatalf("Should not return error")
 		}
+		x--
 	}
 
 }
@@ -58,7 +64,7 @@ func TestAdd(t *testing.T) {
 		//Id:                 s("1"),
 		ChangeType: s("created,updated,deleted"),
 		//Resource:           s("https://christianiabpos.sharepoint.com/sites/Cava3/_api/Web/GetList('/sites/Cava3/Lists/Test Changes"),
-		Resource:           s("/users/niels.johansen@nexigroup.com/events"),
+		Resource:           s("/users/room-dk-kb601-31m3@nets.eu/events"),
 		ExpirationDateTime: &time,
 		NotificationUrl:    s("https://niels-mac.nets-intranets.com/api/v1/subscription/notify"),
 		//NotificationUrl: s("https://magicbox.nexi-intra.com/api/v1/subscription/notify"),
