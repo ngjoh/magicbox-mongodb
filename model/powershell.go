@@ -53,9 +53,9 @@ func ExecutePowerShellScriptByRef(auth Authorization, id string, params string) 
 
 	switch script.Host {
 	case "exchange":
-		return powershell.RunExchange[any](auth.AppId, "scriptid:"+id, params, script.Src)
+		return powershell.RunExchange[any](auth.AppId, "scriptid:"+id, params, script.Src, powershell.CallbackMockup)
 	case "pnp":
-		return powershell.RunPNP[any](auth.AppId, "scriptid:"+id, params, script.Src)
+		return powershell.RunPNP[any](auth.AppId, "scriptid:"+id, params, script.Src, powershell.CallbackMockup)
 
 	default:
 
@@ -68,13 +68,13 @@ func ExecutePowerShellScript(appId string, host string, script string, params st
 
 	switch host {
 	case "exchange":
-		res, err := powershell.RunRawExchange(appId, "adhoc", params, script)
+		res, err := powershell.RunRawExchange(appId, "adhoc", params, script, powershell.CallbackMockup)
 		if err != nil {
 			return "", err
 		}
 		return res, nil
 	case "pnp":
-		res, err := powershell.RunRawPNP(appId, "adhoc", params, script)
+		res, err := powershell.RunRawPNP(appId, "adhoc", params, script, powershell.CallbackMockup)
 		if err != nil {
 			return "", err
 		}

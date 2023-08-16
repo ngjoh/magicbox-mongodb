@@ -2,6 +2,9 @@ package powershell
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"path"
 	"time"
 )
 
@@ -46,29 +49,42 @@ type SiteNavigation struct {
 func GetHubSpokesSitePages(hubId string) (*SitePages, error) {
 	powershellScript := "scripts/sharepoint/get-hubsite-spokes-pages.ps1"
 	powershellArguments := " -HubSiteId " + hubId
-	return RunPNP[SitePages]("koksmat", powershellScript, powershellArguments, "")
+	return RunPNP[SitePages]("koksmat", powershellScript, powershellArguments, "", CallbackMockup)
 }
 
 func GetSiteNavigation(siteURL string) (*SiteNavigation, error) {
 	powershellScript := "scripts/sharepoint/get-site-navigation.ps1"
 	powershellArguments := " -childSite " + siteURL
-	return RunPNP[SiteNavigation]("koksmat", powershellScript, powershellArguments, "")
+	return RunPNP[SiteNavigation]("koksmat", powershellScript, powershellArguments, "", CallbackMockup)
 }
 
 func GetHubSites() (*[]HubSite, error) {
 	powershellScript := "scripts/sharepoint/get-hubsites.ps1"
 	powershellArguments := ""
-	return RunPNP[[]HubSite]("koksmat", powershellScript, powershellArguments, "")
+	return RunPNP[[]HubSite]("koksmat", powershellScript, powershellArguments, "", CallbackMockup)
 }
 
 func CopyLibrary(sourceUrl string, destinationUrl string, sourceLibray string, destinationLibray string) (*[]HubSite, error) {
 	powershellScript := "scripts/sharepoint/copy-library.ps1"
 	powershellArguments := fmt.Sprintf("-SourceSiteURL \"%s\" -DestinationSiteURL  \"%s\" -SourceLibraryName \"%s\" -DestinationLibraryName  \"%s\"", sourceUrl, destinationUrl, sourceLibray, destinationLibray)
-	return RunPNP[[]HubSite]("koksmat", powershellScript, powershellArguments, "")
+	return RunPNP[[]HubSite]("koksmat", powershellScript, powershellArguments, "", CallbackMockup)
 }
 
 func RenameLibrary(url string, fromlibrary string, tolibrary string, newUrl string) (*[]HubSite, error) {
 	powershellScript := "scripts/sharepoint/rename-library.ps1"
 	powershellArguments := fmt.Sprintf("-SourceSiteURL \"%s\" -oldListName  \"%s\" -newListName \"%s\" -newListUrl  \"%s\"", url, fromlibrary, tolibrary, newUrl)
-	return RunPNP[[]HubSite]("koksmat", powershellScript, powershellArguments, "")
+	return RunPNP[[]HubSite]("koksmat", powershellScript, powershellArguments, "", CallbackMockup)
+}
+
+func GetSiteTemplate(url string) (*[]HubSite, error) {
+	powershellScript := "scripts/sharepoint/get-site-template.ps1"
+	powershellArguments := fmt.Sprintf(`-Url "%s"`, url)
+	return RunPNP[[]HubSite]("koksmat", powershellScript, powershellArguments, "", func(workingDirectory string) {
+		template, err := os.ReadFile(path.Join(workingDirectory, "template.xml"))
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s", template)
+
+	})
 }

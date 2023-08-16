@@ -31,7 +31,10 @@ func PwshCwd(appId string) string {
 	return dir
 }
 
-func Execute(appId string, fileName, args string, setEnvironment Setup, src string) (output []byte, err error, console string,
+type Callback func(workingDirectory string)
+
+func CallbackMockup(workingDirectory string) {}
+func Execute(appId string, fileName, args string, setEnvironment Setup, src string, callback Callback) (output []byte, err error, console string,
 ) {
 	cmd := exec.Command("pwsh", "-nologo", "-noprofile")
 	workingDirectory := PwshCwd(appId)
@@ -91,15 +94,17 @@ func Execute(appId string, fileName, args string, setEnvironment Setup, src stri
 	}
 
 	outputJson, err := os.ReadFile(path.Join(cmd.Dir, "output.json"))
-
+	if callback != nil {
+		callback(cmd.Dir)
+	}
 	audit.LogPowerShell(appId, fileName, srcCode, args, fmt.Sprintf("[%s]", outputJson), false, string(combinedOutput))
 
 	return outputJson, nil, string(combinedOutput)
 }
 
-func Run[R any](appId string, fileName string, args string, setup Setup, src string) (result *R, err error) {
+func Run[R any](appId string, fileName string, args string, setup Setup, src string, callback Callback) (result *R, err error) {
 
-	output, err, _ := Execute(appId, fileName, args, setup, src)
+	output, err, _ := Execute(appId, fileName, args, setup, src, callback)
 	dataOut := new(R)
 	textOutput := fmt.Sprintf("%s", output)
 	if (output != nil) && (textOutput != "") {
@@ -117,9 +122,9 @@ func Run[R any](appId string, fileName string, args string, setup Setup, src str
 	result = *&dataOut // fmt.Sprintf("%s", outputJson)
 	return result, err
 }
-func RunRaw(appId string, fileName string, args string, setup Setup, src string) (result string, err error) {
+func RunRaw(appId string, fileName string, args string, setup Setup, src string, callback Callback) (result string, err error) {
 
-	output, err, _ := Execute(appId, fileName, args, setup, src)
+	output, err, _ := Execute(appId, fileName, args, setup, src, callback)
 	result = fmt.Sprintf("%s", output)
 
 	return result, err
@@ -156,22 +161,22 @@ var SetupPNP = func(workingDirectory string) (string, []string, error) {
 
 }
 
-func RunExchange[R any](appId string, fileName string, args string, src string) (result *R, err error) {
+func RunExchange[R any](appId string, fileName string, args string, src string, callback Callback) (result *R, err error) {
 
-	return Run[R](appId, fileName, args, SetupExchange, src)
+	return Run[R](appId, fileName, args, SetupExchange, src, callback)
 }
 
-func RunPNP[R any](appId string, fileName string, args string, src string) (result *R, err error) {
+func RunPNP[R any](appId string, fileName string, args string, src string, callback Callback) (result *R, err error) {
 
-	return Run[R](appId, fileName, args, SetupPNP, src)
+	return Run[R](appId, fileName, args, SetupPNP, src, callback)
 }
 
-func RunRawExchange(appId string, fileName string, args string, src string) (result string, err error) {
+func RunRawExchange(appId string, fileName string, args string, src string, callback Callback) (result string, err error) {
 
-	return RunRaw(appId, fileName, args, SetupExchange, src)
+	return RunRaw(appId, fileName, args, SetupExchange, src, callback)
 }
 
-func RunRawPNP(appId string, fileName string, args string, src string) (result string, err error) {
+func RunRawPNP(appId string, fileName string, args string, src string, callback Callback) (result string, err error) {
 
-	return RunRaw(appId, fileName, args, SetupPNP, src)
+	return RunRaw(appId, fileName, args, SetupPNP, src, callback)
 }

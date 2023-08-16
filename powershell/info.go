@@ -10,7 +10,7 @@ type Domain struct {
 
 func GetDomains() (result *[]Domain, err error) {
 	powershellScript := "scripts/getdomains.ps1"
-	result, err = RunExchange[[]Domain]("koksmat", powershellScript, "", "")
+	result, err = RunExchange[[]Domain]("koksmat", powershellScript, "", "", CallbackMockup)
 	if err != nil {
 		return result, err
 	}

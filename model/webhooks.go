@@ -80,31 +80,20 @@ type WebhookEvent struct {
 	mgm.DefaultModel   `bson:",inline"`
 	WebhookEventStruct `bson:",inline"`
 	Version            string `json:"version"`
-	EventStruct        `bson:"event"`
-	CavaId             string `json:"cavaId"`
+	Processed          bool   `json:"processed"`
+	// EventStruct        `bson:"event"`
+	// CavaId             string `json:"cavaId"`
 }
 
 func GetWebhookss(name string) ([]*Subscription, error) {
 	return db.GetAll[*Subscription](&Subscription{})
 }
 
-func SaveWebhookUserEvent(data WebhookEventStruct, userevents EventStruct, cavaId string) error {
-
-	newRecord := &WebhookEvent{
-		DefaultModel:       mgm.DefaultModel{},
-		Version:            "1",
-		WebhookEventStruct: data,
-		EventStruct:        userevents,
-		CavaId:             cavaId,
-	}
-	return mgm.Coll(newRecord).Create(newRecord)
-}
-
 func SaveWebhookEvent(data WebhookEventStruct) error {
 
 	newRecord := &WebhookEvent{
 		DefaultModel:       mgm.DefaultModel{},
-		Version:            "1",
+		Version:            "2",
 		WebhookEventStruct: data,
 	}
 	return mgm.Coll(newRecord).Create(newRecord)

@@ -131,7 +131,7 @@ func Pnp2Ts(filename string) string {
 		fmt.Println(err)
 	}
 
-	fmt.Println("Successfully Opened template.xml")
+	//fmt.Println("Successfully Opened template.xml")
 	// defer the closing of our xmlFile so that we can parse it later on
 	defer xmlFile.Close()
 
