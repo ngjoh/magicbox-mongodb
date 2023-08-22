@@ -13,13 +13,13 @@ import (
 
 var scaffoldCmd = &cobra.Command{
 	Use:   "scaffold [inputfile]",
-	Short: "Generate Type Script from PNP Template",
+	Short: "Generate Go from PNP Template",
 	Long:  ``,
 
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 1 {
 
-			code := scaffold.Pnp2Ts(args[0])
+			code := scaffold.Pnp2Go(args[0])
 			fmt.Print(code)
 			clipboard.WriteAll(code)
 			return

@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/atotto/clipboard"
 	"github.com/koltyakov/gosip/api"
 )
 
@@ -32,6 +33,7 @@ func GetListItems[T any](sharePointSiteUrl string, listName string, selectedFiel
 	// use custom structs and unmarshal for custom fields
 	for _, item := range itemsResp.Data() {
 		i := new(T)
+		clipboard.WriteAll(fmt.Sprintf("%s", item))
 		err = json.Unmarshal(item, i)
 		if err != nil {
 			return nil, err
