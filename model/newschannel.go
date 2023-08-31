@@ -4,17 +4,24 @@ import (
 	"github.com/kamva/mgm/v3"
 	"github.com/koksmat-com/koksmat/officegraph"
 	"github.com/koksmat-com/koksmat/officegraph/sites"
+	"github.com/koksmat-com/koksmat/sharepoint/sites/nexiintra_home"
 )
 
-type NewsChannel struct {
+type Newschannel struct {
 	mgm.DefaultModel `bson:",inline"`
-	Item             sites.NewsChannelsListItem `bson:",inline"`
+	Item             *nexiintra_home.NewsChannels `bson:"inline"`
 }
 
-func CreateNewsChannel(channel sites.NewsChannelsListItem) (newsChannel *NewsChannel, err error) {
+func CreateNewsChannel(channel sites.NewsChannelsListItem) (newsChannel *Newschannel, err error) {
 
-	newRecord := &NewsChannel{}
-	newRecord.Item = channel
+	newRecord := &Newschannel{}
+	newRecord.Item = &nexiintra_home.NewsChannels{
+		Title:         channel.NewsChannel.Title,
+		RelevantUnits: []nexiintra_home.Units{},
+		Mandatory:     channel.NewsChannel.Mandatory,
+		//NewsCategory: channel.NewsChannel.Newscategory,
+
+	}
 
 	err = mgm.Coll(newRecord).Create(newRecord)
 

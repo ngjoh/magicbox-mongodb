@@ -164,6 +164,14 @@ func addExchangeEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handle
 			r.Method(http.MethodDelete, "/{exchangeObjectId}", nethttp.NewHandler(deleteSharedMailbox()))
 		})
 	})
+	s.Route("/v1/distributionslists", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))
+			r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
+			r.Use(rateLimitByAppId(50))
+			r.Method(http.MethodPost, "/setmembers", nethttp.NewHandler(setMemberships()))
+		})
+	})
 	s.Route("/v1/rooms", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			//r.Use(adminAuth, nethttp.HTTPBasicSecurityMiddleware(s.OpenAPICollector, "User", "User access"))

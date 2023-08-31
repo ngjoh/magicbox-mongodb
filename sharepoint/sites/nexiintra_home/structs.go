@@ -256,16 +256,10 @@ var SP_NewsChannels_Dependencies = []string{"Units", "Countries", "Regions", "Ne
 
 type NewsChannels struct {
 	Title             string         `"json:Title"`
-	Created           time.Time      `"json:Created"`
-	Editorid          int            `"json:EditorId"`
-	Guid              string         `"json:GUID"`
-	Id                int            `"json:ID"`
-	Modified          time.Time      `"json:Modified"`
-	Authorid          int            `"json:AuthorId"`
-	RelevantUnits     Units          `"json:RelevantUnits"`
+	RelevantUnits     []Units        `"json:RelevantUnits"`
 	Mandatory         bool           `"json:Mandatory"`
-	RelevantCountires Countries      `"json:RelevantCountires"`
-	Region            Regions        `"json:Region"`
+	RelevantCountires []Countries    `"json:RelevantCountires"`
+	Region            []Regions      `"json:Region"`
 	NewsCategory      NewsCategories `"json:NewsCategory"`
 	Tag               string         `"json:Tag"`
 }

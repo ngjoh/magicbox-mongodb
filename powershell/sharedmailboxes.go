@@ -23,6 +23,9 @@ type MembersResponse struct {
 	Members []Member `json:"Members"`
 }
 
+type SyncResponse struct {
+	Changes []string `json:"changes"`
+}
 type OwnersResponse struct {
 	Owners string `json:"Owners"`
 }
@@ -116,4 +119,12 @@ func RemoveSharedMailboxReaders(appid string, ExchangeObjectId string, Readers [
 	powershellArguments := fmt.Sprintf(` -ExchangeObjectId %s -Readers %s`, ExchangeObjectId, PwshArray(Readers))
 	members, err = RunExchange[MembersResponse](appid, powershellScript, powershellArguments, "", CallbackMockup)
 	return members, err
+}
+
+func SetDistributionListMembers(appid string, upn string, requestForOnlyThisMemberships []string, withinThisDistributionListExchangeObjectIds []string) (*SyncResponse, error) {
+	powershellScript := "scripts/distributionlists/setmemberships.ps1"
+	powershellArguments := fmt.Sprintf(` -UPN %s -Memberships %s  -DistributionLists %s`, upn, PwshArray(requestForOnlyThisMemberships), PwshArray(withinThisDistributionListExchangeObjectIds))
+	response, err := RunExchange[SyncResponse](appid, powershellScript, powershellArguments, "", CallbackMockup)
+	return response, err
+
 }

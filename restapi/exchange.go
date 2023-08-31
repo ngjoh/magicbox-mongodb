@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/koksmat-com/koksmat/model"
+	"github.com/koksmat-com/koksmat/powershell"
 	"github.com/swaggest/usecase"
 	"github.com/swaggest/usecase/status"
 )
@@ -281,5 +282,30 @@ func deleteRoom() usecase.Interactor {
 	u.SetDescription("Deletes a room by referencing to a sharepoint item id")
 	u.SetExpectedErrors(status.InvalidArgument)
 	u.SetTags("Room Management (legacy)")
+	return u
+}
+
+func setMemberships() usecase.Interactor {
+	type SetMembershipsRquest struct {
+		UPN                  string   `json:"upn" binding:"required" example:"contact@contosoelectronics.com`
+		DistributionListsIds []string `json:"distributionlists" binding:"required"`
+		Memberships          []string `json:"memberships" binding:"required"`
+	}
+	type SetMembershipsResponse struct {
+		Changes []string `json:"changes" binding:"required"`
+	}
+	u := usecase.NewInteractor(func(ctx context.Context, input SetMembershipsRquest, output *SetMembershipsResponse) error {
+
+		r, err := powershell.SetDistributionListMembers(ctx.Value("auth").(model.Authorization).AppId, input.UPN, input.Memberships, input.DistributionListsIds)
+		if err != nil {
+			return err
+		}
+		*&output.Changes = r.Changes
+		return nil
+
+	})
+	u.SetTitle("Change memberships of a user for a set of Distributions lists")
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags("Distribution Lists")
 	return u
 }
