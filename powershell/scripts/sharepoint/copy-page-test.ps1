@@ -1,0 +1,1 @@
+. "$psscriptroot/copy-page.ps1" -SourceSiteURL "https://christianiabpos.sharepoint.com/sites/nexiintra-country-dk" -DestinationSiteURL "https://christianiabpos.sharepoint.com/sites/nexiintra-country-hr-si" -PageName "Denmark-Rollup.aspx"

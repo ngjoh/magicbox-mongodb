@@ -2,6 +2,8 @@ package restapi
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/koksmat-com/koksmat/model"
 	"github.com/koksmat-com/koksmat/powershell"
@@ -74,6 +76,41 @@ func copyLibrary() usecase.Interactor {
 	Copy a library from one site to another site, can also copy internally in the same site
 
 	Future: Copy a library from one site to another site, cross tenancy
+
+`)
+	u.SetExpectedErrors(status.InvalidArgument)
+	u.SetTags(sharePointTag)
+	return u
+}
+
+func copyPage() usecase.Interactor {
+	type CopyPageRequest struct {
+		FromPageUrl string `json:"frompageurl"  example:"https://christianiabpos.sharepoint.com/sites/nexi/SitePages/Home.aspx?mode=Edit"  binding:"required"`
+		ToSiteUrl   string `json:"tositeurl"  example:"https://christianiabpos.sharepoint.com/sites/nexiintra-home/SitePages/Home.aspx"  binding:"required"`
+	}
+	type CopyPageResponse struct {
+		NewPageUrl string `json:"newpageurl"`
+	}
+
+	u := usecase.NewInteractor(func(ctx context.Context, input CopyPageRequest, output *CopyPageResponse) error {
+		split := strings.Split(input.FromPageUrl, "/SitePages/")
+		fromUrl := fmt.Sprintf("%s", split[0])
+
+		pageNameRaw1 := fmt.Sprintf("%s", split[1])
+		pageName := fmt.Sprintf("%s", strings.Split(pageNameRaw1, "?")[0])
+
+		result, err := powershell.CopyPage(fromUrl, input.ToSiteUrl, pageName)
+
+		if (err == nil) && (result != nil) {
+			output.NewPageUrl = result.NewPageURL
+		}
+		return err
+
+	})
+
+	u.SetTitle("Copy a page ")
+	u.SetDescription(`
+	
 
 `)
 	u.SetExpectedErrors(status.InvalidArgument)

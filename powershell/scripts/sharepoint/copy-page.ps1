@@ -1,36 +1,40 @@
-# [9:11 AM] Mele Fabrizio
+param (
+    [Parameter(Mandatory = $true)]
+    [string]$SourceSiteURL ,
+    [Parameter(Mandatory = $true)]
+    [string]$DestinationSiteURL ,
+    [Parameter(Mandatory = $true)]
+    [string]$PageName
 
-# •    https://christianiabpos.sharepoint.com/sites/intranets-hr/SitePages/On-boarding.aspx
+)
 
-# •    https://christianiabpos.sharepoint.com/sites/intranets-hr/SitePages/Buddy-Program.aspx
 
-# •    https://christianiabpos.sharepoint.com/sites/intranets-hr/SitePages/New2Nets.aspx
 
-# [9:11 AM] Mele Fabrizio
-
-# Inside:
-
-# [9:11 AM] Mele Fabrizio
-
-#https://christianiabpos.sharepoint.com/sites/nexiintra-unit-gf-hr
-
-#Parameters
-$SourceSiteURL = "https://christianiabpos.sharepoint.com/sites/intranets-hr"
-$DestinationSiteURL = "https://christianiabpos.sharepoint.com/sites/nexiintra-unit-gf-hr"
-$PageName =  "New2Nets.aspx"
- 
-#Connect to Source Site
 Connect-PnPOnline -Url $SourceSiteURL -ClientId $PNPAPPID -Tenant $PNPTENANTID -CertificatePath "$PNPCERTIFICATEPATH" 
 
-#Export the Source page
-$TempFile = [System.IO.Path]::GetTempFileName()
-Export-PnPPage -Force -Identity $PageName -Out $TempFile
- 
-#Import the page to the destination site
+
+$TempFile = "$PSScriptRoot/copypagetemplate.xml"
+$TempFile2 = "$PSScriptRoot/copypagetemplate2.xml"
+Export-PnPPage -Force -Identity $PageName -Out $TempFile -PersistBrandingFiles
+
+$newPageName = "copy-$($PageName)"
+$replaceTag = "PageName=""$($PageName)"""
+$replaceWith = "PageName=""$($newPageName)"""
+
+[string]$text = Get-Content $TempFile
+$text.Replace($replaceTag, $replaceWith) | Set-Content $TempFile2 
+
+
+
 
 Connect-PnPOnline -Url $DestinationSiteURL -ClientId $PNPAPPID -Tenant $PNPTENANTID -CertificatePath "$PNPCERTIFICATEPATH" 
 
-Invoke-PnPSiteTemplate -Path $TempFile
+Invoke-PnPSiteTemplate -Path $TempFile2
+$copyFileResult = @{
+
+    NewPageURL = "$DestinationSiteURL/SitePages/$newPageName"
+  }
 
 
-#Read more: https://www.sharepointdiary.com/2020/07/sharepoint-online-copy-pages-to-another-site-using-powershell.html#ixzz88YGGWHXQ
+ConvertTo-Json  -InputObject $copyFileResult -Depth 10
+| Out-File -FilePath $PSScriptRoot/output.json -Encoding:utf8NoBOM

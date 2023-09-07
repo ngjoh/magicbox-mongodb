@@ -45,6 +45,9 @@ type SiteNavigation struct {
 	Title      string     `json:"title"`
 	Siteurl    string     `json:"siteurl"`
 }
+type CopyPageResult struct {
+	NewPageURL string `json:"NewPageURL"`
+}
 
 func GetHubSpokesSitePages(hubId string) (*SitePages, error) {
 	powershellScript := "scripts/sharepoint/get-hubsite-spokes-pages.ps1"
@@ -68,6 +71,13 @@ func CopyLibrary(sourceUrl string, destinationUrl string, sourceLibray string, d
 	powershellScript := "scripts/sharepoint/copy-library.ps1"
 	powershellArguments := fmt.Sprintf("-SourceSiteURL \"%s\" -DestinationSiteURL  \"%s\" -SourceLibraryName \"%s\" -DestinationLibraryName  \"%s\"", sourceUrl, destinationUrl, sourceLibray, destinationLibray)
 	return RunPNP[[]HubSite]("koksmat", powershellScript, powershellArguments, "", CallbackMockup)
+}
+
+func CopyPage(sourceUrl string, destinationUrl string, pageName string) (*CopyPageResult, error) {
+
+	powershellScript := "scripts/sharepoint/copy-page.ps1"
+	powershellArguments := fmt.Sprintf("-SourceSiteURL \"%s\" -DestinationSiteURL  \"%s\" -PageName \"%s\"", sourceUrl, destinationUrl, pageName)
+	return RunPNP[CopyPageResult]("koksmat", powershellScript, powershellArguments, "", CallbackMockup)
 }
 
 func RenameLibrary(url string, fromlibrary string, tolibrary string, newUrl string) (*[]HubSite, error) {
