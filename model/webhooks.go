@@ -1,10 +1,22 @@
 package model
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/kamva/mgm/v3"
+	"github.com/koksmat-com/koksmat/config"
 	"github.com/koksmat-com/koksmat/db"
+	"github.com/koksmat-com/koksmat/officegraph"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type EventStruct struct {
@@ -97,4 +109,119 @@ func SaveWebhookEvent(data WebhookEventStruct) error {
 		WebhookEventStruct: data,
 	}
 	return mgm.Coll(newRecord).Create(newRecord)
+}
+
+func (e *WebhookEvent) Hash() string {
+	return fmt.Sprintf("%s:%s", e.ResourceData.OdataID, e.ResourceData.OdataEtag)
+}
+
+type CachedWebhookItems struct {
+	Event WebhookEvent `bson:",inline"`
+	Data  interface{}  `bson:"data"`
+}
+
+func addToCollection(databaseName string, collectionName string, event WebhookEvent, data []byte) {
+	ctx := context.TODO()
+
+	// Set client options
+	clientOptions := options.Client().ApplyURI(config.MongoConnectionString())
+
+	// Connect to MongoDB
+	client, err := mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		if err := client.Disconnect(ctx); err != nil {
+			log.Println("addToCollection", err)
+		}
+	}()
+
+	coll := client.Database(databaseName).Collection(collectionName)
+	var v interface{}
+
+	json.Unmarshal(data, &v)
+	cachedItem := &CachedWebhookItems{
+		Event: event,
+		Data:  v,
+	}
+
+	_, err = coll.InsertOne(ctx, cachedItem)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+func RunWebhookEventParser() error {
+	loops := 0
+	log.Println("Webhook event processor starting")
+	for {
+		loops++
+
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+		defer cancel()
+
+		results, err := mgm.Coll(&WebhookEvent{}).Find(context.TODO(), bson.D{{"processed", false}}, options.Find().SetSort(bson.D{{"created_at", 1}}))
+		if err != nil {
+
+			return err
+		}
+
+		accessToken := ""
+
+		for results.Next(ctx) {
+			var webhookEvent WebhookEvent
+
+			if err = results.Decode(&webhookEvent); err != nil {
+				return err
+			}
+
+			if accessToken == "" {
+				_, accessToken, err = officegraph.GetClient()
+				if err != nil {
+					log.Println("Error getting access token", err)
+					continue
+				}
+			}
+			url := fmt.Sprintf("https://graph.microsoft.com/v1.0/%s", webhookEvent.WebhookEventStruct.Resource)
+			req, err := http.NewRequest("GET", url, nil)
+			req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+			client := &http.Client{}
+			rsp, err := client.Do(req)
+
+			if err != nil {
+				log.Println("Error getting resource data", err)
+				continue
+			}
+
+			if strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode/100 == 2 {
+
+				bodyBytes, _ := io.ReadAll(rsp.Body)
+				defer func() { _ = rsp.Body.Close() }()
+				//data := fmt.Sprintf("%s", bodyBytes)
+
+				addToCollection(config.DatabaseName(), "cached_webhook_items", webhookEvent, bodyBytes)
+
+				//log.Println(data)
+
+			} else {
+				log.Println("Error getting resource data", rsp.StatusCode)
+			}
+			webhookEvent.Processed = true
+			updateErr := mgm.Coll(&webhookEvent).Update(&webhookEvent)
+			if updateErr != nil {
+				log.Println("Error updating web hook", updateErr)
+			}
+			//log.Println(webhookEvent.ID)
+
+		}
+		results.Close(ctx)
+
+		time.Sleep(2 * time.Second)
+		if (loops % 10) == 0 {
+			log.Println("Still here", loops)
+		}
+
+	}
 }

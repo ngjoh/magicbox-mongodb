@@ -67,9 +67,9 @@ func TestAddRoomDevNiels(t *testing.T) {
 		Resource:           s("/users/room-dk-kb601-31m3@nets.eu/events"),
 		ExpirationDateTime: &time,
 
-		NotificationUrl: s("https://niels-mac.nets-intranets.com/api/v1/subscription/notify"),
-		//NotificationUrl: s("https://magicbox.nexi-intra.com/api/v1/subscription/notify"),
-		ClientState: s("room"),
+		//NotificationUrl: s("https://niels-mac.nets-intranets.com/api/v1/subscription/notify"),
+		NotificationUrl: s("https://magicbox.nexi-intra.com/api/v1/subscription/notify"),
+		ClientState:     s("room"),
 	}
 
 	response, err := c.SubscriptionsSubscriptionCreateSubscription(ctx, *sub)
@@ -117,7 +117,7 @@ func TestAddRoomProd(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	time := time.Now().Add(time.Hour * 24 * 1)
+	time := time.Now().Add(time.Hour * 24 * 2)
 
 	sub := &MicrosoftGraphSubscription{
 		//Id:                 s("1"),
@@ -145,7 +145,7 @@ func TestAddUsersProd(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	time := time.Now().Add(time.Hour * 24 * 1)
+	time := time.Now().Add(time.Hour * 24 * 2)
 
 	sub := &MicrosoftGraphSubscription{
 		//Id:                 s("1"),

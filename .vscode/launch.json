@@ -95,7 +95,16 @@
             "mode": "auto",
             "program": "${workspaceFolder}",
             "args": ["ping","nats"]
-        },        {
+        },     
+        {
+            "name": "Webhook",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["webhook","parse"]
+        }, 
+           {
             "name": "Read Users from Excel",
             "type": "go",
             "request": "launch",

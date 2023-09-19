@@ -73,10 +73,10 @@ func CopyLibrary(sourceUrl string, destinationUrl string, sourceLibray string, d
 	return RunPNP[[]HubSite]("koksmat", powershellScript, powershellArguments, "", CallbackMockup)
 }
 
-func CopyPage(sourceUrl string, destinationUrl string, pageName string) (*CopyPageResult, error) {
+func CopyPage(sourceUrl string, destinationUrl string, pageName string, destpageName string) (*CopyPageResult, error) {
 
 	powershellScript := "scripts/sharepoint/copy-page.ps1"
-	powershellArguments := fmt.Sprintf("-SourceSiteURL \"%s\" -DestinationSiteURL  \"%s\" -PageName \"%s\"", sourceUrl, destinationUrl, pageName)
+	powershellArguments := fmt.Sprintf("-SourceSiteURL \"%s\" -DestinationSiteURL  \"%s\" -PageName \"%s\"  -DestPageName \"copy-%s\"", sourceUrl, destinationUrl, pageName, destpageName)
 	return RunPNP[CopyPageResult]("koksmat", powershellScript, powershellArguments, "", CallbackMockup)
 }
 

@@ -5,7 +5,9 @@ param (
     [string]$DestinationSiteURL ,
     [Parameter(Mandatory = $true)]
     [string]$PageName
-
+    [Parameter(Mandatory = $true)]
+    [string]$DestPageName
+    
 )
 
 
@@ -17,7 +19,7 @@ $TempFile = "$PSScriptRoot/copypagetemplate.xml"
 $TempFile2 = "$PSScriptRoot/copypagetemplate2.xml"
 Export-PnPPage -Force -Identity $PageName -Out $TempFile -PersistBrandingFiles
 
-$newPageName = "copy-$($PageName)"
+$newPageName = $DestPageName
 $replaceTag = "PageName=""$($PageName)"""
 $replaceWith = "PageName=""$($newPageName)"""
 

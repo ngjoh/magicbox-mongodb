@@ -98,8 +98,12 @@ func copyPage() usecase.Interactor {
 
 		pageNameRaw1 := fmt.Sprintf("%s", split[1])
 		pageName := fmt.Sprintf("%s", strings.Split(pageNameRaw1, "?")[0])
+		destPageName := pageName
+		if len(strings.Split(pageName, "/")) > 1 {
+			destPageName = strings.Split(pageName, "/")[1]
+		}
 
-		result, err := powershell.CopyPage(fromUrl, input.ToSiteUrl, pageName)
+		result, err := powershell.CopyPage(fromUrl, input.ToSiteUrl, pageName, destPageName)
 
 		if (err == nil) && (result != nil) {
 			output.NewPageUrl = result.NewPageURL
