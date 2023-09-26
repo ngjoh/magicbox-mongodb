@@ -1,0 +1,826 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.NetStandard.ResXResourceReader, PnP.Framework, Version=1.12.85.0, Culture=neutral, PublicKeyToken=0d501f89f11b748c</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.NetStandard.ResXResourceWriter, PnP.Framework, Version=1.12.85.0, Culture=neutral, PublicKeyToken=0d501f89f11b748c</value>
+  </resheader>
+  <data name="Field_Change_Published_Date_DisplayName" xml:space="preserve">
+    <value>Change Published Date</value>
+  </data>
+  <data name="Field_Translation_languages_DisplayName" xml:space="preserve">
+    <value>Lingue di traduzione</value>
+  </data>
+  <data name="Field_Translation_languages_Description" xml:space="preserve">
+    <value>Lingue in cui questo elemento è stato tradotto o è in corso la traduzione</value>
+  </data>
+  <data name="Field_Translation_Source_ID_DisplayName" xml:space="preserve">
+    <value>ID origine della traduzione</value>
+  </data>
+  <data name="Field_Translation_Source_ID_Description" xml:space="preserve">
+    <value>ID univoco dell'elemento su cui è basata la traduzione</value>
+  </data>
+  <data name="Field_Translation_DisplayName" xml:space="preserve">
+    <value>Traduzione</value>
+  </data>
+  <data name="Field_Translation_Description" xml:space="preserve">
+    <value>Questo elemento è una traduzione</value>
+  </data>
+  <data name="Field_Shared_With_DisplayName" xml:space="preserve">
+    <value>Condiviso con</value>
+  </data>
+  <data name="Field_Item_Language_DisplayName" xml:space="preserve">
+    <value>Lingua elemento</value>
+  </data>
+  <data name="Field_Item_Language_Description" xml:space="preserve">
+    <value>Lingua di questo elemento</value>
+  </data>
+  <data name="Field_Shared_With_Details_DisplayName" xml:space="preserve">
+    <value>Condiviso con dettagli</value>
+  </data>
+  <data name="List_be_social_for_nexi_group_Title" xml:space="preserve">
+    <value>be_social_for_nexi_group</value>
+  </data>
+  <data name="ListView_be_social_for_nexi_group_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_be_social_for_nexi_group_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_be_social_for_nexi_group_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_LANG_DisplayName" xml:space="preserve">
+    <value>LANG</value>
+  </data>
+  <data name="Field_Doc_type_DisplayName" xml:space="preserve">
+    <value>Doc_type</value>
+  </data>
+  <data name="Field_Image_Tags_DisplayName" xml:space="preserve">
+    <value>Tag immagine</value>
+  </data>
+  <data name="Field_be_social_for_nexi_group_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_be_social_for_nexi_group_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_culture_cards_Title" xml:space="preserve">
+    <value>culture_cards</value>
+  </data>
+  <data name="ListView_culture_cards_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_culture_cards_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_culture_cards_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Image_Tags_DisplayName" xml:space="preserve">
+    <value>Tag immagine</value>
+  </data>
+  <data name="Field_Extracted_Text_DisplayName" xml:space="preserve">
+    <value>Extracted Text</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_culture_cards_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_culture_cards_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Customer_Letters_Title" xml:space="preserve">
+    <value>Customer Letters</value>
+  </data>
+  <data name="ListView_Customer_Letters_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_Customer_Letters_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Customer_Letters_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_KeyPoints_DisplayName" xml:space="preserve">
+    <value>KeyPoints</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Customer_Letters_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Customer_Letters_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Documents_Title" xml:space="preserve">
+    <value>Documenti</value>
+  </data>
+  <data name="ListView_Documents_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="ListView_Documents_GDPR_documents_Title" xml:space="preserve">
+    <value>GDPR_documents</value>
+  </data>
+  <data name="Field_Documents_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Documents_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Extracted_Text_DisplayName" xml:space="preserve">
+    <value>Extracted Text</value>
+  </data>
+  <data name="Field_Image_Tags_DisplayName" xml:space="preserve">
+    <value>Tag immagine</value>
+  </data>
+  <data name="Field_Location_DisplayName" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Field_Documents_Shared_With_DisplayName" xml:space="preserve">
+    <value>Condiviso con</value>
+  </data>
+  <data name="Field_Documents_Shared_With_Details_DisplayName" xml:space="preserve">
+    <value>Condiviso con dettagli</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Documents_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Documents_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Events_Title" xml:space="preserve">
+    <value>Eventi</value>
+  </data>
+  <data name="ListView_Events_Calendar_Title" xml:space="preserve">
+    <value>Calendario</value>
+  </data>
+  <data name="ListView_Events_All_Events_Title" xml:space="preserve">
+    <value>Tutti gli eventi</value>
+  </data>
+  <data name="ListView_Events_Current_Events_Title" xml:space="preserve">
+    <value>Eventi correnti</value>
+  </data>
+  <data name="Field_Events_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Events_Location_DisplayName" xml:space="preserve">
+    <value>Luogo</value>
+  </data>
+  <data name="Field_Events_Start_Time_DisplayName" xml:space="preserve">
+    <value>Ora inizio</value>
+  </data>
+  <data name="Field_Events_End_Time_DisplayName" xml:space="preserve">
+    <value>Ora fine</value>
+  </data>
+  <data name="Field_Events_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Events_All_Day_Event_DisplayName" xml:space="preserve">
+    <value>Giornata intera</value>
+  </data>
+  <data name="Field_Events_Recurrence_DisplayName" xml:space="preserve">
+    <value>Ricorrenza</value>
+  </data>
+  <data name="Field_Events_Category_DisplayName" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="Field_Banner_Image_URL_DisplayName" xml:space="preserve">
+    <value>URL immagine banner</value>
+  </data>
+  <data name="Field_Banner_Image_URL_Description" xml:space="preserve">
+    <value>URL dell'immagine del banner</value>
+  </data>
+  <data name="List_everyones_welcome_at_nexi_Title" xml:space="preserve">
+    <value>everyones_welcome_at_nexi</value>
+  </data>
+  <data name="ListView_everyones_welcome_at_nexi_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_everyones_welcome_at_nexi_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_everyones_welcome_at_nexi_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Image_Tags_DisplayName" xml:space="preserve">
+    <value>Tag immagine</value>
+  </data>
+  <data name="Field_Extracted_Text_DisplayName" xml:space="preserve">
+    <value>Extracted Text</value>
+  </data>
+  <data name="Field_everyones_welcome_at_nexi_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_everyones_welcome_at_nexi_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Flash_cards_Title" xml:space="preserve">
+    <value>Flash_cards</value>
+  </data>
+  <data name="ListView_Flash_cards_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Flash_cards_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Flash_cards_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Image_Tags_DisplayName" xml:space="preserve">
+    <value>Tag immagine</value>
+  </data>
+  <data name="Field_Extracted_Text_DisplayName" xml:space="preserve">
+    <value>Extracted Text</value>
+  </data>
+  <data name="Field_Flash_cards_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Flash_cards_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Form_Templates_Title" xml:space="preserve">
+    <value>Modelli di modulo</value>
+  </data>
+  <data name="List_Form_Templates_Description" xml:space="preserve">
+    <value>Questa raccolta contiene modelli di modulo approvati dall'amministratore e attivati nella raccolta siti.</value>
+  </data>
+  <data name="ListView_Form_Templates_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="ListView_Form_Templates_All_Forms_Title" xml:space="preserve">
+    <value>All Forms</value>
+  </data>
+  <data name="Field_Form_Templates_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Form_Templates_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Form_Templates_Form_Name_DisplayName" xml:space="preserve">
+    <value>Nome modulo</value>
+  </data>
+  <data name="Field_Form_Templates_Form_Category_DisplayName" xml:space="preserve">
+    <value>Categoria modulo</value>
+  </data>
+  <data name="Field_Form_Templates_Form_Version_DisplayName" xml:space="preserve">
+    <value>Versione modulo</value>
+  </data>
+  <data name="Field_Form_Templates_Form_ID_DisplayName" xml:space="preserve">
+    <value>ID modulo</value>
+  </data>
+  <data name="Field_Form_Templates_Form_Locale_DisplayName" xml:space="preserve">
+    <value>Impostazioni locali modulo</value>
+  </data>
+  <data name="Field_Form_Templates_Form_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione modulo</value>
+  </data>
+  <data name="Field_Form_Templates_Show_in_Catalog_DisplayName" xml:space="preserve">
+    <value>Mostra nel catalogo</value>
+  </data>
+  <data name="Field_Form_Templates_Form_Name_DisplayName" xml:space="preserve">
+    <value>Nome modulo</value>
+  </data>
+  <data name="Field_Form_Templates_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Form_Templates_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="List_Group_Finance_Title" xml:space="preserve">
+    <value>Group Finance</value>
+  </data>
+  <data name="ListView_Group_Finance_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_Group_Finance_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Group_Finance_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Group_Finance_Shared_With_DisplayName" xml:space="preserve">
+    <value>Condiviso con</value>
+  </data>
+  <data name="Field_Group_Finance_Shared_With_Details_DisplayName" xml:space="preserve">
+    <value>Condiviso con dettagli</value>
+  </data>
+  <data name="Field_KeyPoints_DisplayName" xml:space="preserve">
+    <value>KeyPoints</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Group_Finance_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Group_Finance_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Organograms_Title" xml:space="preserve">
+    <value>Organograms</value>
+  </data>
+  <data name="ListView_Organograms_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_Organograms_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Organograms_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Organograms_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Organograms_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Planning_and_Reporting_Title" xml:space="preserve">
+    <value>Planning and Reporting</value>
+  </data>
+  <data name="ListView_Planning_and_Reporting_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_Planning_and_Reporting_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Planning_and_Reporting_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Planning_and_Reporting_Shared_With_DisplayName" xml:space="preserve">
+    <value>Condiviso con</value>
+  </data>
+  <data name="Field_Planning_and_Reporting_Shared_With_Details_DisplayName" xml:space="preserve">
+    <value>Condiviso con dettagli</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Planning_and_Reporting_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Planning_and_Reporting_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Process_Flashcards_Title" xml:space="preserve">
+    <value>Process_Flashcards</value>
+  </data>
+  <data name="ListView_Process_Flashcards_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Process_Flashcards_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Process_Flashcards_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Process_Flashcards_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Process_Flashcards_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Regulations_Title" xml:space="preserve">
+    <value>Regulations</value>
+  </data>
+  <data name="ListView_Regulations_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="ListView_Regulations_for_Consultants_Title" xml:space="preserve">
+    <value>for Consultants</value>
+  </data>
+  <data name="ListView_Regulations_copia_incolla_Title" xml:space="preserve">
+    <value>copia_incolla</value>
+  </data>
+  <data name="Field_Regulations_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Regulations_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Document_Code_DisplayName" xml:space="preserve">
+    <value>Document Code</value>
+  </data>
+  <data name="Field_Approval_Date_DisplayName" xml:space="preserve">
+    <value>Approval Date</value>
+  </data>
+  <data name="Field_Show_New_Label_until_DisplayName" xml:space="preserve">
+    <value>Show New Label until</value>
+  </data>
+  <data name="Field_Show_Update_Label_Until_DisplayName" xml:space="preserve">
+    <value>Show Update Label Until</value>
+  </data>
+  <data name="Field_Show_Update_Label_Until_Description" xml:space="preserve">
+    <value>This fiels describes for how long the "Update" label will be shown in web part</value>
+  </data>
+  <data name="Field_Effective_Date_DisplayName" xml:space="preserve">
+    <value>Effective Date</value>
+  </data>
+  <data name="Field_Document_Version_DisplayName" xml:space="preserve">
+    <value>Document Version</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Document_Title_DisplayName" xml:space="preserve">
+    <value>Document Title</value>
+  </data>
+  <data name="Field_Process_DisplayName" xml:space="preserve">
+    <value>Process</value>
+  </data>
+  <data name="Field_ContactPerson_DisplayName" xml:space="preserve">
+    <value>ContactPerson</value>
+  </data>
+  <data name="Field_NotesCurrentDocument_DisplayName" xml:space="preserve">
+    <value>NotesCurrentDocument</value>
+  </data>
+  <data name="Field_CrossReferenceOtherRegulations_DisplayName" xml:space="preserve">
+    <value>CrossReferenceOtherRegulations</value>
+  </data>
+  <data name="Field_Process_Owner_DisplayName" xml:space="preserve">
+    <value>Process Owner</value>
+  </data>
+  <data name="Field_Regulations_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Regulations_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Site_Assets_Title" xml:space="preserve">
+    <value>Risorse del sito</value>
+  </data>
+  <data name="List_Site_Assets_Description" xml:space="preserve">
+    <value>Utilizzare questa raccolta per archiviare i file contenuti nelle pagine all'interno del sito, ad esempio immagini in pagine wiki.</value>
+  </data>
+  <data name="ListView_Site_Assets_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_Site_Assets_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Site_Assets_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Extracted_Text_DisplayName" xml:space="preserve">
+    <value>Extracted Text</value>
+  </data>
+  <data name="Field_Location_DisplayName" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Field_Image_Tags_DisplayName" xml:space="preserve">
+    <value>Tag immagine</value>
+  </data>
+  <data name="Field_Site_Assets_Shared_With_DisplayName" xml:space="preserve">
+    <value>Condiviso con</value>
+  </data>
+  <data name="Field_Site_Assets_Shared_With_Details_DisplayName" xml:space="preserve">
+    <value>Condiviso con dettagli</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Site_Assets_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Site_Assets_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="List_Site_Pages_Title" xml:space="preserve">
+    <value>Pagine del sito</value>
+  </data>
+  <data name="ListView_Site_Pages_By_Author_Title" xml:space="preserve">
+    <value>Per autore</value>
+  </data>
+  <data name="ListView_Site_Pages_Recent_Changes_Title" xml:space="preserve">
+    <value>Modifiche recenti</value>
+  </data>
+  <data name="ListView_Site_Pages_All_Pages_Title" xml:space="preserve">
+    <value>Tutte le pagine</value>
+  </data>
+  <data name="ListView_Site_Pages_By_Editor_Title" xml:space="preserve">
+    <value>Per redattore</value>
+  </data>
+  <data name="ListView_Site_Pages_Created_By_Me_Title" xml:space="preserve">
+    <value>Create dall'utente corrente</value>
+  </data>
+  <data name="Field_Site_Pages_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Site_Pages_Authoring_Canvas_Content_DisplayName" xml:space="preserve">
+    <value>Contenuto area del contenuto</value>
+  </data>
+  <data name="Field_Site_Pages_Banner_Image_URL_DisplayName" xml:space="preserve">
+    <value>URL immagine banner</value>
+  </data>
+  <data name="Field_Site_Pages_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Site_Pages_Promoted_State_DisplayName" xml:space="preserve">
+    <value>Stato Alzato di livello</value>
+  </data>
+  <data name="Field_Site_Pages_First_Published_Date_DisplayName" xml:space="preserve">
+    <value>Data prima pubblicazione</value>
+  </data>
+  <data name="Field_Site_Pages_Page_Layout_Content_DisplayName" xml:space="preserve">
+    <value>Contenuto layout di pagina</value>
+  </data>
+  <data name="Field_Site_Pages_Author_Byline_DisplayName" xml:space="preserve">
+    <value>Riga autore</value>
+  </data>
+  <data name="Field_Site_Pages_Topic_header_DisplayName" xml:space="preserve">
+    <value>Intestazione argomento</value>
+  </data>
+  <data name="Field_Site_Pages_Site_Page_Flags_DisplayName" xml:space="preserve">
+    <value>Contrassegni della pagina del sito</value>
+  </data>
+  <data name="Field_Site_Pages_Original_Source_Url_DisplayName" xml:space="preserve">
+    <value>URL di origine originale</value>
+  </data>
+  <data name="Field_Site_Pages_Original_Source_Site_ID_DisplayName" xml:space="preserve">
+    <value>ID sito di origine originale</value>
+  </data>
+  <data name="Field_Site_Pages_Original_Source_Web_ID_DisplayName" xml:space="preserve">
+    <value>ID Web di origine originale</value>
+  </data>
+  <data name="Field_Site_Pages_Original_Source_List_ID_DisplayName" xml:space="preserve">
+    <value>ID elenco di origine originale</value>
+  </data>
+  <data name="Field_Site_Pages_Original_Source_Item_ID_DisplayName" xml:space="preserve">
+    <value>ID elemento di origine originale</value>
+  </data>
+  <data name="Field_Site_Pages_Translation_languages_DisplayName" xml:space="preserve">
+    <value>Lingue di traduzione</value>
+  </data>
+  <data name="Field_Site_Pages_Item_Language_DisplayName" xml:space="preserve">
+    <value>Lingua elemento</value>
+  </data>
+  <data name="Field_Site_Pages_Translation_Source_ID_DisplayName" xml:space="preserve">
+    <value>ID origine della traduzione</value>
+  </data>
+  <data name="Field_Site_Pages_Translation_DisplayName" xml:space="preserve">
+    <value>Traduzione</value>
+  </data>
+  <data name="Field_Site_Pages_Call_To_Action_DisplayName" xml:space="preserve">
+    <value>Invito all'azione</value>
+  </data>
+  <data name="Field_Site_Pages_Shared_With_DisplayName" xml:space="preserve">
+    <value>Condiviso con</value>
+  </data>
+  <data name="Field_Site_Pages_Shared_With_Details_DisplayName" xml:space="preserve">
+    <value>Condiviso con dettagli</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="List_Style_Library_Title" xml:space="preserve">
+    <value>Raccolta stili</value>
+  </data>
+  <data name="List_Style_Library_Description" xml:space="preserve">
+    <value>Utilizzare la raccolta stili per archiviare fogli di stile, ad esempio file CSS o XSL. I fogli di stile della raccolta possono essere utilizzati in questo sito e nei relativi siti secondari.</value>
+  </data>
+  <data name="ListView_Style_Library_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_Style_Library_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_Style_Library_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_Style_Library_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_Style_Library_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="List_video_Title" xml:space="preserve">
+    <value>video</value>
+  </data>
+  <data name="ListView_video_All_Documents_Title" xml:space="preserve">
+    <value>Tutti i documenti</value>
+  </data>
+  <data name="Field_video_Title_DisplayName" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="Field_video_Description_DisplayName" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Field_Tags_DisplayName" xml:space="preserve">
+    <value>Tags</value>
+  </data>
+  <data name="Field_video_Shared_With_DisplayName" xml:space="preserve">
+    <value>Condiviso con</value>
+  </data>
+  <data name="Field_video_Shared_With_Details_DisplayName" xml:space="preserve">
+    <value>Condiviso con dettagli</value>
+  </data>
+  <data name="Field_Color_Tag_DisplayName" xml:space="preserve">
+    <value>Tag colore</value>
+  </data>
+  <data name="Field_video_Comment_count_DisplayName" xml:space="preserve">
+    <value>Conteggio commenti</value>
+  </data>
+  <data name="Field_video_Like_count_DisplayName" xml:space="preserve">
+    <value>Conteggio Mi piace</value>
+  </data>
+  <data name="CustomAction_{17b25217-99d7-42a3-b2fb-1d422a28d036}_Title" xml:space="preserve">
+    <value>AlertManager</value>
+  </data>
+  <data name="CustomAction_{f7176261-21f4-4aa4-a371-595d2f8c56cf}_Title" xml:space="preserve">
+    <value>NewsExtender</value>
+  </data>
+  <data name="CustomAction_{9eccf001-d6cf-4598-af2a-d93a6c3c7e5d}_Title" xml:space="preserve">
+    <value>FatFooter</value>
+  </data>
+  <data name="CustomAction_{70719e88-8b09-47e2-aa80-f0d97a15597f}_Title" xml:space="preserve">
+    <value>SharePointToolbar</value>
+  </data>
+  <data name="FooterNavigationNode_2014_2032_Title" xml:space="preserve">
+    <value>Websites</value>
+  </data>
+  <data name="FooterNavigationNode_2032_2041_Title" xml:space="preserve">
+    <value>Nexi Group</value>
+  </data>
+  <data name="FooterNavigationNode_2032_2033_Title" xml:space="preserve">
+    <value>Nexi.it</value>
+  </data>
+  <data name="FooterNavigationNode_2032_2034_Title" xml:space="preserve">
+    <value>Nets.eu</value>
+  </data>
+  <data name="FooterNavigationNode_2032_2048_Title" xml:space="preserve">
+    <value>SIA.eu</value>
+  </data>
+  <data name="FooterNavigationNode_2014_2015_Title" xml:space="preserve">
+    <value>LinkedIn</value>
+  </data>
+  <data name="FooterNavigationNode_2015_2037_Title" xml:space="preserve">
+    <value>Nexi Group</value>
+  </data>
+  <data name="FooterNavigationNode_2015_2028_Title" xml:space="preserve">
+    <value>Nexi</value>
+  </data>
+  <data name="FooterNavigationNode_2015_2016_Title" xml:space="preserve">
+    <value>Nets Group</value>
+  </data>
+  <data name="FooterNavigationNode_2015_2049_Title" xml:space="preserve">
+    <value>SIA</value>
+  </data>
+  <data name="FooterNavigationNode_2014_2019_Title" xml:space="preserve">
+    <value>Facebook</value>
+  </data>
+  <data name="FooterNavigationNode_2019_2029_Title" xml:space="preserve">
+    <value>Nexi</value>
+  </data>
+  <data name="FooterNavigationNode_2019_2020_Title" xml:space="preserve">
+    <value>Nets Group</value>
+  </data>
+  <data name="FooterNavigationNode_2014_2017_Title" xml:space="preserve">
+    <value>Twitter</value>
+  </data>
+  <data name="FooterNavigationNode_2017_2039_Title" xml:space="preserve">
+    <value>Nexi Group</value>
+  </data>
+  <data name="FooterNavigationNode_2017_2030_Title" xml:space="preserve">
+    <value>Nexi</value>
+  </data>
+  <data name="FooterNavigationNode_2017_2018_Title" xml:space="preserve">
+    <value>Nets Group</value>
+  </data>
+  <data name="FooterNavigationNode_2017_2050_Title" xml:space="preserve">
+    <value>SIA</value>
+  </data>
+  <data name="FooterNavigationNode_2014_2025_Title" xml:space="preserve">
+    <value>YouTube</value>
+  </data>
+  <data name="FooterNavigationNode_2025_2031_Title" xml:space="preserve">
+    <value>Nexi</value>
+  </data>
+  <data name="FooterNavigationNode_2025_2026_Title" xml:space="preserve">
+    <value>Nets Group</value>
+  </data>
+  <data name="NavigationNode_0_2035_Title" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="NavigationNode_0_2022_Title" xml:space="preserve">
+    <value>Our Group</value>
+  </data>
+  <data name="NavigationNode_0_2011_Title" xml:space="preserve">
+    <value>Our organisation</value>
+  </data>
+  <data name="NavigationNode_0_2012_Title" xml:space="preserve">
+    <value>Our transformation</value>
+  </data>
+  <data name="NavigationNode_0_2010_Title" xml:space="preserve">
+    <value>Nexi Group news</value>
+  </data>
+  <data name="NavigationNode_0_1033_Title" xml:space="preserve">
+    <value>Recenti</value>
+  </data>
+  <data name="NavigationNode_1033_2069_Title" xml:space="preserve">
+    <value>Flash_cards</value>
+  </data>
+  <data name="NavigationNode_1033_2068_Title" xml:space="preserve">
+    <value>Process_Flashcards</value>
+  </data>
+  <data name="NavigationNode_1033_2067_Title" xml:space="preserve">
+    <value>everyones_welcome_at_nexi</value>
+  </data>
+  <data name="NavigationNode_1033_2058_Title" xml:space="preserve">
+    <value>Regulations</value>
+  </data>
+  <data name="NavigationNode_1033_2047_Title" xml:space="preserve">
+    <value>Planning and Reporting</value>
+  </data>
+  <data name="NavigationNode_0_2052_Title" xml:space="preserve">
+    <value>video</value>
+  </data>
+  <data name="NavigationNode_0_2060_Title" xml:space="preserve">
+    <value>culture_cards</value>
+  </data>
+  <data name="NavigationNode_0_2062_Title" xml:space="preserve">
+    <value>be_social_for_nexi_group</value>
+  </data>
+</root>
