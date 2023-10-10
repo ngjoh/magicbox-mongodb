@@ -1,6 +1,7 @@
 package scaffold
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/atotto/clipboard"
@@ -8,6 +9,7 @@ import (
 
 func TestPnp2Ts(t *testing.T) {
 	sharepointMap := Pnp2Ts("template.xml")
+	fmt.Println(1)
 	// fmt.Println(sharepointMap)
 	clipboard.WriteAll(sharepointMap)
 
