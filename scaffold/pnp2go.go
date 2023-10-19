@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -93,7 +94,7 @@ func CommonField(name string, typeName string) string {
 	return fmt.Sprintf("%s %s", v, `
 	`)
 }
-func OutGo(list ListInstance) string {
+func OutGo(projDir string, list ListInstance) string {
 	dependencies := map[string]string{}
 
 	itemsMap := ""
@@ -193,7 +194,7 @@ func OutGo(list ListInstance) string {
 
 }
 func Pnp2Go(filename string) string {
-
+	projDir := createProject(time.Now().Format("2006-01-02T15:04:05"))
 	// Open our xmlFile
 	xmlFile, err := os.Open(filename)
 	// if we os.Open returns an error then handle it
@@ -226,7 +227,7 @@ func Pnp2Go(filename string) string {
 	`
 
 	for _, list := range template.Templates.ProvisioningTemplate.Lists.ListInstance {
-		sharepointMap += OutGo(list)
+		sharepointMap += OutGo(projDir, list)
 	}
 
 	return sharepointMap
