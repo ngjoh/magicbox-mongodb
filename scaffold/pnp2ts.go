@@ -4,18 +4,13 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
 	"strings"
 )
 
-func createProject(appId string) string {
+func createProject(dir string) string {
 
-	//dir := ".koksmat/sharepoint"
-	dir := "/Users/nielsgregersjohansen/code/koksmat/ui/apps/www/app/sharepoint/models"
-	os.MkdirAll(dir, os.ModePerm)
-	dir = path.Join(dir, appId)
 	os.MkdirAll(dir, os.ModePerm)
 
 	return dir
@@ -38,239 +33,17 @@ func writeFile(fileDir string, filename string, content string) {
 
 	file.WriteString(content)
 }
-func GetTsField(field Field) (string, string, string) {
-	switch field.Type {
-	case "Text":
-		return fmt.Sprintf(`item.fields.%s ? item.fields.%s : ""`, field.Name, field.Name),
-			fmt.Sprintf(`%s : z.string()`, field.Name), fmt.Sprintf(`<FormField
-			control={form.control}
-			name="%s"
-			render={({ field }) => (
-				<FormItem>
-					<FormLabel>%s</FormLabel>
-					<FormControl>
-						<Input placeholder="" {...field} />
-					</FormControl>
-					<FormDescription>
-						%s
-					</FormDescription>
-					<FormMessage />
-				</FormItem>
-			)}
-		/>`, field.Name, field.DisplayName, field.Description)
-	case "Note":
-		return fmt.Sprintf(`item.fields.%s ? item.fields.%s : ""`, field.Name, field.Name),
-			fmt.Sprintf(`%s : z.string()`, field.Name), ""
-	case "Number":
-		return fmt.Sprintf(`item.fields.%s`, field.Name),
-			fmt.Sprintf(`%s : z.number()`, field.Name), ""
-	case "Boolean":
-		return fmt.Sprintf(`item.fields.%s ? true : false`, field.Name),
-			fmt.Sprintf(`%s : z.boolean()`, field.Name), ""
-	case "DateTime":
-		return fmt.Sprintf(`new Date(item.fields.%s)`, field.Name),
-			fmt.Sprintf(`%s : z.date()`, field.Name), ""
-	case "User":
-		return fmt.Sprintf(`item.fields.%s`, field.Name),
-			fmt.Sprintf(`%s : z.string().nullable()`, field.Name), ""
-	case "Lookup":
-		return fmt.Sprintf(`mapLookup(%s,item.fields.%sLookupId)`, strings.ReplaceAll(strings.ReplaceAll(field.List, "{listid:", "\""), "}", "\""), field.Name),
-			fmt.Sprintf(`%s : z.object({
-				LookupId:z.number(),
-				LookupValue:z.string()
-			  }).nullable()`, field.Name), ""
-	case "LookupMulti":
-		return fmt.Sprintf(`mapLookupMulti(%s,item.fields.%sLookupId)`, strings.ReplaceAll(strings.ReplaceAll(field.List, "{listid:", "\""), "}", "\""), field.Name),
-			fmt.Sprintf(`%s : z.object({
-				LookupId:z.number(),
-				LookupValue:z.string()
-			  }).array().nullable()`, field.Name), ""
-	case "URL":
-		return fmt.Sprintf(`item.fields.%s`, field.Name),
-			fmt.Sprintf(`%s : z.string().nullable()`, field.Name), ""
-	case "Choice":
 
-		return fmt.Sprintf(`item.fields.%s ?? ""`, field.Name),
-			fmt.Sprintf(`%s : z.string().nullable()`, field.Name), ""
-	case "MultiChoice":
-		return fmt.Sprintf(`item.fields.%s ?? []`, field.Name),
-			fmt.Sprintf(`%s : z.string().nullable()`, field.Name), ""
-	case "Calculated":
-		return fmt.Sprintf(`item.fields.%s`, field.Name),
-			fmt.Sprintf(`%s : z.string().nullable()`, field.Name), ""
-	// case "Attachments":
-	// 	return "string"
-	// case "Guid":
-	// 	return "string"
-	// case "Integer":
-	// 	return "number"
-	// case "Counter":
-
-	// 	return "number"
-	// case "Currency":
-
-	// 	return "number"
-	default:
-		log.Println("Unknown type", field.Type)
-	}
-
-	return "", "", ""
-}
-
-func formCode(listName string, formFields string) string {
-	return fmt.Sprintf(`
-
-	
-	"use client"
-	import * as React from "react"
-	
-	import { useEffect, useState } from "react"
-	import { zodResolver } from "@hookform/resolvers/zod"
-	
-	import { useForm } from "react-hook-form"
-	import * as z from "zod"
-	
-	import {schema} from "."
-	import { IProgressProps, ProcessStatusOverlay } from "../../../../../components/progress"
-	
-	
-	import {
-		Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage
-	} from "../../../../../registry/new-york/ui/form"
-	
-	import { Input } from "../../../../../registry/new-york/ui/input"
-	
-	
-	// const profileFormSchema = z.object({
-	// 	country: z.string({ required_error: "Please select a country." }),
-	// 	unit: z.string({
-	// 		required_error: "Please select an unit to display.",
-	// 	}),
-	// 	channels: z.array(z.string({})).optional(),
-	// })
-	
-	type ProfileFormValues = z.infer<typeof schema>
-	
-	
-	
-	export function ProfileForm<T>(props: {
-		item: T
-	
-	}) {
-	
-		const [processing, setProcessing] = useState(false)
-		const [processPercentage, setProcessPercentage] = useState(0)
-		const [processTitle, setProcessTitle] = useState("")
-		const [processDescription, setProcessDescription] = useState("")
-		const [lastResult, setlastResult] = useState<any>()
-	
-	
-	
-	
-	
-	
-		// This can come from your database or API.
-		const defaultValues: Partial<ProfileFormValues> = {
-			Title:"xx"
-		}
-		const form = useForm<ProfileFormValues>({
-			resolver: zodResolver(schema),
-			defaultValues,
-			mode: "onChange",
-		})
-	
-		async function onSubmit(data: ProfileFormValues) {
-			setProcessTitle("Saving profile")
-			setProcessDescription("Please wait while we save your profile.")
-			setProcessPercentage(0)
-			setProcessing(true)
-	
-	
-		}
-	
-	
-	
-		useEffect(() => {
-	
-		}, [])
-	
-	
-	
-		return (
-			<div className="flex">
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-						%s
-					</form>
-				</Form>
-				<ProcessStatusOverlay
-					done={!processing}
-					title={processTitle}
-					description={processDescription}
-					progress={processPercentage}
-				/>
-	
-			</div>
-		)
-	
-	
-	}
-	
-	
-	
-	
-			
-		
-
-
-
-		
-	`, formFields)
-}
-func pageCode(listName string, formFields string) string {
-	return fmt.Sprintf(`
-
-	
-	"use client"
-
-	import * as React from "react"
-	
-	import {schema} from "."
-	import {ProfileForm} from "./form"
-	
-	
-	
-	
-	
-	export default function ItemPage() {
-	
-	
-	
-	
-		return (
-			<ProfileForm item={undefined}/>
-		)
-	
-	
-	}
-	
-	
-	
-	
-			
-		
-
-
-
-		
-	`)
-}
-func OutTS(projDir string, list ListInstance) string {
+func OutTS(projDir string, list ListInstance, moduleName string) string {
 
 	itemsMap := fmt.Sprintf(`
+
 	export function mapLookup(listName:string,item:any) {
+		return item ? {LookupId:parseInt(item),LookupValue:"id " + item + " in " + listName  }: null
 	}
 	export function mapLookupMulti(listName:string,item:any) {
+
+		return null
 	}
 // %s
 	export function map(item:any) {
@@ -279,9 +52,10 @@ func OutTS(projDir string, list ListInstance) string {
 	return {
 		Id : item.id,
 	Title : item.fields.Title,
-	CreatedBy : item.createdBy.user.email,
+	eTag : JSON.parse(item.eTag),
+	CreatedBy : item.createdBy.user.email ?? item.createdBy.user.displayName,
 	Created :new Date(item.createdDateTime),
-	ModifiedBy : item.lastModifiedBy.user.email,
+	ModifiedBy : item.lastModifiedBy.user.email ?? item.lastModifiedBy.user.displayName,
 	Modified : new Date(item.lastModifiedDateTime),	
 		`, list.Title)
 
@@ -292,19 +66,34 @@ func OutTS(projDir string, list ListInstance) string {
 		ModifiedBy : z.string(),
 		Modified: z.date(),
 		Id: z.string(),
+		eTag : z.string(),
 		Title: z.string(),
 		
 		`
 
 	formFields := ``
+	tableFields := ``
+
 	var standardFields []string = []string{"Id", "Title", "CreatedBy", "Created", "ModifiedBy", "Modified"}
+
+	formFields += FormTextfield("Title", "Title", "")
+	tableFields += TableTextColumn("Title", "Title")
+	tableFields += TableTextColumn("CreatedBy", "Created By")
+	tableFields += TableDateColumn("Created", "Created")
+	tableFields += TableTextColumn("ModifiedBy", "Modified By")
+	tableFields += TableDateColumn("Modified", "Modified")
+
 	var fieldNames []string = []string{}
 	var dependencies []string = []string{}
 	for _, field := range standardFields {
 		fieldNames = append(fieldNames, fmt.Sprintf("\"%s\"", field))
 	}
 	for _, field := range list.Fields.Field {
-		fieldMap, zodMap, formField := GetTsField(field)
+		if field.Name == "_ColorTag" {
+			break
+		}
+		fieldMap, zodMap, formField, tableField := GetTsField(field)
+		tableFields += tableField
 		if field.Type == "Lookup" || field.Type == "LookupMulti" {
 			dependencies = append(dependencies, fmt.Sprintf(`"%s"`, strings.ReplaceAll(strings.ReplaceAll(field.List, "{listid:", ""), "}", "")))
 		}
@@ -324,14 +113,18 @@ func OutTS(projDir string, list ListInstance) string {
 
 	}
 	itemsMap += "}}"
-	zodMaps += "})"
+	zodMaps += `})
+	
+	export type ItemType = z.infer<typeof schema>
+	`
 	sharepointMap := ""
 
 	sharepointMap += fmt.Sprintf(`
 	import z from "zod"
 
 		export const listName = "%s"
-		`, list.Title)
+		export const listURL = "%s"
+		`, list.Title, list.URL)
 
 	sharepointMap += fmt.Sprintf(`export type FieldNames = %s
 	`, strings.Join(fieldNames, "|"))
@@ -342,17 +135,19 @@ func OutTS(projDir string, list ListInstance) string {
 	sharepointMap += zodMaps
 	//sharepointMap += "}"
 	listName := strings.ReplaceAll(list.Title, " ", "")
-	pagedir := createSubdir(projDir, listName)
+	listDir := createSubdir(projDir, listName)
+	itemDir := createSubdir(listDir, "[itemid]")
 
-	writeFile(pagedir, fmt.Sprintf("index.ts"), sharepointMap)
-	writeFile(pagedir, fmt.Sprintf("form.tsx"), formCode(listName, formFields))
-
-	writeFile(pagedir, fmt.Sprintf("page.tsx"), pageCode(listName, ""))
+	writeFile(listDir, fmt.Sprintf("index.ts"), sharepointMap)
+	writeFile(listDir, fmt.Sprintf("form.tsx"), formCode(listName, formFields))
+	writeFile(listDir, fmt.Sprintf("table.tsx"), tableCode(listName, tableFields, moduleName))
+	writeFile(listDir, fmt.Sprintf("page.tsx"), listPageCode(listName, ""))
+	writeFile(itemDir, fmt.Sprintf("page.tsx"), itemPageCode(listName, ""))
 	return sharepointMap
 
 }
 
-func Pnp2Ts(sitename string, filename string) string {
+func Pnp2Ts(sitename string, filename string, moduleName string) string {
 
 	projDir := createProject(sitename) //time.Now().Format("2006-01-02T15:04:05"))
 	dollarDir := createSubdir(projDir, "$")
@@ -382,6 +177,7 @@ func Pnp2Ts(sitename string, filename string) string {
 	// Generated by pnp2ts - do not edit
 	// www.koksmat.com
 	// ************************************************************
+
 	import { https, httpsGetAll } from "@/lib/httphelper"
 	import z from "zod"
 
@@ -403,8 +199,43 @@ func Pnp2Ts(sitename string, filename string) string {
 	}
 
 	`
-	for _, list := range template.Templates.ProvisioningTemplate.Lists.ListInstance {
-		sharepointMap += OutTS(projDir, list)
+	fields := []Field{}
+	fields = append(fields, Field{
+		Name:        "Name",
+		DisplayName: "Name",
+		Type:        "Text",
+	})
+	fields = append(fields, Field{
+		Name:        "IsSiteAdmin",
+		DisplayName: "IsSiteAdmin",
+		Type:        "Boolean",
+	})
+	fields = append(fields, Field{
+		Name:        "EMail",
+		DisplayName: "EMail",
+		Type:        "Text",
+	})
+	fields = append(fields, Field{
+		Name:        "Notes",
+		DisplayName: "Notes",
+		Type:        "Text",
+	})
+	fields = append(fields, Field{
+		Name:        "ContentType",
+		DisplayName: "ContentType",
+		Type:        "Text",
+	})
+
+	userInformationList := ListInstance{
+		Title: "User Information List",
+		URL:   "User Information List",
+		Fields: Fields{
+			Field: fields,
+		},
+	}
+	listInstances := append(template.Templates.ProvisioningTemplate.Lists.ListInstance, userInformationList)
+	for _, list := range listInstances {
+		sharepointMap += OutTS(projDir, list, moduleName)
 	}
 	mapSrc := `
 	// ************************************************************
@@ -419,33 +250,38 @@ func Pnp2Ts(sitename string, filename string) string {
 	
 	`
 	linkSrc := `
+	"use client"
 	// ************************************************************
-	// Generated by pnp2ts - do not edit
+	// Generated by pnp2ts - do not edit .
 	// www.koksmat.com
 	// v0.1.0
 	// ************************************************************
 
 	import Link from "next/link";
-
+	import { Button } from "@/registry/new-york/ui/button";
+	import { ShowDefinitions } from "@/app/sharepoint/components/showlistsDefinitions";
+import { useContext } from "react";
+import { MagicboxContext } from "@/app/magicbox-context";
+import { map } from "..";
 	
 
 
-	export default function Page() {
-	
+	export default function Page({params}:{params:{site:string}}) {
+		const magicbox = useContext(MagicboxContext);
 		return (<div>
 	`
 
-	for _, list := range template.Templates.ProvisioningTemplate.Lists.ListInstance {
+	for _, list := range listInstances {
 		listName := strings.ReplaceAll(list.Title, " ", "")
 
 		linkSrc += fmt.Sprintf(`
 <div>
-		<Link href="./%s">%s</Link>		
+		<Button variant={"link"}><Link href="./%s">%s</Link></Button>		
 </div>
 `, listName, list.Title)
 
 		mapSrc += fmt.Sprintf(`
-import { listName as %sList,dependencies as %sDependencies } from "./%s";`, listName, listName, list.Title)
+import { listName as %sList,dependencies as %sDependencies } from "./%s";`, listName, listName, listName)
 	}
 
 	mapSrc += `
@@ -454,7 +290,7 @@ export function map(){
 	const dependencies = []
 `
 
-	for _, list := range template.Templates.ProvisioningTemplate.Lists.ListInstance {
+	for _, list := range listInstances {
 		listName := strings.ReplaceAll(list.Title, " ", "")
 		mapSrc += fmt.Sprintf(`
 dependencies.push({listName : %sList,
@@ -462,12 +298,13 @@ dependencies:  %sDependencies }) `, listName, listName)
 	}
 	mapSrc += `
 
+
 	return dependencies
 }
 
 `
 	linkSrc += `
-
+	<ShowDefinitions tenant={magicbox.tenant} site={params.site} map={map()} />
 	</div>)
 }
 

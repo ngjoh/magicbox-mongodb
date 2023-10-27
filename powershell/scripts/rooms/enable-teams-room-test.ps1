@@ -1,7 +1,7 @@
-$guid = New-Guid
-$mail = . "$psscriptroot/create-room.ps1"  -Name $guid -Capacity 10 -Prefix "test-"
+#$guid = New-Guid
+#$mail = . "$psscriptroot/create-room.ps1"  -Name $guid -Capacity 10 -Prefix "test-"
+$mail = "room-dk-kb601-21d4@nets.eu"
+. "$psscriptroot/enable-teams-room.ps1"   -Mail $mail -Password "n!ND12217001100"
 
-. "$psscriptroot/enable-teams-room.ps1"   -Mail $mail -Password "sdaf90jnc$sz!!a"
-
-. "$psscriptroot/remove-room.ps1"  -Mail $mail 
+#. "$psscriptroot/remove-room.ps1"  -Mail $mail 
 

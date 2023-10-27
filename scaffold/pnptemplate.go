@@ -97,6 +97,11 @@ type Field struct {
 		} `xml:"ArrayOfProperty"`
 	} `xml:"Customization"`
 }
+
+type Fields struct {
+	Text  string  `xml:",chardata"`
+	Field []Field `xml:"Field"`
+}
 type ListInstance struct {
 	Text                   string `xml:",chardata"`
 	Title                  string `xml:"Title,attr"`
@@ -257,10 +262,7 @@ type ListInstance struct {
 			} `xml:"CalendarViewStyles"`
 		} `xml:"View"`
 	} `xml:"Views"`
-	Fields struct {
-		Text  string  `xml:",chardata"`
-		Field []Field `xml:"Field"`
-	} `xml:"Fields"`
+	Fields    Fields `xml:"Fields"`
 	FieldRefs struct {
 		Text     string `xml:",chardata"`
 		FieldRef []struct {
