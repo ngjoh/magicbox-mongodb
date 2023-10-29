@@ -6,9 +6,9 @@ import (
 	"github.com/koksmat-com/koksmat/model"
 )
 
-func TestGetMailgroupsSegments(t *testing.T) {
+func TestSyncDistributionGroups(t *testing.T) {
 
-	if err := CreateNewDistributionGroups(); err != nil {
+	if err := SyncDistributionGroups(); err != nil {
 		t.Errorf("CreateNewDistributionGroups() error = %v", err)
 	}
 

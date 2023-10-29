@@ -1,10 +1,12 @@
 package powershell
 
 import (
+	"bufio"
 	"embed"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -75,6 +77,10 @@ func Execute(appId string, fileName, args string, setEnvironment Setup, src stri
 	if err != nil {
 		return nil, err, ""
 	}
+
+	pipe, _ := cmd.StdoutPipe()
+	combinedOutput := []byte{}
+
 	script := fmt.Sprintf(`
 	$ErrorActionPreference = "Stop"
 	. ./run.ps1  %s`, args)
@@ -84,8 +90,19 @@ func Execute(appId string, fileName, args string, setEnvironment Setup, src stri
 		fmt.Fprintln(stdin, script)
 
 	}()
+
 	srcCode := fmt.Sprintf("[%s]", ps2Code)
-	combinedOutput, err := cmd.CombinedOutput()
+	err = cmd.Start()
+	go func(p io.ReadCloser) {
+		reader := bufio.NewReader(pipe)
+		line, err := reader.ReadString('\n')
+		for err == nil {
+			log.Print(line)
+			combinedOutput = append(combinedOutput, []byte(line)...)
+			line, err = reader.ReadString('\n')
+		}
+	}(pipe)
+	err = cmd.Wait()
 
 	if err != nil {
 		audit.LogPowerShell(appId, fileName, srcCode, args, "", true, string(combinedOutput))
@@ -94,6 +111,8 @@ func Execute(appId string, fileName, args string, setEnvironment Setup, src stri
 	}
 
 	outputJson, err := os.ReadFile(path.Join(cmd.Dir, "output.json"))
+
+	os.WriteFile(path.Join(cmd.Dir, "output.txt"), []byte(string(combinedOutput)), 0644)
 	if callback != nil {
 		callback(cmd.Dir)
 	}

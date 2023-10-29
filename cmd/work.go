@@ -4,17 +4,34 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"github.com/koksmat-com/koksmat/worker"
+	"fmt"
+	"log"
+
+	"github.com/koksmat-com/koksmat/exchange"
 	"github.com/spf13/cobra"
 )
 
 // workCmd represents the work command
 var workCmd = &cobra.Command{
-	Use:   "work",
-	Short: "Starts the worker process",
+	Use:   "work [area name]",
+	Short: "",
 	Long:  ``,
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		worker.Work()
+		log.Println("Starting worker")
+
+		switch fmt.Sprint(args[0]) {
+		case "exchange":
+
+			exchange.Work()
+
+		default:
+
+			log.Fatalln("Unknow area", subject)
+			return
+		}
+
+		log.Println("Done")
 	},
 }
 

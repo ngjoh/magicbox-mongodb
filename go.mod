@@ -2,8 +2,6 @@ module github.com/koksmat-com/koksmat
 
 go 1.21
 
-
-
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.0
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.1.0
@@ -148,9 +146,10 @@ require (
 	github.com/xuri/nfp v0.0.0-20230802015359-2d5eeba905e9 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	golang.org/x/crypto v0.12.0
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.12.0
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

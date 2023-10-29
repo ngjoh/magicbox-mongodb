@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"github.com/koksmat-com/koksmat/audit"
+	"github.com/koksmat-com/koksmat/channels"
 	"github.com/koksmat-com/koksmat/model"
 	"github.com/spf13/cobra"
 )
@@ -33,6 +34,12 @@ var syncCmd = &cobra.Command{
 		case "domains":
 
 			err := model.SyncDomains()
+			if err != nil {
+				log.Fatalln(err)
+			}
+		case "groupfinder":
+
+			err := channels.Sync()
 			if err != nil {
 				log.Fatalln(err)
 			}
