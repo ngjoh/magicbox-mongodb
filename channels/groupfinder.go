@@ -86,9 +86,7 @@ func GetGuidsForSMTPs(smtps []string) string {
 $result = @()	
 	`
 	for ix, smtp := range smtps {
-		if ix > 10 {
-			break
-		}
+
 		script += fmt.Sprintf(`
 $ErrorActionPreference = "SilentlyContinue"
 $smtp =  "%s" 
@@ -116,9 +114,11 @@ func GetScriptUpdateMembers(segment Segment, members []string) (string, error) {
 	log.Println("Processing Mailgroup Segment", segment.Name)
 	script := ""
 	for _, value := range segment.Values {
+		memberString := strings.Join(members, `","`)
+		//members = members[0 : len(members)-1]
 		script += fmt.Sprintf(`
-Update-DistributionGroupMember  -Identity "zc-dl-%s" -Members %s -Confirm:$false	
-	`, value.KeyHash, strings.Join(members, ","))
+Update-DistributionGroupMember  -Identity "zc-dl-%s" -Members "%s" -Confirm:$false	
+	`, value.KeyHash, memberString)
 	}
 	return script, nil
 }
