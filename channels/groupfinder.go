@@ -92,7 +92,7 @@ $ErrorActionPreference = "SilentlyContinue"
 $smtp =  "%s" 
 
 Write-Host Checking %d of %d : $smtp
-$recipient = Get-Recipient $smtp
+$recipient = Get-Recipient $smtp -ResultSize 1
 if ($null -ne $recipient){
 		$result += "$smtp=$($recipient.Guid)"
 }	
@@ -203,6 +203,16 @@ func processSMTPS(segments []Segment) (map[string]string, error) {
 
 }
 
+/*
+*
+
+Updates the members of all mailgroups with the members from the segments.
+
+This is done by mapping the SMTP address to the GUID of the user, and then use the GUID as a reference when
+running the
+
+Update-DistributionGroupMember
+*/
 func updateMembers(segments []Segment, smtp2guidMap map[string]string) error {
 
 	log.Println("Updating members")
@@ -230,6 +240,60 @@ func updateMembers(segments []Segment, smtp2guidMap map[string]string) error {
 			return err
 		}
 	}
+	return nil
+}
+
+type GroupFinderIndex struct {
+	HasError bool `json:"hasError"`
+	Data     struct {
+		Sheets  []any `json:"sheets"`
+		Columns []any `json:"columns"`
+		Results struct {
+			OnSheetLoaded struct {
+				Version  string    `json:"version"`
+				Columns  []string  `json:"columns"`
+				Segments []Segment `json:"segments"`
+			} `json:"onSheetLoaded"`
+		} `json:"results"`
+	} `json:"data"`
+}
+
+/**
+Iterate over all segmnets, and create a new segment that only contains the name (Key) and alias (Keyhash) of each segment.
+
+*/
+
+func getIndexAllSegments(segments []Segment) []Segment {
+	segmentsForIndex := make([]Segment, 0)
+	for _, segment := range segments {
+		segmentForIndex := Segment{
+			Name: segment.Name,
+		}
+		for _, value := range segment.Values {
+			valueForIndex := Value{
+				Key:     value.Key,
+				KeyHash: value.KeyHash,
+			}
+			segmentForIndex.Values = append(segmentForIndex.Values, valueForIndex)
+
+		}
+		segmentsForIndex = append(segmentsForIndex, segmentForIndex)
+	}
+
+	return segmentsForIndex
+}
+
+/*
+*
+ */
+
+func ExportIndex(segments []Segment) error {
+	index := &GroupFinderIndex{}
+	index.HasError = false
+	index.Data.Sheets = []any{}
+	index.Data.Results.OnSheetLoaded.Version = "1"
+	index.Data.Results.OnSheetLoaded.Segments = getIndexAllSegments(segments)
+
 	return nil
 }
 
@@ -262,6 +326,7 @@ func SyncDistributionGroups() (err error) {
 		return err
 	}
 
+	//ExportIndex(segmentdata.Segments)
 	// Publish new Group Finder map
 	log.Println("Done")
 
