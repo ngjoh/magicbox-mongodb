@@ -109,16 +109,30 @@ ConvertTo-Json  -InputObject $result -Depth 10
 	return script
 }
 
+func removeDuplicateStr(strSlice []string) []string {
+	allKeys := make(map[string]bool)
+	list := []string{}
+	for _, item := range strSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
+}
+
 func GetScriptUpdateMembers(segment Segment, members []string) (string, error) {
 
 	log.Println("Processing Mailgroup Segment", segment.Name)
 	script := ""
-	for _, value := range segment.Values {
-		memberString := strings.Join(members, `","`)
+	for ix, value := range segment.Values {
+		memberString := strings.Join(removeDuplicateStr(members), `","`)
 		//members = members[0 : len(members)-1]
 		script += fmt.Sprintf(`
+$ErrorActionPreference = "Continue"
+Write-Host  %d of %d: Update-DistributionGroupMember  -Identity "zc-dl-%s" 
 Update-DistributionGroupMember  -Identity "zc-dl-%s" -Members "%s" -Confirm:$false	
-	`, value.KeyHash, memberString)
+	`, ix, len(segment.Values), value.KeyHash, value.KeyHash, memberString)
 	}
 	return script, nil
 }
