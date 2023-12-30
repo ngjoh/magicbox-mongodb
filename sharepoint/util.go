@@ -68,13 +68,3 @@ func Ping(siteUrl string) error {
 	fmt.Printf("%s\n", res.Data().Title)
 	return nil
 }
-
-func FilterTemplate(templateName string) error {
-
-	_, err := Assets.ReadFile(templateName)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}

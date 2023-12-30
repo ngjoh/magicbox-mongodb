@@ -1,0 +1,1 @@
+. $PSScriptRoot/get-site-allpages.ps1 -SiteUrl "https://christianiabpos.sharepoint.com/sites/nexiintra-hub"  -tenantDomaain "nexigroup.com"

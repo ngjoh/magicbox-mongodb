@@ -1,1 +1,1 @@
-. "$psscriptroot/copy-page.ps1" -SourceSiteURL "https://christianiabpos.sharepoint.com/sites/nexiintra-country-dk" -DestinationSiteURL "https://christianiabpos.sharepoint.com/sites/nexiintra-country-hr-si" -PageName "Denmark-Rollup.aspx"
+. "$psscriptroot/copy-page.ps1" -SourceSiteURL "https://christianiabpos.sharepoint.com/sites/intranets-hr" -DestinationSiteURL  "https://christianiabpos.sharepoint.com/sites/nexiintra-country-de" -PageName "HR-Handbuch-fur-Deutschland.aspx"

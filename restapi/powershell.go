@@ -13,6 +13,11 @@ import (
 func executePowerShell(w http.ResponseWriter, r *http.Request) {
 
 	host := r.URL.Query().Get("host")
+	if (host != "exchange") && (host != "pnp") {
+		w.WriteHeader(500)
+		fmt.Fprint(w, "Invalid host")
+		return
+	}
 
 	b, err := io.ReadAll(r.Body)
 	// b, err := ioutil.ReadAll(resp.Body)  Go.1.15 and earlier

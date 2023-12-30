@@ -23,3 +23,13 @@ func TestFilterTemplate2(t *testing.T) {
 	}
 
 }
+
+func TestSwapLangauges(t *testing.T) {
+
+	err := FilterTemplate("assets/en-base-it-trans-allpages-template.xml")
+
+	if err != nil {
+		t.Fatalf("Should not return error")
+	}
+
+}

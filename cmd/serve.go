@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/koksmat-com/koksmat/restapi"
+	"github.com/koksmat-com/koksmat/sockets"
 	"github.com/spf13/cobra"
 )
 
@@ -27,6 +28,8 @@ var serveCmd = &cobra.Command{
 			restapi.All()
 		case "core":
 			restapi.Core()
+		case "sockets":
+			sockets.SocketIO()
 		case "admin":
 			restapi.Admin()
 

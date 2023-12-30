@@ -14,6 +14,7 @@ import (
 )
 
 var hubSiteID string = ""
+var isDryrun bool = false
 
 // importCmd represents the import command
 var syncCmd = &cobra.Command{
@@ -39,7 +40,7 @@ var syncCmd = &cobra.Command{
 			}
 		case "groupfinder":
 
-			err := channels.Sync()
+			err := channels.Sync(isDryrun)
 			if err != nil {
 				log.Fatalln(err)
 			}
@@ -74,5 +75,6 @@ var syncCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(syncCmd)
 	syncCmd.Flags().StringVarP(&hubSiteID, "hubSiteId", "", "", "Hub Site ID")
+	syncCmd.Flags().BoolVarP(&isDryrun, "dryrun", "", false, "If set, will be a dry run, no changes will be made")
 
 }

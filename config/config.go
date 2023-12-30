@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"log"
 	"strings"
 
 	"github.com/kamva/mgm/v3"
@@ -29,10 +30,14 @@ func Setup(envPath string) {
 		},
 	}
 
+	if viper.GetString("DATABASEADMIN") == "" {
+
+		return
+	}
 	db := DatabaseName()
 	err := mgm.SetDefaultConfig(nil, db, options.Client().ApplyURI(MongoConnectionString()).SetMonitor(cmdMonitor))
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 }

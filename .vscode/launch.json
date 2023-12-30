@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
+
         {
             "name": "Import Receipients",
             "type": "go",
@@ -56,6 +57,14 @@
             "program": "${workspaceFolder}",
             "args": ["serve","admin"]
         },
+        {
+            "name": "Sockets API",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["serve","sockets"]
+        },        
         {
             "name": "Sync Audit logs",
             "type": "go",

@@ -5,38 +5,41 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/google/uuid"
-	"github.com/koksmat-com/koksmat/powershell"
+	"github.com/koksmat-com/koksmat/model"
 	"github.com/spf13/cobra"
 )
 
+var Host string
+
 // pwshCmd represents the pwsh command
 var pwshCmd = &cobra.Command{
-	Use:   "powershell",
+	Use:   "pwsh file",
 	Short: "Run PowerShell",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		type NewSharedMailboxResult struct {
-			Name               string `json:"Name"`
-			DisplayName        string `json:"DisplayName"`
-			Identity           string `json:"Identity"`
-			PrimarySmtpAddress string `json:"PrimarySmtpAddress"`
-		}
-		id := fmt.Sprintf("%s", uuid.New())
-
-		result, err := powershell.CreateSharedMailbox("CLI", id, id, id, []string{"s", "s"}, []string{"s", "s"}, []string{"s", "s"})
+		data, err := os.ReadFile(args[0])
 		if err != nil {
-			fmt.Println(err)
-		} else {
-			fmt.Println("DisplayName", result.DisplayName)
-			fmt.Println("PrimarySmtpAddress", result.PrimarySmtpAddress)
-			fmt.Println("ExchangeObjectId", result.ExchangeObjectId)
-			fmt.Println("Name", result.Name)
-
-			fmt.Println("--------------------------------------")
+			panic(err)
 		}
+
+		host := Host
+		script := string(data)
+
+		finalScript := fmt.Sprintf(`
+%s
+ConvertTo-Json -InputObject $result
+| Out-File -FilePath $PSScriptRoot/output.json -Encoding:utf8NoBOM
+
+		`, script)
+		result, err := model.ExecutePowerShellScript("koksmat", host, finalScript, "")
+		if err != nil {
+			panic(err)
+		}
+		println(result)
+
 	},
 }
 
@@ -47,7 +50,7 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// pwshCmd.PersistentFlags().String("foo", "", "A help for foo")
+	pwshCmd.Flags().StringVarP(&Host, "host", "", "", "Host system to connect to. The default is none. Options are: exchange sharepoint powerapps")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
