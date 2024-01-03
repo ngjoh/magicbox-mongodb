@@ -7,14 +7,14 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/koksmat-com/koksmat/connectors"
+	"github.com/koksmat-com/koksmat/kitchen"
 	"github.com/spf13/cobra"
 )
 
 // serveCmd represents the serve command
 var workspaceCmd = &cobra.Command{
 	Use:   "workspace [workspace [path]",
-	Short: "ws  ",
+	Short: "workspace",
 	Long:  `workspace`,
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -22,11 +22,11 @@ var workspaceCmd = &cobra.Command{
 			fmt.Println("No service specified")
 			return
 		}
-		//	workspace := args[0]
+		workspace := args[0]
 		path := args[1]
 		switch path {
 		case "status":
-			printData(connectors.GitStatus())
+			printData(kitchen.GetStatus(workspace))
 		// case "github/organisations":
 		// 	printData(connectors.GithubOrgs())
 		// case "github/repositories":
@@ -59,7 +59,7 @@ var workspaceCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(connectorCmd)
+	rootCmd.AddCommand(workspaceCmd)
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

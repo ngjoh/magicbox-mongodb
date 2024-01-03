@@ -13,9 +13,9 @@ import (
 )
 
 // serveCmd represents the serve command
-var connectorCmd = &cobra.Command{
-	Use:   "connector [path]",
-	Short: "connector  ",
+var storesCmd = &cobra.Command{
+	Use:   "store [path]",
+	Short: "store  ",
 	Long:  ``,
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -27,32 +27,11 @@ var connectorCmd = &cobra.Command{
 		switch path {
 		case "context":
 			printData(connectors.GetContext())
-		case "github/organisations":
-			printData(connectors.GithubOrgs())
-		case "github/repositories":
-			printData(connectors.GithubRepos())
-		case "github/codespaces":
-			printData(connectors.GithubCodespaces())
-		case "azure/subscriptions":
-			printData(connectors.AzureSubscriptions())
-		case "azure/storageaccounts":
-			printData(connectors.AzureStorageAccounts())
-		case "kubernetes/clusters":
-			printData(connectors.KubernetesClusters())
-		case "kubernetes/namespaces":
-			printData(connectors.KubernetesNamespaces())
-		case "kubernetes/pods":
-			printData(connectors.KubernetesPods())
-		case "sharepoint/tenants":
-			printData(connectors.SharePointTenants())
-		case "microsoft365/tenants":
-			printData(connectors.M365Context())
-		case "microsoft365/sites":
-			printData(connectors.M365Sites())
 		case "mongodb/clusters":
 			printData(stores.PerconaCRDS())
-		case "mongodb/databases":
-			printData(stores.Databases())
+		// case "pod"
+		// kubectl -n percona exec booking-mongos-0 -- df -h
+
 		default:
 
 			log.Fatalln("Unknown ", path)
@@ -63,7 +42,7 @@ var connectorCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(connectorCmd)
+	rootCmd.AddCommand(storesCmd)
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command

@@ -36,6 +36,7 @@ func AzureSubscriptions() ([]Connector, error) {
 		connector := Connector{
 			Name:        account.Name,
 			Description: account.User.Name,
+			IsCurrent:   account.IsDefault,
 		}
 		connectors = append(connectors, connector)
 	}

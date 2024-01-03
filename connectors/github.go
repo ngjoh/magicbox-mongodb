@@ -7,6 +7,7 @@ import (
 )
 
 func GithubOrgs() ([]Connector, error) {
+	mateContext, err := GetMateContext()
 	bytes, err := Execute("gh", *&Options{}, "org", "list", "-L", "40")
 	if err != nil {
 		return nil, err
@@ -19,8 +20,9 @@ func GithubOrgs() ([]Connector, error) {
 			continue
 		}
 		connector := Connector{
-			Name: name,
-			Url:  "https://github.com/" + name,
+			Name:      name,
+			Url:       "https://github.com/" + name,
+			IsCurrent: mateContext.Current.GitOrg == name,
 		}
 		connectors = append(connectors, connector)
 	}
@@ -35,7 +37,8 @@ func GithubRepos() ([]Connector, error) {
 		Description string `json:"description"`
 		Url         string `json:"url"`
 	}
-	bytes, err := Execute("gh", *&Options{}, "repo", "list", "-L", "30", "--json", "id,name,description,url")
+	mateContext, err := GetMateContext()
+	bytes, err := Execute("gh", *&Options{}, "repo", "list", mateContext.Current.GitOrg, "-L", "30", "--json", "id,name,description,url")
 	if err != nil {
 		return nil, err
 	}

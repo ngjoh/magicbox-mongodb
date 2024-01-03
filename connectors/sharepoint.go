@@ -13,9 +13,22 @@ type Current struct {
 	Name       string `json:"name"`
 	SharePoint string `json:"sharepoint"`
 	Path       string `json:"path"`
+	GitOrg     string `json:"gitorg"`
+	Mongo      string `json:"mongo"`
+}
+
+type Sharepoint struct {
+	Tenant string `json:"tenant"`
+	Site   string `json:"site"`
+}
+type Mongo struct {
+	Cluster  string `json:"cluster"`
+	Database string `json:"database"`
 }
 type MateContext struct {
-	Current Current `json:"current"`
+	Current    Current      `json:"current"`
+	SharePoint []Sharepoint `json:"sharepoint"`
+	Mongo      []Mongo      `json:"mongo"`
 }
 
 func GetMateContext() (*MateContext, error) {

@@ -6,6 +6,7 @@
     "configurations": [
 
 
+
         {
             "name": "Import Receipients",
             "type": "go",
@@ -112,6 +113,14 @@
             "mode": "auto",
             "program": "${workspaceFolder}",
             "args": ["webhook","parse"]
+        }, 
+        {
+            "name": "Kitchen status",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["kitchen","status","magicbox"]
         }, 
            {
             "name": "Read Users from Excel",

@@ -1,14 +1,23 @@
 package kitchen
 
-type Station struct {
+type Script struct {
 	Name        string `json:"name"`
-	Path        string `json:"path"`
+	Title       string `json:"title"`
 	Description string `json:"description"`
-	Readme      string `json:"readme"`
+}
+
+type Station struct {
+	Name        string   `json:"name"`
+	Title       string   `json:"title"`
+	Path        string   `json:"path"`
+	Description string   `json:"description"`
+	Readme      string   `json:"readme"`
+	Scripts     []Script `json:"scripts"`
 }
 
 type Kitchen struct {
 	Name        string    `json:"name"`
+	Title       string    `json:"title"`
 	Stations    []Station `json:"stations"`
 	Description string    `json:"description"`
 	Path        string    `json:"path"`

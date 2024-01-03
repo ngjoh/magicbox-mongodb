@@ -37,6 +37,8 @@ require (
 	github.com/Azure/go-autorest/logger v0.2.1 // indirect
 	github.com/Azure/go-autorest/tracing v0.6.0 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.1.0 // indirect
+	github.com/alecthomas/chroma v0.10.0 // indirect
+	github.com/alecthomas/chroma/v2 v2.2.0 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/bytedance/sonic v1.10.0-rc3 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
@@ -47,6 +49,7 @@ require (
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
 	github.com/denisbrodbeck/machineid v1.0.1 // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
+	github.com/dlclark/regexp2 v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.9.1 // indirect
@@ -99,6 +102,7 @@ require (
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
 	github.com/rs/zerolog v1.30.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
+	github.com/tenkoh/goldmark-img64 v0.1.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/unidoc/unioffice v1.28.0 // indirect
@@ -106,6 +110,7 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/yuin/goldmark v1.6.0 // indirect
+	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc // indirect
 	github.com/yuin/goldmark-meta v1.1.0 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.11 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.11 // indirect
@@ -170,6 +175,7 @@ require (
 	github.com/xuri/efp v0.0.0-20230802181842-ad255f2331ca // indirect
 	github.com/xuri/nfp v0.0.0-20230802015359-2d5eeba905e9 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
+	github.com/yuin/goldmark-highlighting v0.0.0-20220208100518-594be1970594
 	golang.design/x/clipboard v0.7.0
 	golang.org/x/crypto v0.14.0
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
