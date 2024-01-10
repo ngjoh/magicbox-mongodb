@@ -2,11 +2,15 @@ package connectors
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os/exec"
+	"time"
 )
 
 type Connector struct {
@@ -21,10 +25,53 @@ type Connector struct {
 }
 
 type Options struct {
-	Dir string
-	Env []string
+	Channel string
+	Dir     string
+	Env     []string
 }
 
+type MessageData struct {
+	Timestamp time.Time `json:"timestamp"`
+	Message   string    `json:"message"`
+	IsError   bool      `json:"isError"`
+}
+type Message struct {
+	Channel string      `json:"channel"`
+	Data    MessageData `json:"data"`
+}
+
+func CentrifugePost(channel string, data string, isError bool) error {
+	// http post to localhost:8000/api/publish/centrifuge including X-API-Key: secret
+
+	messageData := MessageData{
+		Timestamp: time.Now(),
+		Message:   data,
+		IsError:   isError,
+	}
+
+	body := Message{
+		Channel: channel,
+		Data:    messageData,
+	}
+	bodyJson, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", "http://localhost:8000/api/publish", bytes.NewReader(bodyJson))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("X-API-Key", "913f84d9-797c-49e7-b2ac-8bacb40f7637")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+	return nil
+}
 func Execute(program string, options Options, args ...string) (output []byte, err error,
 ) {
 	cmd := exec.Command(program, args...)
@@ -41,6 +88,9 @@ func Execute(program string, options Options, args ...string) (output []byte, er
 	go func(p io.ReadCloser) {
 		reader := bufio.NewReader(pipe)
 		line, err := reader.ReadString('\n')
+		if options.Channel != "" {
+			CentrifugePost(options.Channel, line, err == nil)
+		}
 		for err == nil {
 			//log.Print(line)
 			combinedOutput = append(combinedOutput, []byte(line)...)

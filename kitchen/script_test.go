@@ -4,9 +4,30 @@ import (
 	"testing"
 )
 
+func TestExtractEnvRef(t *testing.T) {
+	sample := `
+
+$PNPAPPID=$env:PNPAPPID
+$PNPTENANTID=$env:PNPTENANTID
+$PNPCERTIFICATEPATH = "$($PSScriptRoot)/pnp.pfx"
+$PNPSITE=$env:PNPSITE
+$bytes = [Convert]::FromBase64String($ENV:PNPCERTIFICATE)
+[IO.File]::WriteAllBytes($PNPCERTIFICATEPATH, $bytes)
+
+
+
+write-output "Connecting to $PNPSITE"
+Connect-PnPOnline -Url $PNPSITE  -ClientId $PNPAPPID -Tenant $PNPTENANTID -CertificatePath "$PNPCERTIFICATEPATH"
+
+		
+	`
+	vars := extractEnvVarsFromPowerShellFile(sample)
+	t.Log(vars)
+}
+
 func TestParsePowerShellFile(t *testing.T) {
 
-	md, err := ParsePowerShellFile(`<#---
+	md, _, err := ParsePowerShellFile(`<#---
 title: "Apply site template"
 description: This script will get the app catalogue URL
 ---
@@ -42,7 +63,7 @@ $result = 1
 	if err != nil {
 		t.Error(err)
 	}
-	html, meta, err := ParseMarkdown(md)
+	html, meta, err := ParseMarkdown("", md)
 	if err != nil {
 		t.Error(err)
 	}
@@ -52,4 +73,12 @@ $result = 1
 	t.Log(html)
 	t.Log(md)
 
+}
+
+func TestGetParms(t *testing.T) {
+	p, err := GetPowerShellFileParameters("/Users/nielsgregersjohansen/kitchens/sharepoint-branding/install/20 apply-sitetemplate.ps1")
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(p)
 }

@@ -6,8 +6,11 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"net/url"
 	"path"
+	"path/filepath"
 
+	"github.com/koksmat-com/koksmat/connectors"
 	"github.com/koksmat-com/koksmat/kitchen"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -15,6 +18,17 @@ import (
 
 var kitchenName string
 var stationName string
+var channelName string
+var tenantName string = "365adm"
+
+func UnEscape(s string) string {
+	ss, err := url.QueryUnescape(s)
+	if err != nil {
+		return s
+	}
+	return ss
+
+}
 
 // serveCmd represents the serve command
 var kitchenCmd = &cobra.Command{
@@ -52,6 +66,19 @@ var scriptcmd = &cobra.Command{
 	Long:  ``,
 }
 
+func cmd(use string, short string, long string, run func(cmd *cobra.Command, args []string)) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   use,
+		Short: short,
+		Long:  long,
+		Run:   run,
+	}
+	cmd.Flags().StringVarP(&kitchenName, "kitchen", "k", "", "Kitchen (required)")
+	cmd.MarkFlagRequired("kitchen")
+	cmd.Flags().StringVarP(&stationName, "station", "s", "", "Station (required)")
+	cmd.MarkFlagRequired("station")
+	return cmd
+}
 func init() {
 
 	rootCmd.AddCommand(kitchenCmd)
@@ -107,14 +134,28 @@ func init() {
 
 		Run: func(cmd *cobra.Command, args []string) {
 			root := viper.GetString("KITCHENROOT")
-			filename := args[0]
+			filename, _ := url.QueryUnescape(args[0])
 			file := path.Join(root, kitchenName, stationName, filename)
-
-			markdown, err := kitchen.ReadMarkdownFromPowerShell(file)
-			if err != nil {
-				fmt.Println(err)
+			markdown := ""
+			switch filepath.Ext(file) {
+			case ".ps1":
+				md, _, err := kitchen.ReadMarkdownFromPowerShell(file)
+				if err != nil {
+					fmt.Println(err)
+				}
+				markdown = md
+			case ".go":
+				md, err := kitchen.ReadMarkdownFromGo(file)
+				if err != nil {
+					fmt.Println(err)
+				}
+				markdown = md
+			default:
+				fmt.Println("Unknown file type")
+				return
 			}
-			html, _, err := kitchen.ParseMarkdown(markdown)
+
+			html, _, err := kitchen.ParseMarkdown(filepath.Dir(file), markdown)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -136,27 +177,12 @@ func init() {
 		Long:  ``,
 
 		Run: func(cmd *cobra.Command, args []string) {
-			type Meta struct {
-				Title       string `json:"title"`
-				Description string `json:"description"`
-			}
-			root := viper.GetString("KITCHENROOT")
-			filename := args[0]
-			file := path.Join(root, kitchenName, stationName, filename)
 
-			markdown, err := kitchen.ReadMarkdownFromPowerShell(file)
+			fileName, err := url.QueryUnescape(args[0])
 			if err != nil {
-				fmt.Println(err)
+				log.Fatalln(err)
 			}
-			_, meta, err := kitchen.ParseMarkdown(markdown)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			metadata := Meta{
-				Title:       kitchen.GetMetadataProperty(meta, "title", ""),
-				Description: kitchen.GetMetadataProperty(meta, "description", ""),
-			}
+			metadata, err := kitchen.GetMetadata(kitchenName, stationName, fileName)
 			printJSON(metadata)
 
 		},
@@ -166,5 +192,34 @@ func init() {
 	metaCmd.MarkFlagRequired("kitchen")
 	metaCmd.Flags().StringVarP(&stationName, "station", "s", "", "Station (required)")
 	metaCmd.MarkFlagRequired("station")
+
+	scriptcmd.AddCommand(cmd("edit [file]", "Edit script", "", func(cmd *cobra.Command, args []string) {
+		root := viper.GetString("KITCHENROOT")
+
+		filename, _ := url.QueryUnescape(args[0])
+
+		file := path.Join(root, kitchenName, stationName, filename)
+		connectors.Execute("code", *&connectors.Options{}, file)
+		fmt.Println("Opened", file)
+
+	}))
+
+	runcmd := cmd("run [file]", "Run script", "", func(cmd *cobra.Command, args []string) {
+
+		filename := UnEscape(args[0])
+		mateContext, err := connectors.GetContext()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		result, err := kitchen.Cook(mateContext.Tenant, kitchenName, stationName, filename, nil)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		fmt.Println(result)
+
+	})
+
+	runcmd.Flags().StringVarP(&channelName, "channel", "c", "", "Centrifugo channel to write back on")
+	scriptcmd.AddCommand(runcmd)
 
 }

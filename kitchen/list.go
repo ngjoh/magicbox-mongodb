@@ -15,6 +15,8 @@ import (
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer/html"
+	"github.com/yuin/goldmark/util"
+	"go.abhg.dev/goldmark/mermaid"
 )
 
 func GetMetadataProperty(meta map[string]interface{}, key string, defaultValue string) string {
@@ -27,11 +29,36 @@ func GetMetadataProperty(meta map[string]interface{}, key string, defaultValue s
 
 type Metadata map[string]interface{}
 
-func ParseMarkdown(content string) (string, Metadata, error) {
+func wrapperRenderer(w util.BufWriter, ctx highlighting.CodeBlockContext, entering bool) {
+	language, ok := ctx.Language()
+	lang := string(language)
+	// code block with a language
+	if ok && lang != "" {
+		if entering {
+			w.WriteString(`<div style="border-radius:10px; background-color: #282a36;padding:20px;margin-top:20px;margin-bottom:20px;overflow-x:auto" data-lang=` + lang + ">")
+		} else {
+			w.WriteString(`</div>`)
+		}
+		return
+	}
+
+	// code block with no language specified
+	if language == nil {
+		if entering {
+			w.WriteString(`<pre style="padding:10px"><code>`)
+		} else {
+			w.WriteString(`</code></pre>`)
+		}
+	}
+}
+func ParseMarkdown(parentPath string, content string) (string, Metadata, error) {
 	var buf bytes.Buffer
 	context := parser.NewContext()
 	md := goldmark.New(
 		goldmark.WithExtensions(extension.GFM, meta.Meta),
+		goldmark.WithExtensions(&mermaid.Extender{}),
+		goldmark.WithExtensions(img64.Img64),
+		goldmark.WithRendererOptions(img64.WithParentPath(parentPath)),
 		goldmark.WithParserOptions(
 			parser.WithAutoHeadingID(),
 		),
@@ -39,10 +66,15 @@ func ParseMarkdown(content string) (string, Metadata, error) {
 			html.WithHardWraps(),
 			html.WithXHTML(),
 		),
+		// goldmark.WithExtensions(
+		// 	highlighting.Highlighting,
+		// ),
 		goldmark.WithExtensions(
-			highlighting.Highlighting,
+			highlighting.NewHighlighting(
+				highlighting.WithStyle("dracula"),
+				highlighting.WithWrapperRenderer(wrapperRenderer),
+			),
 		),
-		goldmark.WithExtensions(img64.Img64),
 	)
 	if err := md.Convert([]byte(content), &buf, parser.WithContext(context)); err != nil {
 		return "", nil, err
@@ -61,7 +93,7 @@ func ReadMarkdown(pathname string, filename string) (string, Metadata, error) {
 		return "", nil, err
 	}
 
-	return ParseMarkdown(string(fileContent))
+	return ParseMarkdown(pathname, string(fileContent))
 
 }
 
@@ -135,12 +167,29 @@ func GetScripts(stationPath string, subPath string) ([]Script, error) {
 			result = append(result, s...)
 		}
 		if !script.IsDir() && strings.HasSuffix(script.Name(), ".ps1") && !strings.HasPrefix(script.Name(), "test-") {
-			markdown, err := ReadMarkdownFromPowerShell(path.Join(filePath, script.Name()))
+			markdown, envs, err := ReadMarkdownFromPowerShell(path.Join(filePath, script.Name()))
 			if err != nil {
 				return nil, err
 			}
 
-			_, scriptmeta, _ := ParseMarkdown(markdown)
+			_, scriptmeta, _ := ParseMarkdown(filePath, markdown)
+
+			script := Script{
+				Name:        path.Join(subPath, script.Name()),
+				Title:       path.Join(subPath, GetMetadataProperty(scriptmeta, "title", script.Name())),
+				Description: GetMetadataProperty(scriptmeta, "description", ""),
+				Environment: envs,
+			}
+			result = append(result, script)
+
+		}
+		if !script.IsDir() && strings.HasSuffix(script.Name(), ".go") && !strings.HasSuffix(script.Name(), "_test.go") {
+			markdown, err := ReadMarkdownFromGo(path.Join(filePath, script.Name()))
+			if err != nil {
+				return nil, err
+			}
+
+			_, scriptmeta, _ := ParseMarkdown(filePath, markdown)
 
 			script := Script{
 				Name:        path.Join(subPath, script.Name()),

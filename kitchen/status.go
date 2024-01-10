@@ -22,6 +22,7 @@ type Environment struct {
 
 type Status struct {
 	Name         string        `json:"name"`
+	Title        string        `json:"title"`
 	About        string        `json:"about"`
 	Description  string        `json:"description"`
 	Url          string        `json:"url"`
@@ -37,6 +38,7 @@ func GetStatus(kitchen string) (Status, error) {
 		return status, err
 	}
 	status.About = about
+	status.Title = GetMetadataProperty(meta, "title", kitchen)
 	status.Description = GetMetadataProperty(meta, "description", "")
 	sharePointPath := path.Join(kitchenPath, ".koksmat", "sharepoint")
 

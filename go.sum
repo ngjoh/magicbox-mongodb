@@ -735,6 +735,8 @@ github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc h1:+
 github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc/go.mod h1:ovIvrum6DQJA4QsJSovrkC4saKHQVs7TvcaeO8AIl5I=
 github.com/yuin/goldmark-meta v1.1.0 h1:pWw+JLHGZe8Rk0EGsMVssiNb/AaPMHfSRszZeUeiOUc=
 github.com/yuin/goldmark-meta v1.1.0/go.mod h1:U4spWENafuA7Zyg+Lj5RqK/MF+ovMYtBvXi1lBb2VP0=
+go.abhg.dev/goldmark/mermaid v0.5.0 h1:mDkykpSPJ+5wCQ8bSXgzJ2KQskjXkI5Ndxz7JYDHW38=
+go.abhg.dev/goldmark/mermaid v0.5.0/go.mod h1:OCyk2o85TX2drWHH+HRy6bih2yZlUwbbv/R1MMh1YLs=
 go.etcd.io/etcd/api/v3 v3.5.11 h1:B54KwXbWDHyD3XYAwprxNzTe7vlhR69LuBgZnMVvS7E=
 go.etcd.io/etcd/api/v3 v3.5.11/go.mod h1:Ot+o0SWSyT6uHhA56al1oCED0JImsRiU9Dc26+C2a+4=
 go.etcd.io/etcd/client/pkg/v3 v3.5.11 h1:bT2xVspdiCj2910T0V+/KHcVKjkUrCZVtk8J2JF2z1A=

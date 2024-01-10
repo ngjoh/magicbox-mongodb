@@ -2,6 +2,7 @@ package connectors
 
 type Context struct {
 	Name            string     `json:"name"`
+	Tenant          string     `json:"tenant"`
 	Kubernetes      Connector  `json:"kubernetes"`
 	Azure           Connector  `json:"azure"`
 	Sharepoint      Sharepoint `json:"sharepoint"`
@@ -42,6 +43,8 @@ func GetContext() (*Context, error) {
 			ctx.MongoDBdatabase = mongo.Database
 		}
 	}
+	ctx.Tenant = mateContext.Current.Tenant
+	ctx.Name = mateContext.Current.Name
 
 	return &ctx, nil
 }

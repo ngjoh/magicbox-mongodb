@@ -4,6 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+    
 
 
 
@@ -121,6 +122,39 @@
             "mode": "auto",
             "program": "${workspaceFolder}",
             "args": ["kitchen","status","magicbox"]
+        }, 
+        {
+            "name": "Run script",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["kitchen","script","run","10-sleep10.ps1","--channel","echo11", "--kitchen","365admin-test","--station","10-basic"]
+        }, 
+        {
+            "name": "Run Exchange Test script",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["kitchen","script","run","10 list.ps1","--channel","echo11", "--kitchen","365admin-test","--station","30-exchange"]
+
+        }, 
+        {
+            "name": "Get HTML",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["kitchen","script","html","init.go", "--kitchen","enterprise-meetings","--station","invite"]
+        }, 
+        {
+            "name": "Get scripts",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["kitchen","stations","365admin-test"]
         }, 
            {
             "name": "Read Users from Excel",

@@ -1,9 +1,10 @@
 package kitchen
 
 type Script struct {
-	Name        string `json:"name"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	Name        string   `json:"name"`
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Environment []string `json:"environment"`
 }
 
 type Station struct {

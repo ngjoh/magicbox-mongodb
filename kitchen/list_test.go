@@ -23,7 +23,7 @@ func TestRun(t *testing.T) {
 func TestReadMarkdownFromPowerShell(t *testing.T) {
 	//text := string("dafdsf")
 
-	text, err := ReadMarkdownFromPowerShell("/Users/nielsgregersjohansen/kitchens/sharepoint-branding/install/20 apply-sitetemplate.ps1")
+	text, _, err := ReadMarkdownFromPowerShell("/Users/nielsgregersjohansen/kitchens/sharepoint-branding/install/20 apply-sitetemplate.ps1")
 	if err != nil {
 		t.Error(err)
 	}

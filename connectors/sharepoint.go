@@ -11,6 +11,7 @@ import (
 
 type Current struct {
 	Name       string `json:"name"`
+	Tenant     string `json:"tenant"`
 	SharePoint string `json:"sharepoint"`
 	Path       string `json:"path"`
 	GitOrg     string `json:"gitorg"`

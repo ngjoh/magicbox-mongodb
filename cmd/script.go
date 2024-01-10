@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"net/url"
+	"path/filepath"
 
 	"github.com/koksmat-com/koksmat/kitchen"
 	"github.com/spf13/cobra"
@@ -24,19 +25,33 @@ func init() {
 	scriptCmd.AddCommand(
 		&cobra.Command{
 			Use:   "html [file]",
-			Short: "Exports HTML from Markdown in script",
+			Short: "Exports HTML from Markdown in code",
 			Args:  cobra.MinimumNArgs(1),
 			Long:  ``,
 
 			Run: func(cmd *cobra.Command, args []string) {
 
 				file, _ := url.QueryUnescape(args[0])
-
-				markdown, err := kitchen.ReadMarkdownFromPowerShell(file)
-				if err != nil {
-					fmt.Println(err)
+				markdown := ""
+				switch filepath.Ext(file) {
+				case ".ps1":
+					md, _, err := kitchen.ReadMarkdownFromPowerShell(file)
+					if err != nil {
+						fmt.Println(err)
+					}
+					markdown = md
+				case ".go":
+					md, err := kitchen.ReadMarkdownFromGo(file)
+					if err != nil {
+						fmt.Println(err)
+					}
+					markdown = md
+				default:
+					fmt.Println("Unknown file type")
+					return
 				}
-				html, _, err := kitchen.ParseMarkdown(markdown)
+
+				html, _, err := kitchen.ParseMarkdown(filepath.Dir(file), markdown)
 				if err != nil {
 					fmt.Println(err)
 				}
