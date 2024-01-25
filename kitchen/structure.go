@@ -5,6 +5,12 @@ type Script struct {
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
 	Environment []string `json:"environment"`
+	Connection  string   `json:"connection"`
+	Input       string   `json:"input"`
+	Output      string   `json:"output"`
+	Cron        string   `json:"cron"`
+	Tag         string   `json:"tag"`
+	Trigger     string   `json:"trigger"`
 }
 
 type Station struct {
@@ -14,6 +20,7 @@ type Station struct {
 	Description string   `json:"description"`
 	Readme      string   `json:"readme"`
 	Scripts     []Script `json:"scripts"`
+	Tag         string   `json:"tag"`
 }
 
 type Kitchen struct {
@@ -23,4 +30,5 @@ type Kitchen struct {
 	Description string    `json:"description"`
 	Path        string    `json:"path"`
 	Readme      string    `json:"readme"`
+	Tag         string    `json:"tag"`
 }

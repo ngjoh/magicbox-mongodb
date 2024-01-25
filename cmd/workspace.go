@@ -26,7 +26,7 @@ var workspaceCmd = &cobra.Command{
 		path := args[1]
 		switch path {
 		case "status":
-			printData(kitchen.GetStatus(workspace))
+			printData(kitchen.GetStatus(workspace, true))
 		// case "github/organisations":
 		// 	printData(connectors.GithubOrgs())
 		// case "github/repositories":

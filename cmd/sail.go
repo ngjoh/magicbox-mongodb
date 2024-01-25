@@ -6,21 +6,25 @@ package cmd
 import (
 	"log"
 
+	"github.com/koksmat-com/koksmat/connectors"
 	"github.com/spf13/cobra"
 )
 
 // serveCmd represents the serve command
 var sailCmd = &cobra.Command{
-	Use:   "sail [journey] [id]",
-	Short: "Travel management",
-	Args:  cobra.MinimumNArgs(2),
+	Use:   "sail ",
+	Short: "Auto pilot mode",
+	Args:  cobra.MinimumNArgs(0),
 	Long:  ``,
 
 	Run: func(cmd *cobra.Command, args []string) {
 
-		journey := args[0]
-		id := args[1]
-		log.Println("Sailing", journey, id)
+		log.Println("Sailing")
+		connectors.Execute("open", connectors.Options{Dir: "/Users/nielsgregersjohansen/servers/mate/apps/www"}, "http://localhost:3010")
+
+		connectors.Execute("npm", connectors.Options{Dir: "/Users/nielsgregersjohansen/servers/mate/apps/www"}, "run", "start")
+
+		// restapi.Sail()
 		//webserver.Run()
 	},
 }

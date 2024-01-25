@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/koksmat-com/koksmat/connectors"
 	"github.com/spf13/viper"
 	img64 "github.com/tenkoh/goldmark-img64"
 	"github.com/yuin/goldmark"
@@ -56,7 +57,10 @@ func ParseMarkdown(parentPath string, content string) (string, Metadata, error) 
 	context := parser.NewContext()
 	md := goldmark.New(
 		goldmark.WithExtensions(extension.GFM, meta.Meta),
-		goldmark.WithExtensions(&mermaid.Extender{}),
+		goldmark.WithExtensions(&mermaid.Extender{
+			RenderMode: mermaid.RenderModeServer,
+			CLI:        mermaid.MMDC("/usr/local/bin/mmdc"),
+		}),
 		goldmark.WithExtensions(img64.Img64),
 		goldmark.WithRendererOptions(img64.WithParentPath(parentPath)),
 		goldmark.WithParserOptions(
@@ -82,6 +86,40 @@ func ParseMarkdown(parentPath string, content string) (string, Metadata, error) 
 	metaData := meta.Get(context)
 	return buf.String(), metaData, nil
 }
+func ParseMarkdownGetMetadata(parentPath string, content string) (Metadata, error) {
+	var buf bytes.Buffer
+	context := parser.NewContext()
+	md := goldmark.New(
+		goldmark.WithExtensions(extension.GFM, meta.Meta),
+		goldmark.WithExtensions(&mermaid.Extender{
+			RenderMode: mermaid.RenderModeServer,
+			CLI:        mermaid.MMDC("/usr/local/bin/mmdc"),
+		}),
+		goldmark.WithExtensions(img64.Img64),
+		goldmark.WithRendererOptions(img64.WithParentPath(parentPath)),
+		goldmark.WithParserOptions(
+			parser.WithAutoHeadingID(),
+		),
+		goldmark.WithRendererOptions(
+			html.WithHardWraps(),
+			html.WithXHTML(),
+		),
+		// goldmark.WithExtensions(
+		// 	highlighting.Highlighting,
+		// ),
+		goldmark.WithExtensions(
+			highlighting.NewHighlighting(
+				highlighting.WithStyle("dracula"),
+				highlighting.WithWrapperRenderer(wrapperRenderer),
+			),
+		),
+	)
+	if err := md.Convert([]byte(content), &buf, parser.WithContext(context)); err != nil {
+		return nil, err
+	}
+	metaData := meta.Get(context)
+	return metaData, nil
+}
 func ReadMarkdown(pathname string, filename string) (string, Metadata, error) {
 
 	filepath := filepath.Join(pathname, filename)
@@ -92,8 +130,9 @@ func ReadMarkdown(pathname string, filename string) (string, Metadata, error) {
 	if err != nil {
 		return "", nil, err
 	}
+	_, metadata, err := ParseMarkdown(pathname, string(fileContent))
 
-	return ParseMarkdown(pathname, string(fileContent))
+	return string(fileContent), metadata, err
 
 }
 
@@ -111,36 +150,20 @@ func List() (*[]Kitchen, error) {
 	}
 
 	kitchens := []Kitchen{}
-	meta := map[string]interface{}{}
+
 	for _, dir := range dirs {
 		if dir.IsDir() && !strings.HasPrefix(dir.Name(), ".") {
 
-			kitchen := Kitchen{
-				Name: dir.Name(),
-				Path: path.Join(root, dir.Name()),
+			k, err := GetStatus(dir.Name(), false)
+			if err != nil {
+				return nil, err
 			}
-			// stations, err := os.ReadDir(path.Join(root, dir.Name()))
-			// if err != nil {
-			// 	return nil, err
-			// }
-			// for _, station := range stations {
-			// 	if station.IsDir() {
-			// 		stationPath := path.Join(root, dir.Name(), station.Name())
-			// 		station := Station{
-			// 			Name: station.Name(),
-			// 			Path: stationPath,
-			// 		}
-
-			// 		station.Readme, meta, _ = ReadMarkdown(path.Join(stationPath, "readme.md"))
-			// 		station.Description = getMetadataProperty(meta, "description")
-
-			// 		kitchen.Stations = append(kitchen.Stations, station)
-			// 	}
-			// }
-
-			kitchen.Readme, meta, _ = ReadMarkdown(path.Join(root, dir.Name()), "readme.md")
-			kitchen.Description = GetMetadataProperty(meta, "description", "")
-
+			kitchen := Kitchen{
+				Name:        dir.Name(),
+				Title:       k.Title,
+				Description: k.Description,
+				Path:        path.Join(root, dir.Name()),
+			}
 			kitchens = append(kitchens, kitchen)
 			//	}
 		}
@@ -173,12 +196,18 @@ func GetScripts(stationPath string, subPath string) ([]Script, error) {
 			}
 
 			_, scriptmeta, _ := ParseMarkdown(filePath, markdown)
-
+			defaultTag := strings.ReplaceAll(strings.ToLower(script.Name()), " ", "-")
 			script := Script{
 				Name:        path.Join(subPath, script.Name()),
 				Title:       path.Join(subPath, GetMetadataProperty(scriptmeta, "title", script.Name())),
 				Description: GetMetadataProperty(scriptmeta, "description", ""),
 				Environment: envs,
+				Input:       GetMetadataProperty(scriptmeta, "input", ""),
+				Output:      GetMetadataProperty(scriptmeta, "output", ""),
+				Cron:        GetMetadataProperty(scriptmeta, "cron", ""),
+				Connection:  GetMetadataProperty(scriptmeta, "connection", ""),
+				Tag:         GetMetadataProperty(scriptmeta, "tag", defaultTag),
+				Trigger:     GetMetadataProperty(scriptmeta, "trigger", ""),
 			}
 			result = append(result, script)
 
@@ -218,20 +247,25 @@ func GetStations(kitchenName string) (*Kitchen, error) {
 	}
 
 	readme, meta, _ := ReadMarkdown(filepath, "readme.md")
+
+	defaultKitchenTag := strings.ReplaceAll(strings.ToLower(kitchenName), " ", "-")
+
 	kitchen.Readme = readme
 	kitchen.Title = GetMetadataProperty(meta, "title", kitchenName)
 	kitchen.Description = GetMetadataProperty(meta, "description", "")
-
+	kitchen.Tag = GetMetadataProperty(meta, "tag", defaultKitchenTag)
 	for _, dir := range dirs {
 		if dir.IsDir() && !strings.HasPrefix(dir.Name(), ".") {
 			stationPath := path.Join(filepath, dir.Name())
-			stationReadme, statoinmeta, _ := ReadMarkdown(path.Join(stationPath), "readme.md")
+			stationReadme, stationmeta, _ := ReadMarkdown(path.Join(stationPath), "readme.md")
+			defaultStationTag := strings.ReplaceAll(strings.ToLower(dir.Name()), " ", "-")
 
 			station := Station{
 				Readme: stationReadme,
 				Name:   dir.Name(),
 				Path:   stationPath,
-				Title:  GetMetadataProperty(statoinmeta, "title", dir.Name()),
+				Title:  GetMetadataProperty(stationmeta, "title", dir.Name()),
+				Tag:    GetMetadataProperty(stationmeta, "tag", defaultStationTag),
 			}
 
 			station.Description = GetMetadataProperty(meta, "description", "")
@@ -263,6 +297,28 @@ func GetStations(kitchenName string) (*Kitchen, error) {
 			kitchen.Stations = append(kitchen.Stations, station)
 			//	}
 		}
+	}
+
+	return kitchen, nil
+}
+
+type KitchenJobs struct {
+	Name string
+	Data string
+}
+
+func GetJobs(kitchenName string) (*KitchenJobs, error) {
+
+	root := viper.GetString("KITCHENROOT")
+	filepath := filepath.Join(root, kitchenName)
+
+	data, err := connectors.Execute("gh", *&connectors.Options{Dir: filepath}, "jobs", "list")
+	if err != nil {
+		return nil, err
+	}
+	kitchen := &KitchenJobs{
+		Name: kitchenName,
+		Data: string(data),
 	}
 
 	return kitchen, nil

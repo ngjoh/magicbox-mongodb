@@ -16,7 +16,7 @@ func printData(data any, err error) {
 	printJSON(data)
 }
 func printJSON(v any) {
-	j, err := json.Marshal(v)
+	j, err := json.MarshalIndent(v, "", "  ")
 	if err != nil {
 		log.Println(err)
 	}

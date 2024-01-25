@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 	"time"
 
@@ -12,8 +13,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-func SetupSessionPath(kitchenPath string) (string, error) {
-	sessionPath := path.Join(kitchenPath, ".koksmat", "sessions", time.Now().Format(time.RFC3339Nano))
+func clearString(str string) string {
+	var nonAlphanumericRegex = regexp.MustCompile(`[^a-zA-Z0-9 ]+`)
+	return nonAlphanumericRegex.ReplaceAllString(str, "")
+}
+
+func GenerateSessionId() string {
+	return clearString(time.Now().Format(time.RFC3339Nano))
+}
+func SetupSessionPath(kitchenPath string, sessionId string) (string, error) {
+	sessionPath := path.Join(kitchenPath, ".koksmat", "sessions", sessionId)
 	err := os.MkdirAll(sessionPath, 0755)
 	if err != nil {
 		return "", err
@@ -85,7 +94,9 @@ func getConnectionsFromMetadata(tenant string, metadata map[string]interface{}, 
 	// }
 
 	connectionString := GetMetadataProperty(metadata, "connection", "")
-
+	if strings.Index(connectionString, "sharepoint") == -1 {
+		connectionString = fmt.Sprintf("sharepoint,%s", connectionString)
+	}
 	if connectionString != "" {
 		connections := strings.Split(connectionString, ",")
 		for _, connection := range connections {
@@ -107,7 +118,7 @@ func getConnectionsFromMetadata(tenant string, metadata map[string]interface{}, 
 	return connectScript, nil
 }
 
-func Cook(tenantName string, kitchenName string, stationName string, filename string, environment []string, args ...string) (string, error) {
+func Cook(tenantName string, kitchenName string, stationName string, journeyId string, filename string, environment []string, args ...string) (string, error) {
 	// 	Run: run,
 	// }
 	// return cmd
@@ -117,8 +128,12 @@ func Cook(tenantName string, kitchenName string, stationName string, filename st
 	root := viper.GetString("KITCHENROOT")
 	kitchenPath := path.Join(root, kitchenName)
 	scriptPath := path.Join(root, kitchenName, stationName, filename)
+	//if (journeyId != "") && (journeyId != "null") {
+	journeyId = "latest"
+	//}
+	sessionId := GenerateSessionId()
 
-	sessionPath, err := SetupSessionPath(kitchenPath)
+	sessionPath, err := SetupSessionPath(kitchenPath, sessionId)
 	//hostConnections := []HostConnection{}
 
 	if err != nil {
@@ -162,6 +177,9 @@ $DebugPreference = "SilentlyContinue"
 
 %s
 $ENV:WORKDIR="%s"
+$ENV:MILLERSESSIONID="%s"
+$ENV:MILLERJOURNEY="%s"
+$ENV:KITCHEN="%s"
 Start-Transcript -Path "$PSScriptRoot/transcript.txt" -Append
 $result=""
 write-host "Running script"
@@ -169,8 +187,28 @@ write-host "Running script"
 . $PSScriptRoot/script.ps1 %s
 Out-File -InputObject $result  -FilePath $PSScriptRoot/output.txt -Encoding:utf8NoBOM
 Stop-Transcript
+return # the remaining code is not executed in the current session
+$libraryName = "Miller Sessions"
+Connect-PnPOnline -Url $ENV:SITEURL  -ClientId $PNPAPPID -Tenant $PNPTENANTID -CertificatePath "$PNPCERTIFICATEPATH"
 
-`, psEnv, workDir, connectScript, strings.Join(args, " "))
+New-PnPList -Title $libraryName -Template DocumentLibrary -ErrorAction SilentlyContinue
+Add-PnPFolder -Name $env:KITCHEN -Folder $libraryName -ErrorAction SilentlyContinue
+Add-PnPFolder -Name $env:MILLERJOURNEY -Folder "$($libraryName)/$($env:KITCHEN)" -ErrorAction SilentlyContinue
+
+Add-PnPFolder -Name $env:MILLERSESSIONID -Folder "$($libraryName)/$($env:KITCHEN)/$($env:MILLERJOURNEY)" -ErrorAction SilentlyContinue
+
+$files = Get-ChildItem -Path "$env:WORKDIR" -Filter *.json 
+foreach ($file in $files) {
+    Add-PnPFile -Path $file.FullName -Folder "$($libraryName)/$($env:KITCHEN)/$($env:MILLERJOURNEY)" 
+    
+}
+Add-PnPFile -Path "$PSScriptRoot/output.txt" -Folder "$($libraryName)/$($env:KITCHEN)/$($env:MILLERJOURNEY)/$($env:MILLERSESSIONID)" 
+Add-PnPFile -Path "$PSScriptRoot/script.ps1" -Folder "$($libraryName)/$($env:KITCHEN)/$($env:MILLERJOURNEY)/$($env:MILLERSESSIONID)" 
+Add-PnPFile -Path "$PSScriptRoot/transcript.txt" -Folder "$($libraryName)/$($env:KITCHEN)/$($env:MILLERJOURNEY)/$($env:MILLERSESSIONID)" 
+    
+
+
+`, psEnv, workDir, sessionId, journeyId, kitchenName, connectScript, strings.Join(args, " "))
 
 	os.WriteFile(path.Join(sessionPath, "run.ps1"), []byte(fullScript), 0755)
 

@@ -24,20 +24,26 @@ type Status struct {
 	Name         string        `json:"name"`
 	Title        string        `json:"title"`
 	About        string        `json:"about"`
+	Markdown     string        `json:"markdown"`
 	Description  string        `json:"description"`
 	Url          string        `json:"url"`
 	Environments []Environment `json:"environments"`
 }
 
-func GetStatus(kitchen string) (Status, error) {
+func GetStatus(kitchen string, parseMD bool) (Status, error) {
 	root := viper.GetString("KITCHENROOT")
 	status := Status{}
 	kitchenPath := path.Join(root, kitchen)
 	about, meta, err := ReadMarkdown(kitchenPath, "readme.md")
-	if err != nil {
-		return status, err
+	if parseMD {
+		html, _, err := ParseMarkdown(kitchenPath, about)
+		if err != nil {
+			return status, err
+		}
+		status.About = html
 	}
-	status.About = about
+
+	status.Markdown = about
 	status.Title = GetMetadataProperty(meta, "title", kitchen)
 	status.Description = GetMetadataProperty(meta, "description", "")
 	sharePointPath := path.Join(kitchenPath, ".koksmat", "sharepoint")

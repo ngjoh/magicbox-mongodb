@@ -6,7 +6,7 @@ import (
 
 func TestGetStatus(t *testing.T) {
 
-	k, err := GetStatus("magicbox")
+	k, err := GetStatus("magicbox", true)
 	if err != nil {
 		t.Error(err)
 	}

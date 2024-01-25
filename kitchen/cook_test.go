@@ -10,7 +10,8 @@ import (
 func TestSetupSession(t *testing.T) {
 	root := viper.GetString("KITCHENROOT")
 	kitchenPath := path.Join(root, "sharepoint-branding")
-	s, err := SetupSessionPath(kitchenPath)
+	sessionId := GenerateSessionId()
+	s, err := SetupSessionPath(kitchenPath, sessionId)
 	if err != nil {
 		t.Error(err)
 	}

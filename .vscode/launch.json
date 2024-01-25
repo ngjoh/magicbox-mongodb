@@ -60,6 +60,14 @@
             "args": ["serve","admin"]
         },
         {
+            "name": "Mate Sail API",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["sail"]
+        },
+        {
             "name": "Sockets API",
             "type": "go",
             "request": "launch",
@@ -121,7 +129,15 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["kitchen","status","magicbox"]
+            "args": ["kitchen","status","meeting-infrastructure"]
+        }, 
+        {
+            "name": "Kitchen list",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["kitchen","list"]
         }, 
         {
             "name": "Run script",
@@ -155,6 +171,14 @@
             "mode": "auto",
             "program": "${workspaceFolder}",
             "args": ["kitchen","stations","365admin-test"]
+        }, 
+        {
+            "name": "Get jobs",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["kitchen","jobs","meeting-infrastructure"]
         }, 
            {
             "name": "Read Users from Excel",

@@ -243,6 +243,19 @@ func addAdminEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) 
 	s.Mount("/debug/admin", middleware.Profiler())
 }
 
+func addSailorEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) {
+	s.Route("/v1/mate", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			// r.Use(jwtAuth, nethttp.HTTPBearerSecurityMiddleware(s.OpenAPICollector, "Bearer", "", ""))
+			// r.Use(rateLimitByAppId(50))
+			r.Method(http.MethodPost, "/jobs", nethttp.NewHandler(GetMateJobs()))
+
+		})
+	})
+
+	s.Mount("/debug/mate", middleware.Profiler())
+}
+
 func All() {
 	s := web.DefaultService()
 
@@ -276,6 +289,24 @@ func Admin() {
 
 	log.Println("Server starting")
 	if err := http.ListenAndServe(":4322", s); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func Sail() {
+	s := web.DefaultService()
+
+	// Init API documentation schema.
+	s.OpenAPI.Info.Title = "Mate Autopilot"
+	s.OpenAPI.Info.WithDescription(description)
+	s.OpenAPI.Info.Version = "v0.0.1"
+
+	sharedSettings(s)
+	addSailorEndpoints(s, Authenticator)
+	s.Docs("/openapi/mate", swgui.New)
+
+	log.Println("Server starting")
+	if err := http.ListenAndServe(":1234", s); err != nil {
 		log.Fatal(err)
 	}
 }
