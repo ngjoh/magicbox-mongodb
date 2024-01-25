@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-
-	"golang.design/x/clipboard"
 )
 
 func printData(data any, err error) {
@@ -22,9 +20,9 @@ func printJSON(v any) {
 	}
 	s := string(j)
 	fmt.Print(s)
-	err = clipboard.Init()
-	if err == nil {
-		clipboard.Write(clipboard.FmtText, []byte(s))
-	}
+	// err = clipboard.Init()
+	// if err == nil {
+	// 	clipboard.Write(clipboard.FmtText, []byte(s))
+	// }
 
 }

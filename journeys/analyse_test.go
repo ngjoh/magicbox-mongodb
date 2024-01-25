@@ -2,9 +2,8 @@ package journeys
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
-
-	"github.com/atotto/clipboard"
 )
 
 var kitchenName = "nexi-sharepoint"
@@ -18,7 +17,7 @@ func TestFindWaypoints(t *testing.T) {
 	}
 
 	text, _ := json.MarshalIndent(wayPoints, "", "  ")
-	clipboard.WriteAll(string(text))
+	fmt.Printf("%s\n", text)
 
 }
 
@@ -35,7 +34,7 @@ func TestFindJourneys(t *testing.T) {
 	}
 
 	text, _ := json.MarshalIndent(journeys, "", "  ")
-	clipboard.WriteAll(string(text))
+	fmt.Printf("%s\n", text)
 
 }
 
@@ -57,7 +56,7 @@ func TestBuildTravelPlan(t *testing.T) {
 	}
 
 	text, _ := json.MarshalIndent(travelPlan, "", "  ")
-	clipboard.WriteAll(string(text))
+	fmt.Printf("%s\n", text)
 
 }
 
@@ -74,7 +73,7 @@ func TestBuildTriggerPlan(t *testing.T) {
 	}
 
 	text, _ := json.MarshalIndent(triggers, "", "  ")
-	clipboard.WriteAll(string(text))
+	fmt.Printf("%s\n", text)
 
 }
 func TestBuildTravelPlanMermaid(t *testing.T) {
@@ -99,7 +98,7 @@ func TestBuildTravelPlanMermaid(t *testing.T) {
 		t.Error(err)
 	}
 
-	clipboard.WriteAll(mermaid)
+	fmt.Printf("%s\n", mermaid)
 
 }
 
@@ -109,6 +108,6 @@ func TestGetDiagram(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	clipboard.WriteAll(mermaid)
+	fmt.Printf("%s\n", mermaid)
 
 }

@@ -6,7 +6,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/atotto/clipboard"
 	"github.com/koksmat-com/koksmat/scaffold"
 	"github.com/spf13/cobra"
 )
@@ -21,8 +20,8 @@ var scaffoldCmd = &cobra.Command{
 
 			code := scaffold.Pnp2Go(args[0])
 			fmt.Print(code)
-			clipboard.WriteAll(code)
-			return
+			// clipboard.WriteAll(code)
+			// return
 		}
 
 	},
