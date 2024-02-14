@@ -2,9 +2,14 @@
 title: Database Discovery
 description: Discover databases in the cluster
 connection: sharepoint
+api: post
+tag: discover
 output: databaseservices.json
 ---#>
-$env:WORKDIR = "$psscriptroot/../.koksmat/workdir"
+if ($env:WORKDIR -eq $null) {
+    $env:WORKDIR = "$psscriptroot/../.koksmat/workdir"
+}
+
 $services = kubectl get services -n percona -o json | ConvertFrom-Json
 
 $result = @()

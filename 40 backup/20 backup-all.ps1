@@ -3,11 +3,13 @@ title: Backup all databases
 description: Backup all databases in the cluster
 connection: sharepoint
 input: databaseservices.json
+api: post
 tag: all
 ---#>
 
-$env:WORKDIR = "$psscriptroot/../.koksmat/workdir"
-
+if ($env:WORKDIR -eq $null) {
+    $env:WORKDIR = "$psscriptroot/../.koksmat/workdir"
+}
 $databases = Get-Content -Path "$env:WORKDIR/databaseservices.json" | ConvertFrom-Json
 foreach ($database in $databases) {
     $databasename = $database.name

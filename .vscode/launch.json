@@ -12,5 +12,13 @@
             "program": "${workspaceFolder}",
             "args": ["serve"]
         }, 
+        {
+            "name": "Backup all",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/.koksmat/app",
+            "args": ["backup","all","${workspaceFolder}/.koksmat/workdir/databaseservices.json"]
+        }, 
     ]
 }

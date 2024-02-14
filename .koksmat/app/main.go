@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -7,7 +6,6 @@ import (
 
 	"github.com/365admin/kubernetes-management/magicapp"
 )
-
 
 func main() {
 	info, _ := debug.ReadBuildInfo()
@@ -38,5 +36,6 @@ The pod mount the internal storage and the external storage. The backup job will
 The pod will copy the backup from the external storage to the internal storage. The recovery job will then restore the database from the backup.`
 	magicapp.Setup(".env")
 	magicapp.RegisterServeCmd("kubernetes-management", description, "0.0.1", 8080)
+	magicapp.RegisterCmds()
 	magicapp.Execute(name, "kubernetes-management", "")
 }
