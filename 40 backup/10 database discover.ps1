@@ -4,8 +4,7 @@ description: Discover databases in the cluster
 connection: sharepoint
 output: databaseservices.json
 ---#>
-#$env:WORKDIR="/Users/nielsgregersjohansen/kitchens/kubernetes-management/.koksmat/workdir"
-
+$env:WORKDIR = "$psscriptroot/../.koksmat/workdir"
 $services = kubectl get services -n percona -o json | ConvertFrom-Json
 
 $result = @()
