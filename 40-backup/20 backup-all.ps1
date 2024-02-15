@@ -10,6 +10,10 @@ tag: all
 if ($env:WORKDIR -eq $null) {
     $env:WORKDIR = "$psscriptroot/../.koksmat/workdir"
 }
+$destinationDir = "$env:WORKDIR/dump"
+if (-not (Test-Path $destinationDir)) {
+    $x = New-Item -Path $destinationDir -ItemType Directory 
+}
 $databases = Get-Content -Path "$env:WORKDIR/databaseservices.json" | ConvertFrom-Json
 foreach ($database in $databases) {
     $databasename = $database.name
@@ -31,8 +35,9 @@ foreach ($database in $databases) {
     
     kubectl exec "pod/$databasename-0" -n percona -- tar -czvf dump.tar.gz /data/db/dump
     
-    kubectl cp $databasename-0:/data/db/dump.tar.gz  $env:WORKDIR/$databasename.tar.gz -n percona
+    kubectl cp $databasename-0:/data/db/dump.tar.gz  $destinationDir/$databasename.tar.gz -n percona
     
+    az storage blob upload  --account-name $env:AZURE_STORAGE_ACCOUNT --account-key $env:AZURE_STORAGE_KEY --container-name $env:AZURE_STORAGE_CONTAINER --overwrite $true  --file $destinationDir/$databasename.tar.gz --name mongodb/$databasename.tar.gz 
     
 }
 

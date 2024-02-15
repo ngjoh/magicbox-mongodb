@@ -1,0 +1,14 @@
+param (
+    $database="prod2-mongos",
+    $collection="nextauth"
+)
+$destinationDir = "$env:WORKDIR/download/$database/data/db/dump/$collection"
+Push-Location
+set-location $destinationDir
+$files = Get-ChildItem -Path $destinationDir -Filter "*.bson"  #-Include *.bson 
+for ($i = 0; $i -lt $files.Count; $i++) {
+    $file = $files[$i]
+    $file = $file.Name
+    bsondump $file --outFile="$file.json"
+}
+Pop-Location

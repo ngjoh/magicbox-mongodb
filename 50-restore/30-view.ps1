@@ -10,7 +10,7 @@ param ($database="booking-mongos")
     $env:WORKDIR = "$psscriptroot/../.koksmat/workdir"
 #}
 
-$backupfile = "$env:WORKDIR/$database.tar.gz"
+$backupfile = "$env:WORKDIR/download/$database.tar.gz"
 
 $output = tar -ztvf $backupfile 
 
