@@ -1,0 +1,37 @@
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. -->
+<!-- This file shows how to design a first-run page that provides a welcome screen to the user about the features of the add-in. -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contoso Task Pane Add-in</title>
+
+    <!-- Office JavaScript API -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+
+ 
+</head>
+
+<body class="ms-font-m ms-welcome ms-Fabric">
+
+
+    <main id="app-body" class="ms-welcome__main" style="display: block;">
+        <iframe style="height: 100vh;width: 100%;" src="/officeaddin/workspace/meeting-infrastructure"></iframe>
+    </main>
+</body>
+<script>
+Office.onReady((info) => {
+    
+  if (info.host === Office.HostType.Word) {
+    alert("Word is ready");
+    // document.getElementById("sideload-msg").style.display = "none";
+    // document.getElementById("app-body").style.display = "flex";
+    // document.getElementById("run").onclick = run;
+  }
+});
+    </script>
+</html>

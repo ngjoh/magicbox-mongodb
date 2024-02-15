@@ -3,7 +3,7 @@
 // -------------------------------------------------------------------
 /*
 ---
-title: Database Discovery
+title: Database Restore
 ---
 */
 package endpoints
@@ -21,29 +21,29 @@ import (
 	"github.com/365admin/kubernetes-management/utils"
 )
 
-func BackupDiscoverPost() usecase.Interactor {
+func RestoreViewPost() usecase.Interactor {
 	type Request struct {
 	}
-	u := usecase.NewInteractor(func(ctx context.Context, input Request, output *schemas.Databaseservices) error {
+	u := usecase.NewInteractor(func(ctx context.Context, input Request, output *schemas.Backupcontent) error {
 
-		_, err := execution.ExecutePowerShell("john", "*", "kubernetes-management", "40-backup", "10 database discover.ps1", "")
+		_, err := execution.ExecutePowerShell("john", "*", "kubernetes-management", "50-restore", "view.ps1", "")
 		if err != nil {
 			return err
 		}
 
-		resultingFile := path.Join(utils.WorkDir("kubernetes-management"), "databaseservices.json")
+		resultingFile := path.Join(utils.WorkDir("kubernetes-management"), "backupcontent.json")
 		data, err := os.ReadFile(resultingFile)
 		if err != nil {
 			return err
 		}
-		resultObject := schemas.Databaseservices{}
+		resultObject := schemas.Backupcontent{}
 		err = json.Unmarshal(data, &resultObject)
 		*output = resultObject
 		return err
 
 	})
-	u.SetTitle("Database Discovery")
+	u.SetTitle("Database Restore")
 	// u.SetExpectedErrors(status.InvalidArgument)
-	u.SetTags("40-backup")
+	u.SetTags("50-restore")
 	return u
 }

@@ -11,7 +11,7 @@ import (
 func RegisterCmds() {
 	backupCmd := &cobra.Command{
 		Use:   "backup",
-		Short: "40 backup",
+		Short: "40-backup",
 		Long:  `Describe the main purpose of this kitchen`,
 	}
 	BackupDiscoverPostCmd := &cobra.Command{
@@ -42,9 +42,27 @@ func RegisterCmds() {
 	backupCmd.AddCommand(BackupAllPostCmd)
 
 	RootCmd.AddCommand(backupCmd)
+	restoreCmd := &cobra.Command{
+		Use:   "restore",
+		Short: "50-restore",
+		Long:  `Describe the main purpose of this kitchen`,
+	}
+	RestoreViewPostCmd := &cobra.Command{
+		Use:   "view",
+		Short: "Database Restore",
+		Long:  ``,
+		Run: func(cmd *cobra.Command, args []string) {
+			ctx := cmd.Context()
+
+			cmds.RestoreViewPost(ctx, args)
+		},
+	}
+	restoreCmd.AddCommand(RestoreViewPostCmd)
+
+	RootCmd.AddCommand(restoreCmd)
 	setupCmd := &cobra.Command{
 		Use:   "setup",
-		Short: "90 deployment",
+		Short: "90-deployment",
 		Long:  `Describe the main purpose of this kitchen`,
 	}
 

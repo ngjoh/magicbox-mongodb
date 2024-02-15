@@ -1,0 +1,62 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": ["NODE_ENV"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_APP_URL",
+        "UPSTASH_REDIS_REST_URL",
+        "UPSTASH_REDIS_REST_TOKEN",
+        "COMPONENTS_REGISTRY_URL",
+        "npm_config_user_agent",
+        "https_proxy",
+        "SECRET",
+        "MONGODB",
+        "AZURE_AD_CLIENT_ID",
+        "AZURE_AD_CLIENT_SECRET",
+        "AZURE_AD_TENANT_ID",
+        "SPAUTH_CLIENTSECRET",
+        "KOKSMATLOCAL",
+        "SPAUTH_CLIENTID",
+        "SPAUTH_SITEURL",
+        "SPAUTH_TENANTID"
+      ],
+      "outputs": ["dist/**", ".next/**"]
+    },
+    "preview": {
+      "env": ["NEXT_PUBLIC_APP_URL"],
+      "outputs": ["dist/**", ".next/**"]
+    },
+    "start": {
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "cache": false,
+      "outputs": []
+    },
+    "lint:fix": {
+      "cache": false,
+      "outputs": []
+    },
+    "format:check": {
+      "cache": false,
+      "outputs": []
+    },
+    "format:write": {
+      "cache": false,
+      "outputs": []
+    },
+    "typecheck": {},
+    "dev": {
+      "cache": false
+    },
+    "check": {
+      "cache": false
+    },
+    "test": {
+      "cache": false,
+      "outputs": []
+    }
+  }
+}

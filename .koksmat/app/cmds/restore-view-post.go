@@ -3,7 +3,7 @@
 // -------------------------------------------------------------------
 /*
 ---
-title: Database Discovery
+title: Database Restore
 ---
 */
 package cmds
@@ -19,19 +19,19 @@ import (
 	"github.com/365admin/kubernetes-management/utils"
 )
 
-func BackupDiscoverPost(ctx context.Context, args []string) (*schemas.Databaseservices, error) {
+func RestoreViewPost(ctx context.Context, args []string) (*schemas.Backupcontent, error) {
 
-	_, pwsherr := execution.ExecutePowerShell("john", "*", "kubernetes-management", "40-backup", "10 database discover.ps1", "")
+	_, pwsherr := execution.ExecutePowerShell("john", "*", "kubernetes-management", "50-restore", "view.ps1", "")
 	if pwsherr != nil {
 		return nil, pwsherr
 	}
 
-	resultingFile := path.Join(utils.WorkDir("kubernetes-management"), "databaseservices.json")
+	resultingFile := path.Join(utils.WorkDir("kubernetes-management"), "backupcontent.json")
 	data, err := os.ReadFile(resultingFile)
 	if err != nil {
 		return nil, err
 	}
-	resultObject := schemas.Databaseservices{}
+	resultObject := schemas.Backupcontent{}
 	err = json.Unmarshal(data, &resultObject)
 	return &resultObject, nil
 

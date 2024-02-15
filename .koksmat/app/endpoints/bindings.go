@@ -21,6 +21,7 @@ func AddEndpoints(s *web.Service, jwtAuth func(http.Handler) http.Handler) {
 			//r.Method(http.MethodPost, "/", nethttp.NewHandler(ExchangeCreateRoomsPost()))
 			r.Method(http.MethodPost, "/backup/discover", nethttp.NewHandler(BackupDiscoverPost()))
 			r.Method(http.MethodPost, "/backup/all", nethttp.NewHandler(BackupAllPost()))
+			r.Method(http.MethodPost, "/restore/view", nethttp.NewHandler(RestoreViewPost()))
 
 		})
 	})

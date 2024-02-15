@@ -1,0 +1,192 @@
+navigation: v1
+metadata:
+  app: cava
+  name: CAVA - Sparkling Meeting support
+  logo: /365admin/365admin-periodictable.png 
+  description: |
+    tbd
+menus:
+  leftmenu: 
+    - menuitem: 
+        name: Workspaces
+        menuitems:
+          - menuitem: 
+              name: New Workspace
+              path: new
+          - menuitem: 
+              name: Open Workspace
+              path: /
+    # - menuitem:
+    #     name: Network
+    #     menuitems:
+    #       - menuitem: 
+    #           name: DNS
+    #           path: network/dns
+    #       - menuitem: 
+    #           name: Forwarders
+    #           path: network/forwarders
+    - menuitem: 
+        name: Jobs
+        path: monitoring/jobs
+        menuitems:
+        - menuitem: 
+            name: Local
+            path: jobs/logs/local
+        - menuitem: 
+            name: Magicbox
+            path: jobs/logs/magicbox                      
+    - menuitem:
+        name: Monitoring
+        menuitems:
+          - menuitem: 
+              name: Logs
+              path: monitoring/logs
+              menuitems:
+                - menuitem: 
+                    name: Local
+                    path: monitoring/logs/local
+                - menuitem: 
+                    name: Magicbox
+                    path: monitoring/logs/magicbox                    
+
+    - menuitem: 
+        name: Storage
+        menuitems:
+          - menuitem: 
+              name: Azure Blob Storage
+              path: stores/azure/blobs
+          - menuitem: 
+              name: GitHub Packages
+              path: stores/github/packages
+          - menuitem: 
+              name: MongoDB Collections
+              path: stores/mongodb/collections
+          - menuitem: 
+              name: SharePoint Lists
+              path: stores/sharepoint/lists          
+          - menuitem: 
+              name: SharePoint Libraries
+              path: stores/sharepoint/libraries    
+          - menuitem: 
+              name: SharePoint Pages
+              path: stores/sharepoint/pages   
+                 
+
+    - menuitem: 
+        name: Connections
+        menuitems:
+          - menuitem: 
+              name: Azure
+              path: connections/azure
+              menuitems:
+                - menuitem: 
+                    name: Subscriptions
+                    path: connections/azure/subscriptions
+                - menuitem: 
+                    name: Storage Accounts
+                    path: connections/azure/storageaccounts                    
+        #   - menuitem: 
+        #       name: Docker
+        #       path: connections/docker              
+        #       menuitems:
+        #         - menuitem: 
+        #             name: Containers
+        #             path: connections/docker/containers
+        #         - menuitem: 
+        #             name: Images
+        #             path: connections/docker/images                  
+        #         - menuitem: 
+        #             name: Instances
+        #             path: connections/docker/instances     
+          - menuitem: 
+              name: GitHub
+              path: connections/github            
+              menuitems:
+                - menuitem: 
+                    name: Organisations
+                    path: connections/github/organisations
+                - menuitem: 
+                    name: Repositories
+                    path: connections/github/repositories                 
+                - menuitem: 
+                    name: Codespaces
+                    path: connections/github/codespaces         
+          - menuitem: 
+              name: Kubernetes
+              path: connections/kubernetes              
+              menuitems:
+                - menuitem: 
+                    name: Clusters
+                    path: connections/kubernetes/clusters
+                - menuitem: 
+                    name: Namespaces
+                    path: connections/kubernetes/namespaces                    
+                - menuitem: 
+                    name: Pods
+                    path: connections/kubernetes/pods  
+          - menuitem:
+              name: Microsoft 365
+              path: connections/microsoft365
+              menuitems: 
+                - menuitem: 
+                    name: Tenants
+                    path: connections/microsoft365/tenants
+                - menuitem: 
+                    name: Sites
+                    path: connections/microsoft365/sites
+          - menuitem: 
+              name: MongoDB
+              path: connections/mongo           
+              menuitems:
+                - menuitem: 
+                    name: Clusters
+                    path: connections/mongodb/clusters
+                - menuitem: 
+                    name: Databases
+                    path: connections/mongodb/databases                    
+        #   - menuitem: 
+        #       name: Power Platform
+        #       path: connections/powerplatform             
+        #       menuitems:
+        #         - menuitem: 
+        #             name: Environments
+        #             path: connections/powerplatform/environments
+        #         - menuitem: 
+        #             name: Solutions
+        #             path: connections/powerplatform/solutions      
+          - menuitem: 
+              name: SharePoint
+              path: connections/sharepoint              
+              menuitems:
+                - menuitem: 
+                    name: Tenants
+                    path: connections/sharepoint/tenants
+                - menuitem: 
+                    name: Sites
+                    path: connections/sharepoint/sites    
+
+
+
+   
+
+  rightmenu: 
+    - menuitem: 
+        name: Profile
+        menuitems:
+          - menuitem: 
+              name: username
+              type: label
+              path: signin
+          - menuitem: 
+              unauthenticated: true
+              name: Sign In
+              path: signin
+          - menuitem: 
+              name: Sign Out
+              path: signout
+          - menuitem: 
+              name: Settings
+              menuitems:
+                - menuitem: 
+                    name: Show debug
+                    path: journey/services/openapi/debug

@@ -23,7 +23,7 @@ func BackupAllPost(ctx context.Context, body []byte, args []string) (*string, er
 		return nil, inputErr
 	}
 
-	_, pwsherr := execution.ExecutePowerShell("john", "*", "kubernetes-management", "40 backup", "20 backup-all.ps1", "")
+	_, pwsherr := execution.ExecutePowerShell("john", "*", "kubernetes-management", "40-backup", "20 backup-all.ps1", "")
 	if pwsherr != nil {
 		return nil, pwsherr
 	}

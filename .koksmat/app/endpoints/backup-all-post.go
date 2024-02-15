@@ -36,7 +36,7 @@ func BackupAllPost() usecase.Interactor {
 			return inputErr
 		}
 
-		_, err := execution.ExecutePowerShell("john", "*", "kubernetes-management", "40 backup", "20 backup-all.ps1", "")
+		_, err := execution.ExecutePowerShell("john", "*", "kubernetes-management", "40-backup", "20 backup-all.ps1", "")
 		if err != nil {
 			return err
 		}
@@ -46,6 +46,6 @@ func BackupAllPost() usecase.Interactor {
 	})
 	u.SetTitle("Backup all databases")
 	// u.SetExpectedErrors(status.InvalidArgument)
-	u.SetTags("40 backup")
+	u.SetTags("40-backup")
 	return u
 }
