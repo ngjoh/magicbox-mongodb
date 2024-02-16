@@ -19,3 +19,11 @@ The pod mount the internal storage and the external storage. The backup job will
 ## Recovery
 
 The pod will copy the backup from the external storage to the internal storage. The recovery job will then restore the database from the backup.
+
+
+#
+
+```bash
+apk add neofetch
+neofetch
+```
