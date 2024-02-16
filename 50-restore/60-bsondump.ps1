@@ -2,7 +2,7 @@ param (
     $database="prod2-mongos",
     $collection="nextauth"
 )
-$destinationDir = "$env:WORKDIR/download/$database/data/db/dump/$collection"
+$destinationDir = "$env:WORKDIR/mongodb/$database/data/db/dump/$collection"
 Push-Location
 set-location $destinationDir
 $files = Get-ChildItem -Path $destinationDir -Filter "*.bson"  #-Include *.bson 
