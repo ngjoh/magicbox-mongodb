@@ -1,6 +1,6 @@
 param (
-    $database="prod2-mongos",
-    $collection="nextauth"
+    $database="booking-mongos",
+    $collection="booking-cro"
 )
 $destinationDir = "$env:WORKDIR/mongodb/$database/data/db/dump/$collection"
 Push-Location

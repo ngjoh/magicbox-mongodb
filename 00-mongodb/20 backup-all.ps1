@@ -36,8 +36,8 @@ foreach ($database in $databases) {
     kubectl exec "pod/$databasename-0" -n percona -- tar -czvf dump.tar.gz /data/db/dump
     
     kubectl cp $databasename-0:/data/db/dump.tar.gz  $destinationDir/$databasename.tar.gz -n percona
-    
-    az storage blob upload  --account-name $env:AZURE_STORAGE_ACCOUNT --account-key $env:AZURE_STORAGE_KEY --container-name $env:AZURE_STORAGE_CONTAINER --overwrite $true  --file $destinationDir/$databasename.tar.gz --name mongodb/$databasename.tar.gz 
+    $timestamp = get-date -f "yyyy-MM-dd-HH"
+    az storage blob upload  --account-name $env:AZURE_STORAGE_ACCOUNT --account-key $env:AZURE_STORAGE_KEY --container-name $env:AZURE_STORAGE_CONTAINER --overwrite $true  --file $destinationDir/$databasename.tar.gz --name mongodb/$timestamp/$databasename.tar.gz 
     
 }
 

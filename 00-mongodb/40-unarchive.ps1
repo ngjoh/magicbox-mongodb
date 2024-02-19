@@ -5,7 +5,7 @@ api: post
 tag: view
 
 ---#>
-param ($database="prod2-mongos")
+param ($database="booking-mongos")
 
 $destinationDir = "$env:WORKDIR/mongodb/$database"
 if (-not (Test-Path $destinationDir)) {

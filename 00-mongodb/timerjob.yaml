@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: backupdatabases
+spec:
+  schedule: "* 2 * * *"
+  jobTemplate:
+    spec:
+      parallelism: 1
+      completions: 1
+      backoffLimit: 3
+
+      template:
+        metadata:
+          labels:
+            app: backupdatabases
+        spec: 
+          restartPolicy: Never   
+          containers:
+          - name: koksmat-cli
+            image: ghcr.io/365admin/kubernetes-management:v0.0.3
+            command: ["kubernetes-management"]
+            args: ["backup","all"] 
+            
+          
+            #env:
