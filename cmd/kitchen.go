@@ -127,6 +127,66 @@ func init() {
 	kitchenCmd.AddCommand(
 
 		&cobra.Command{
+			Use:   "build [kitchen]",
+			Short: "Build kitchen",
+			Args:  cobra.MinimumNArgs(1),
+			Long:  ``,
+
+			Run: func(cmd *cobra.Command, args []string) {
+				name := args[0]
+				status, err := kitchen.Build(name)
+				if err != nil {
+					log.Fatalln(err)
+				}
+				fmt.Println(status)
+
+				// kitchen := args[0]
+
+			},
+		})
+	kitchenCmd.AddCommand(
+
+		&cobra.Command{
+			Use:   "open [kitchen]",
+			Short: "Open kitchen",
+			Args:  cobra.MinimumNArgs(1),
+			Long:  ``,
+
+			Run: func(cmd *cobra.Command, args []string) {
+				name := args[0]
+				status, err := kitchen.Open(name)
+				if err != nil {
+					log.Fatalln(err)
+				}
+				fmt.Println(status)
+
+				// kitchen := args[0]
+
+			},
+		})
+	kitchenCmd.AddCommand(
+
+		&cobra.Command{
+			Use:   "launch [kitchen]",
+			Short: "Launch kitchen",
+			Args:  cobra.MinimumNArgs(1),
+			Long:  ``,
+
+			Run: func(cmd *cobra.Command, args []string) {
+				name := args[0]
+				status, err := kitchen.Launch(name)
+				if err != nil {
+					log.Fatalln(err)
+				}
+				fmt.Println(status)
+
+				// kitchen := args[0]
+
+			},
+		})
+	kitchenCmd.AddCommand(
+
+		&cobra.Command{
 			Use:   "create [kitchen]",
 			Short: "Create a new kitchen and change the current path to that",
 			Args:  cobra.MinimumNArgs(1),
@@ -175,7 +235,7 @@ func init() {
 				return
 			}
 
-			html, _, err := kitchen.ParseMarkdown(filepath.Dir(file), markdown)
+			html, _, err := kitchen.ParseMarkdown(false, filepath.Dir(file), markdown)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -269,7 +329,7 @@ func init() {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		result, err := kitchen.Cook(mateContext.Tenant, kitchenName, stationName, journeyId, filename, nil)
+		result, err := kitchen.Cook(true, mateContext.Tenant, kitchenName, stationName, journeyId, filename, nil)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -279,5 +339,20 @@ func init() {
 
 	runcmd.Flags().StringVarP(&channelName, "channel", "c", "", "Centrifugo channel to write back on")
 	scriptcmd.AddCommand(runcmd)
+	run2cmd := cmd("setup [file]", "Setup script", "", func(cmd *cobra.Command, args []string) {
+
+		filename := UnEscape(args[0])
+		mateContext, err := connectors.GetContext()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		result, err := kitchen.Cook(false, mateContext.Tenant, kitchenName, stationName, journeyId, filename, nil)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		fmt.Println(result)
+
+	})
+	scriptcmd.AddCommand(run2cmd)
 
 }

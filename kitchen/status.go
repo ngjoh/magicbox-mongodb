@@ -21,12 +21,13 @@ type Environment struct {
 }
 
 type Status struct {
-	Name         string        `json:"name"`
-	Title        string        `json:"title"`
-	About        string        `json:"about"`
-	Markdown     string        `json:"markdown"`
-	Description  string        `json:"description"`
-	Url          string        `json:"url"`
+	Name        string `json:"name"`
+	Title       string `json:"title"`
+	About       string `json:"about"`
+	Markdown    string `json:"markdown"`
+	Description string `json:"description"`
+	Url         string `json:"url"`
+
 	Environments []Environment `json:"environments"`
 }
 
@@ -34,9 +35,9 @@ func GetStatus(kitchen string, parseMD bool) (Status, error) {
 	root := viper.GetString("KITCHENROOT")
 	status := Status{}
 	kitchenPath := path.Join(root, kitchen)
-	about, meta, err := ReadMarkdown(kitchenPath, "readme.md")
+	about, meta, err := ReadMarkdown(false, kitchenPath, "readme.md")
 	if parseMD {
-		html, _, err := ParseMarkdown(kitchenPath, about)
+		html, _, err := ParseMarkdown(false, kitchenPath, about)
 		if err != nil {
 			return status, err
 		}
@@ -46,6 +47,7 @@ func GetStatus(kitchen string, parseMD bool) (Status, error) {
 	status.Markdown = about
 	status.Title = GetMetadataProperty(meta, "title", kitchen)
 	status.Description = GetMetadataProperty(meta, "description", "")
+
 	sharePointPath := path.Join(kitchenPath, ".koksmat", "sharepoint")
 
 	sharePointEnvironments, err := os.ReadDir(sharePointPath)

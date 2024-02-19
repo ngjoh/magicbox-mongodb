@@ -63,7 +63,7 @@ $result = 1
 	if err != nil {
 		t.Error(err)
 	}
-	html, meta, err := ParseMarkdown("", md)
+	html, meta, err := ParseMarkdown(false, "", md)
 	if err != nil {
 		t.Error(err)
 	}

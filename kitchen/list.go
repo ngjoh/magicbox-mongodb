@@ -52,7 +52,7 @@ func wrapperRenderer(w util.BufWriter, ctx highlighting.CodeBlockContext, enteri
 		}
 	}
 }
-func ParseMarkdown(parentPath string, content string) (string, Metadata, error) {
+func ParseMarkdown(noRender bool, parentPath string, content string) (string, Metadata, error) {
 	var buf bytes.Buffer
 	context := parser.NewContext()
 	md := goldmark.New(
@@ -80,6 +80,11 @@ func ParseMarkdown(parentPath string, content string) (string, Metadata, error) 
 			),
 		),
 	)
+	if noRender {
+		md = goldmark.New(
+			goldmark.WithExtensions(extension.GFM, meta.Meta),
+		)
+	}
 	if err := md.Convert([]byte(content), &buf, parser.WithContext(context)); err != nil {
 		return "", nil, err
 	}
@@ -120,7 +125,7 @@ func ParseMarkdownGetMetadata(parentPath string, content string) (Metadata, erro
 	metaData := meta.Get(context)
 	return metaData, nil
 }
-func ReadMarkdown(pathname string, filename string) (string, Metadata, error) {
+func ReadMarkdown(dontrenderMarkdown bool, pathname string, filename string) (string, Metadata, error) {
 
 	filepath := filepath.Join(pathname, filename)
 	if !fileExists(filepath) {
@@ -130,7 +135,7 @@ func ReadMarkdown(pathname string, filename string) (string, Metadata, error) {
 	if err != nil {
 		return "", nil, err
 	}
-	_, metadata, err := ParseMarkdown(pathname, string(fileContent))
+	_, metadata, err := ParseMarkdown(dontrenderMarkdown, pathname, string(fileContent))
 
 	return string(fileContent), metadata, err
 
@@ -195,7 +200,7 @@ func GetScripts(stationPath string, subPath string) ([]Script, error) {
 				return nil, err
 			}
 
-			_, scriptmeta, _ := ParseMarkdown(filePath, markdown)
+			_, scriptmeta, _ := ParseMarkdown(false, filePath, markdown)
 			defaultTag := strings.ReplaceAll(strings.ToLower(script.Name()), " ", "-")
 			script := Script{
 				Name:        path.Join(subPath, script.Name()),
@@ -208,6 +213,7 @@ func GetScripts(stationPath string, subPath string) ([]Script, error) {
 				Connection:  GetMetadataProperty(scriptmeta, "connection", ""),
 				Tag:         GetMetadataProperty(scriptmeta, "tag", defaultTag),
 				Trigger:     GetMetadataProperty(scriptmeta, "trigger", ""),
+				API:         GetMetadataProperty(scriptmeta, "api", ""),
 			}
 			result = append(result, script)
 
@@ -218,7 +224,7 @@ func GetScripts(stationPath string, subPath string) ([]Script, error) {
 				return nil, err
 			}
 
-			_, scriptmeta, _ := ParseMarkdown(filePath, markdown)
+			_, scriptmeta, _ := ParseMarkdown(false, filePath, markdown)
 
 			script := Script{
 				Name:        path.Join(subPath, script.Name()),
@@ -246,7 +252,7 @@ func GetStations(kitchenName string) (*Kitchen, error) {
 		Path: filepath,
 	}
 
-	readme, meta, _ := ReadMarkdown(filepath, "readme.md")
+	readme, meta, _ := ReadMarkdown(false, filepath, "readme.md")
 
 	defaultKitchenTag := strings.ReplaceAll(strings.ToLower(kitchenName), " ", "-")
 
@@ -257,7 +263,7 @@ func GetStations(kitchenName string) (*Kitchen, error) {
 	for _, dir := range dirs {
 		if dir.IsDir() && !strings.HasPrefix(dir.Name(), ".") {
 			stationPath := path.Join(filepath, dir.Name())
-			stationReadme, stationmeta, _ := ReadMarkdown(path.Join(stationPath), "readme.md")
+			stationReadme, stationmeta, _ := ReadMarkdown(false, path.Join(stationPath), "readme.md")
 			defaultStationTag := strings.ReplaceAll(strings.ToLower(dir.Name()), " ", "-")
 
 			station := Station{

@@ -11,6 +11,7 @@ type Script struct {
 	Cron        string   `json:"cron"`
 	Tag         string   `json:"tag"`
 	Trigger     string   `json:"trigger"`
+	API         string   `json:"api"`
 }
 
 type Station struct {

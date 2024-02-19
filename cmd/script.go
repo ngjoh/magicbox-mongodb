@@ -51,7 +51,7 @@ func init() {
 					return
 				}
 
-				html, _, err := kitchen.ParseMarkdown(filepath.Dir(file), markdown)
+				html, _, err := kitchen.ParseMarkdown(false, filepath.Dir(file), markdown)
 				if err != nil {
 					fmt.Println(err)
 				}

@@ -28,8 +28,19 @@ func TestGetEnvironment(t *testing.T) {
 	}
 	t.Log(s)
 
-	e := PowerShellEnvironmentVariables(s)
+	e := PowerShellEnvironmentVariables(kitchenPath)
 	t.Log(e)
+}
+func TestGetEnvironmentStack(t *testing.T) {
+	root := viper.GetString("KITCHENROOT")
+	kitchenPath := path.Join(root, "sharepoint-branding")
+
+	s, err := getEnvironmentStack(kitchenPath, 0, []environmentStack{})
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(s)
+
 }
 
 // func TestCook(t *testing.T) {

@@ -50,6 +50,44 @@ func getEnvironmentFilePath(startPath string, tenantName string) (string, error)
 
 }
 
+type environmentStack struct {
+	environmentPath string
+	tenantname      string
+	environment     []string
+}
+
+func getEnvironmentStack(endPath string, index int, stack []environmentStack) ([]environmentStack, error) {
+
+	if endPath == "" {
+		return nil, fmt.Errorf("You cannot start from the root")
+	}
+
+	elems := strings.Split(endPath, "/")
+	startPath := "/"
+	if index == len(elems) {
+		startPath = endPath
+	} else {
+		if index > 0 {
+			startPath = fmt.Sprintf("%s", strings.Join(elems[:index+1], "/"))
+		}
+	}
+	envPath := path.Join(startPath, ".env")
+	if fileExists(envPath) {
+		env, err := ReadEnvironmentVariables(envPath)
+		if err != nil {
+			return nil, err
+		}
+		stack = append(stack, environmentStack{environmentPath: envPath, environment: env})
+
+	}
+
+	if startPath == endPath {
+		return stack, nil
+	}
+	return getEnvironmentStack(endPath, index+1, stack)
+
+}
+
 func ReadEnvironmentVariables(filepath string) ([]string, error) {
 
 	if !fileExists(filepath) {
@@ -63,37 +101,39 @@ func ReadEnvironmentVariables(filepath string) ([]string, error) {
 }
 
 func PowerShellEnvironmentVariables(filepath string) string {
-	environment, err := ReadEnvironmentVariables(filepath)
-	if err != nil {
-		return ""
-	}
+
+	// environment, err := ReadEnvironmentVariables(filepath)
 	powershellEnv := fmt.Sprintf(`
 # variables read from %s
 `, filepath)
-	for _, env := range environment {
-		if (env == "") || (strings.HasPrefix(env, "#")) {
-			continue
-		}
-		pairs := strings.Split(env, "=")
-		name, values := pairs[0], pairs[1:]
+	stack, err := getEnvironmentStack(filepath, 0, []environmentStack{})
+	if err != nil {
+		return fmt.Sprintf("# Error reading environment %s", err)
+	}
+	for _, env := range stack {
+		environment := env.environment
+		powershellEnv += "#--------------------------------------\n"
+		powershellEnv += fmt.Sprintf("# %s\n", env.environmentPath)
+		powershellEnv += "#--------------------------------------\n"
+		for _, env := range environment {
+			if (env == "") || (strings.HasPrefix(env, "#")) {
+				continue
+			}
+			pairs := strings.Split(env, "=")
+			name, values := pairs[0], pairs[1:]
 
-		val := strings.Join(values, "=")
-		powershellEnv += fmt.Sprintf(`$env:%s="%s"
+			val := strings.Join(values, "=")
+			powershellEnv += fmt.Sprintf(`$env:%s="%s"
 `, name, val)
+		}
 	}
 	return powershellEnv
 }
 
-func getConnectionsFromMetadata(tenant string, metadata map[string]interface{}, sessionPath string) (string, error) {
+func getConnectionsScript(tenant string, connectionString, sessionPath string) (string, error) {
 	connectScript := ""
 	kitchenRoot := viper.GetString("KITCHENROOT")
-	// for _, hostConnection := range hostConnections {
-	// 	hostConnectionPath := path.Join(sessionPath, hostConnection.Name)
-	// 	connectScript += ". " + path.Join(hostConnectionPath, "connect.ps1") + "\n"
 
-	// }
-
-	connectionString := GetMetadataProperty(metadata, "connection", "")
 	if strings.Index(connectionString, "sharepoint") == -1 {
 		connectionString = fmt.Sprintf("sharepoint,%s", connectionString)
 	}
@@ -118,7 +158,7 @@ func getConnectionsFromMetadata(tenant string, metadata map[string]interface{}, 
 	return connectScript, nil
 }
 
-func Cook(tenantName string, kitchenName string, stationName string, journeyId string, filename string, environment []string, args ...string) (string, error) {
+func Cook(isDebug bool, tenantName string, kitchenName string, stationName string, journeyId string, filename string, environment []string, args ...string) (string, error) {
 	// 	Run: run,
 	// }
 	// return cmd
@@ -141,21 +181,21 @@ func Cook(tenantName string, kitchenName string, stationName string, journeyId s
 
 	}
 
-	envPath, err := getEnvironmentFilePath(kitchenPath, tenantName)
+	//envPath, err := getEnvironmentFilePath(kitchenPath, tenantName)
 	psEnv := ""
 	if err == nil {
-		psEnv = PowerShellEnvironmentVariables(envPath)
+		psEnv = PowerShellEnvironmentVariables(kitchenPath)
 
 	}
 	markdown, _, err := ReadMarkdownFromPowerShell(scriptPath)
 	if err != nil {
 		return "", err
 	}
-	_, metadata, err := ParseMarkdown("", markdown)
+	_, metadata, err := ParseMarkdown(false, "", markdown)
 	if err != nil {
 		return "", err
 	}
-	connectScript, err := getConnectionsFromMetadata(tenantName, metadata, sessionPath)
+	connectScript, err := getConnectionsScript(tenantName, GetMetadataProperty(metadata, "connection", ""), sessionPath)
 	if err != nil {
 		return "", err
 	}
@@ -184,7 +224,7 @@ Start-Transcript -Path "$PSScriptRoot/transcript.txt" -Append
 $result=""
 write-host "Running script"
 %s
-. $PSScriptRoot/script.ps1 %s
+. $PSScriptRoot/script.ps1 ##ARGS##  
 Out-File -InputObject $result  -FilePath $PSScriptRoot/output.txt -Encoding:utf8NoBOM
 Stop-Transcript
 return # the remaining code is not executed in the current session
@@ -208,19 +248,48 @@ Add-PnPFile -Path "$PSScriptRoot/transcript.txt" -Folder "$($libraryName)/$($env
     
 
 
-`, psEnv, workDir, sessionId, journeyId, kitchenName, connectScript, strings.Join(args, " "))
+`, psEnv, workDir, sessionId, journeyId, kitchenName, connectScript)
 
 	os.WriteFile(path.Join(sessionPath, "run.ps1"), []byte(fullScript), 0755)
+	if isDebug {
+		_, err = connectors.Execute("code", *&connectors.Options{Dir: sessionPath}, "run.ps1")
 
-	_, err = connectors.Execute("code", *&connectors.Options{Dir: sessionPath}, "run.ps1")
+		if err != nil {
+			return "", err
+		}
+
+		return fmt.Sprintf(`
+A new sessions has been created for you and the file run.ps1 has been opened in Visual Studio Code.
+	
+	Session path: %s`, sessionPath), nil
+	} else {
+		return sessionPath, nil
+	}
+}
+
+func KitchenCommand(kitchenName string, cmd string, args ...string) (string, error) {
+	root := viper.GetString("KITCHENROOT")
+	kitchenPath := path.Join(root, kitchenName)
+
+	output, err := connectors.Execute(cmd, *&connectors.Options{Dir: kitchenPath}, args...)
 
 	if err != nil {
 		return "", err
 	}
+	if len(output) == 0 {
+		return "Done", nil
+	}
+	return string(output), nil
+}
 
-	return fmt.Sprintf(`
-A new sessions has been created for you and the file run.ps1 has been opened in Visual Studio Code.
-	
-	Session path: %s`, sessionPath), nil
+func Build(kitchenName string, args ...string) (string, error) {
+	return KitchenCommand(kitchenName, "go", "install")
+}
 
+func Open(kitchenName string, args ...string) (string, error) {
+	return KitchenCommand(kitchenName, "code", ".")
+}
+
+func Launch(kitchenName string, args ...string) (string, error) {
+	return KitchenCommand(kitchenName, kitchenName, "-h")
 }

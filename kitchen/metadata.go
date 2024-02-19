@@ -26,7 +26,7 @@ func GetMetadata(kitchenName string, stationName string, filename string) (Meta,
 	if err != nil {
 		fmt.Println(err)
 	}
-	_, meta, err := ParseMarkdown(filepath.Dir(file), markdown)
+	_, meta, err := ParseMarkdown(false, filepath.Dir(file), markdown)
 	if err != nil {
 		fmt.Println(err)
 	}
