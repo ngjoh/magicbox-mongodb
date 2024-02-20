@@ -1,0 +1,1 @@
+helm upgrade pmm --set service.type="ClusterIP" -f $PSScriptRoot/pmm.yaml percona/pmm

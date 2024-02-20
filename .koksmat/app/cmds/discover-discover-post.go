@@ -21,7 +21,7 @@ import (
 
 func DiscoverDiscoverPost(ctx context.Context, args []string) (*schemas.Databaseservices, error) {
 
-	_, pwsherr := execution.ExecutePowerShell("john", "*", "magicbox-mongodb", "00-discover", "10 database discover.ps1", "")
+	_, pwsherr := execution.ExecutePowerShell("john", "*", "magicbox-mongodb", "05-discover", "10 database discover.ps1", "")
 	if pwsherr != nil {
 		return nil, pwsherr
 	}

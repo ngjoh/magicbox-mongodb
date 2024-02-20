@@ -26,7 +26,7 @@ func DiscoverDiscoverPost() usecase.Interactor {
 	}
 	u := usecase.NewInteractor(func(ctx context.Context, input Request, output *schemas.Databaseservices) error {
 
-		_, err := execution.ExecutePowerShell("john", "*", "magicbox-mongodb", "00-discover", "10 database discover.ps1", "")
+		_, err := execution.ExecutePowerShell("john", "*", "magicbox-mongodb", "05-discover", "10 database discover.ps1", "")
 		if err != nil {
 			return err
 		}
