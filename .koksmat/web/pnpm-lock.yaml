@@ -79,12 +79,6 @@ devDependencies:
   '@types/node':
     specifier: ^20
     version: 20.11.16
-  '@types/office-js':
-    specifier: ^1.0.373
-    version: 1.0.373
-  '@types/office-runtime':
-    specifier: ^1.0.35
-    version: 1.0.35
   '@types/react':
     specifier: ^18
     version: 18.2.52
@@ -1101,14 +1095,6 @@ packages:
     resolution: {integrity: sha512-gKb0enTmRCzXSSUJDq6/sPcqrfCv2mkkG6Jt/clpn5eiCbKTY+SgZUxo+p8ZKMof5dCp9vHQUAB7wOUTod22wQ==}
     dependencies:
       undici-types: 5.26.5
-    dev: true
-
-  /@types/office-js@1.0.373:
-    resolution: {integrity: sha512-vgb2EHyexukQmxL9o0k18qovcFVoZkeXSfkykQn4T52dCJy/v/dMbEzuEewc7C5Yb9dp/vSg9yzP6cxoT18UoA==}
-    dev: true
-
-  /@types/office-runtime@1.0.35:
-    resolution: {integrity: sha512-qrP3bkDNoPY6WZMTOoutFdkZHdK91OUC1/Ohzw94bE8OD8pVoPjHKSoYaS+NlTFyXH3SNKYmQU+E6o966zARIA==}
     dev: true
 
   /@types/prop-types@15.7.11:
