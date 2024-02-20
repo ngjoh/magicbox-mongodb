@@ -18,7 +18,7 @@ $databases = Get-Content -Path "$env:WORKDIR/databaseservices.json" | ConvertFro
 foreach ($database in $databases) {
     $databasename = $database.name
     $vars = kubectl exec "pod/$databasename-0" -n percona -- "env" 
-    Write-Host $vars
+   
     foreach ($var in $vars) {
         $s = $var -split "="
         if ($s[0] -eq "MONGODB_DATABASE_ADMIN_PASSWORD") {
