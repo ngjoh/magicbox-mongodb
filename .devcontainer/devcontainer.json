@@ -1,0 +1,17 @@
+{
+	"name": "AZ",
+	"image": "mcr.microsoft.com/azure-cli",
+	"features": {
+		"ghcr.io/devcontainers/features/go:1": {
+			"version": "1.21"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": true,
+			"version": "lts",
+			"nvmVersion": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/ts-node:1": {
+			"version": "latest"
+		}
+	}
+	}
