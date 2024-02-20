@@ -3,6 +3,15 @@
 	"features": {
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/devcontainers/features/powershell:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"donjayamanne.githistory",
+				"eamodio.gitlens",
+				"felipecaputo.git-project-manager"
+			]
+		}
 	}
 	
 	}
