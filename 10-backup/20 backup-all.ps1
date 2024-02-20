@@ -6,7 +6,7 @@ input: databaseservices.json
 api: post
 tag: all
 ---#>
-
+param ($upload = "NO")
 if ($env:WORKDIR -eq $null) {
     $env:WORKDIR = "$psscriptroot/../.koksmat/workdir"
 }
@@ -37,7 +37,8 @@ foreach ($database in $databases) {
     
     kubectl cp $databasename-0:/data/db/dump.tar.gz  $destinationDir/$databasename.tar.gz -n percona
     $timestamp = get-date -f "yyyy-MM-dd-HH"
-    az storage blob upload  --account-name $env:AZURE_STORAGE_ACCOUNT --account-key $env:AZURE_STORAGE_KEY --container-name $env:AZURE_STORAGE_CONTAINER --overwrite $true  --file $destinationDir/$databasename.tar.gz --name mongodb/$timestamp/$databasename.tar.gz 
-    
+    if ($upload -ne "NO"){
+       az storage blob upload  --account-name $env:AZURE_STORAGE_ACCOUNT --account-key $env:AZURE_STORAGE_KEY --container-name $env:AZURE_STORAGE_CONTAINER --overwrite $true  --file $destinationDir/$databasename.tar.gz --name mongodb/$timestamp/$databasename.tar.gz 
+    }    
 }
 
