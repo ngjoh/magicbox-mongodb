@@ -2,7 +2,7 @@
 title: Database Restore
 connection: sharepoint
 api: post
-tag: view
+tag: unarchive
 
 ---#>
 param ($database="booking-mongos")

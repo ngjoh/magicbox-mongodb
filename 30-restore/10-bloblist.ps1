@@ -1,5 +1,5 @@
 <#---
-title: List
+title: List backup blobs
 connection: sharepoint
 tag: list
 api: post

@@ -3,7 +3,7 @@ title: Download all backups
 connection: sharepoint
 input: bloblist.json
 api: post
-tag: all
+tag: download
 ---#>
 
 if ($env:WORKDIR -eq $null) {

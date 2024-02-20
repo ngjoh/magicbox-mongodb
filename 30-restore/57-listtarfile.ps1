@@ -2,7 +2,7 @@
 title: Database Restore
 connection: sharepoint
 api: post
-tag: view
+tag: listtar
 output: backupcontent.json
 ---#>
 param ($database="booking-mongos")
