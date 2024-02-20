@@ -1,5 +1,8 @@
 {
 	"name": "AZ",
-	"image": "mcr.microsoft.com/azure-cli"
+	"features": {
+		"ghcr.io/devcontainers/features/azure-cli:1": {},
+		"ghcr.io/devcontainers/features/powershell:1": {}
+	}
 	
 	}
