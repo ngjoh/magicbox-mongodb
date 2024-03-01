@@ -140,12 +140,14 @@
             "args": ["kitchen","list"]
         }, 
         {
-            "name": "Run script",
+            "name": "Setup script session",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["kitchen","script","run","10-sleep10.ps1","--channel","echo11", "--kitchen","365admin-test","--station","10-basic"]
+            "args": ["kitchen","script","setup","10 database discover.ps1","--kitchen","magicbox-mongodb", "--station","05-discover"]
+            
+
         }, 
         {
             "name": "Run Exchange Test script",

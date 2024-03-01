@@ -8,5 +8,21 @@
 	"features": {
 		"ghcr.io/devcontainers/features/azure-cli:1": {},
 		"ghcr.io/devcontainers/features/powershell:1": {}
+	},
+	"containerEnv": {
+		"KITCHENROOT":"/workspaces"
+	},
+	"postCreateCommand": "",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"golang.go",
+				"ms-vscode.powershell",
+				"bradlc.vscode-tailwindcss",
+				"spmeesseman.vscode-taskexplorer",
+				"Gruntfuggly.todo-tree",
+				"ms-kubernetes-tools.vscode-kubernetes-tools"
+			]
+		}
 	}
 }
